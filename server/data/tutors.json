@@ -1,0 +1,236 @@
+[
+  {
+    "id": "TUT-DDFM4ZLM6",
+    "name": "Vadapalli Pavan Kumar",
+    "qualification": "btech",
+    "gender": "Male",
+    "age": 25,
+    "about": "9990kk",
+    "subjects": [
+      "Chemistry"
+    ],
+    "classes": [
+      "Competitive Exams"
+    ],
+    "modes": [
+      "Online",
+      "Offline"
+    ],
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh",
+    "lat": 12.952882,
+    "lng": 77.630468,
+    "hourlyRate": 500,
+    "monthlyRate": 600,
+    "experience": 5,
+    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80",
+    "streetAddress": "railwaystation",
+    "address": "railwaystation",
+    "rating": 5,
+    "reviewsCount": 0,
+    "reviews": [],
+    "availability": [
+      "Mon - Fri (4:00 PM - 7:00 PM)"
+    ],
+    "createdAt": "2026-06-19T12:45:46.939Z"
+  },
+  {
+    "id": "TUT-TNJYL5AY8",
+    "name": "Vadapalli Pavan Kumar",
+    "qualification": "btech",
+    "gender": "Male",
+    "age": 25,
+    "about": "l",
+    "subjects": [
+      "Chemistry"
+    ],
+    "classes": [
+      "Class 6-10"
+    ],
+    "modes": [
+      "Online",
+      "Offline"
+    ],
+    "city": "A.konduru",
+    "state": "Andhra Pradesh",
+    "lat": 18.093145163338903,
+    "lng": 83.38414137716597,
+    "hourlyRate": 200,
+    "monthlyRate": 5000,
+    "experience": 5,
+    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80",
+    "streetAddress": "railwaystation",
+    "address": "railwaystation",
+    "rating": 5,
+    "reviewsCount": 0,
+    "reviews": [],
+    "availability": [
+      "Mon - Fri (4:00 PM - 7:00 PM)"
+    ],
+    "createdAt": "2026-06-19T12:20:35.241Z"
+  },
+  {
+    "id": "TUT-HRER70IUX",
+    "name": "jhfgfdfghjk",
+    "qualification": "btech",
+    "about": "hytrssdfghjkl;'",
+    "subjects": [
+      "Physics"
+    ],
+    "classes": [
+      "Class 6-10"
+    ],
+    "modes": [
+      "Online",
+      "Offline"
+    ],
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh",
+    "lat": 18.092898,
+    "lng": 83.384093,
+    "hourlyRate": 100,
+    "monthlyRate": 500,
+    "experience": 20,
+    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80",
+    "streetAddress": "railwaystation",
+    "address": "railwaystation",
+    "rating": 5,
+    "reviewsCount": 0,
+    "reviews": [],
+    "availability": [
+      "Mon - Fri (4:00 PM - 7:00 PM)"
+    ],
+    "createdAt": "2026-06-19T12:00:59.283Z"
+  },
+  {
+    "id": "TUT-1Q8B03Z7S",
+    "name": "Vadapalli Pavan Kumar",
+    "qualification": "btech",
+    "about": "lllllll",
+    "subjects": [
+      "Physics"
+    ],
+    "classes": [
+      "Competitive Exams"
+    ],
+    "modes": [
+      "Online",
+      "Offline"
+    ],
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh",
+    "lat": 13.0029,
+    "lng": 77.583274,
+    "hourlyRate": 200,
+    "monthlyRate": 2200,
+    "experience": 9,
+    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80",
+    "streetAddress": "railwaystation",
+    "address": "railwaystation",
+    "rating": 5,
+    "reviewsCount": 0,
+    "reviews": [],
+    "availability": [
+      "Mon - Fri (4:00 PM - 7:00 PM)"
+    ],
+    "createdAt": "2026-06-19T11:43:52.429Z"
+  },
+  {
+    "id": "TUT-OVQH9OITQ",
+    "name": "ram",
+    "qualification": "btech",
+    "about": "j",
+    "subjects": [
+      "Physics"
+    ],
+    "classes": [
+      "Class 11-12"
+    ],
+    "modes": [
+      "Offline"
+    ],
+    "city": "Padmanabham",
+    "state": "Andhra Pradesh",
+    "lat": 13.011122,
+    "lng": 77.615632,
+    "hourlyRate": 100,
+    "monthlyRate": 5000,
+    "experience": 5,
+    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80",
+    "streetAddress": "jhhu",
+    "address": "jhhu",
+    "rating": 5,
+    "reviewsCount": 0,
+    "reviews": [],
+    "availability": [
+      "Mon - Fri (4:00 PM - 7:00 PM)"
+    ],
+    "createdAt": "2026-06-19T11:33:48.604Z"
+  },
+  {
+    "id": "TUT-CD9KB6YO0",
+    "name": "Vadapalli Pavan Kumar",
+    "qualification": "btech",
+    "about": "pavankumarpk",
+    "subjects": [
+      "Physics"
+    ],
+    "classes": [
+      "Class 6-10"
+    ],
+    "modes": [
+      "Online",
+      "Offline"
+    ],
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh",
+    "lat": 18.08964325,
+    "lng": 83.3843075,
+    "hourlyRate": 200,
+    "monthlyRate": 3000,
+    "experience": 2,
+    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80",
+    "streetAddress": "railwaystation",
+    "address": "railwaystation",
+    "rating": 5,
+    "reviewsCount": 0,
+    "reviews": [],
+    "availability": [
+      "Mon - Fri (4:00 PM - 7:00 PM)"
+    ],
+    "createdAt": "2026-06-19T11:12:17.844Z"
+  },
+  {
+    "id": "TUT-KGNCFS4FT",
+    "name": "Vadapalli Pavan Kumar",
+    "qualification": "btech",
+    "about": "pavan",
+    "subjects": [
+      "Physics"
+    ],
+    "classes": [
+      "Class 6-10"
+    ],
+    "modes": [
+      "Online",
+      "Offline"
+    ],
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh",
+    "lat": 18.08964325,
+    "lng": 83.3843075,
+    "hourlyRate": 200,
+    "monthlyRate": 3000,
+    "experience": 5,
+    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80",
+    "streetAddress": "railwaystation",
+    "address": "railwaystation",
+    "rating": 5,
+    "reviewsCount": 0,
+    "reviews": [],
+    "availability": [
+      "Mon - Fri (4:00 PM - 7:00 PM)"
+    ],
+    "createdAt": "2026-06-19T11:09:01.931Z"
+  }
+]

@@ -90,3 +90,76 @@
 input[type="range"] {
   accent-color: #2563EB;
 }
+
+/* Leaflet Custom Marker Styling */
+.pulsing-user-marker {
+  width: 20px;
+  height: 20px;
+  background-color: #10B981; /* green-500 */
+  border-radius: 50%;
+  border: 3px solid #FFF;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+.pulsing-user-marker::after {
+  content: '';
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(16, 185, 129, 0.4);
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  animation: user-marker-pulse 1.8s infinite ease-out;
+}
+@keyframes user-marker-pulse {
+  0% { transform: scale(0.3); opacity: 1; }
+  100% { transform: scale(1.1); opacity: 0; }
+}
+
+.tutor-avatar-marker {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid #2563EB; /* primary blue */
+  background-color: white;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+.tutor-avatar-marker:hover {
+  transform: scale(1.1);
+  border-color: #1D4ED8; /* hover primary */
+}
+.tutor-avatar-marker img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Override default Leaflet popup styles to make it clean & modern */
+.leaflet-popup-content-wrapper {
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(241, 245, 249, 1);
+  padding: 4px;
+}
+.leaflet-popup-content {
+  margin: 8px 12px;
+}
+.leaflet-popup-tip-container {
+  display: none; /* Hide standard ugly arrow tip */
+}
+.leaflet-container a.leaflet-popup-close-button {
+  top: 12px;
+  right: 12px;
+  color: #94a3b8;
+  font-size: 16px;
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #475569;
+}
+

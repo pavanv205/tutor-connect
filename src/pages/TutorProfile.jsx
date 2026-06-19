@@ -8,7 +8,9 @@ import {
   FaCheckCircle,
   FaClock,
   FaArrowLeft,
-  FaUserGraduate
+  FaUserGraduate,
+  FaUser,
+  FaCalendarAlt
 } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
 import { tutorService } from '../services/tutorService';
@@ -23,6 +25,7 @@ const TutorProfile = () => {
   const [tutor, setTutor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
 
   useEffect(() => {
     const fetchTutorDetails = async () => {
@@ -73,11 +76,38 @@ const TutorProfile = () => {
     );
   }
 
+  // Defensive fallbacks to prevent crashes if some fields are missing
+  const name = tutor.name || 'Anonymous Tutor';
+  const photo = tutor.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80';
+  const qualification = tutor.qualification || 'Verified Educator';
+  const gender = tutor.gender || '';
+  const age = tutor.age ? `${tutor.age} yrs` : '';
+  const experience = tutor.experience !== undefined ? tutor.experience : 3;
+
+  const state = tutor.state || '';
+  const city = tutor.city || 'Bangalore';
+  const street = tutor.streetAddress || tutor.address || '';
+  const fullAddressParts = [];
+  if (street) fullAddressParts.push(street);
+  if (city) fullAddressParts.push(city);
+  if (state) fullAddressParts.push(state);
+  const fullAddress = fullAddressParts.length > 0 ? fullAddressParts.join(', ') : city;
+  const rating = tutor.rating !== undefined ? tutor.rating : 'New';
+  const reviewsCount = tutor.reviewsCount || 0;
+  const modes = Array.isArray(tutor.modes) ? tutor.modes : ['Online'];
+  const about = tutor.about || 'No biography details provided.';
+  const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : [];
+  const classes = Array.isArray(tutor.classes) ? tutor.classes : [];
+  const reviews = Array.isArray(tutor.reviews) ? tutor.reviews : [];
+  const hourlyRate = tutor.hourlyRate || 500;
+  const monthlyRate = tutor.monthlyRate || 3000;
+  const availability = Array.isArray(tutor.availability) ? tutor.availability : ['Mon - Fri (4:00 PM - 7:00 PM)'];
+
   return (
     <>
       <SEO
-        title={tutor.name}
-        description={`Read qualifications, experience, reviews, and subjects taught by ${tutor.name}. Book a free trial class now.`}
+        title={name}
+        description={`Read qualifications, experience, reviews, and subjects taught by ${name}. Book a free trial class now.`}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -95,39 +125,47 @@ const TutorProfile = () => {
         {/* Profile Header Details Card */}
         <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">
           <img
-            src={tutor.photo}
-            alt={tutor.name}
+            src={photo}
+            alt={name}
             className="h-28 w-28 md:h-36 md:w-36 rounded-2xl object-cover shrink-0 border border-slate-100 dark:border-slate-800 shadow-md"
           />
           <div className="flex-1 space-y-4 text-center md:text-left w-full">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
-                {tutor.name}
+                {name}
               </h2>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-450 border border-emerald-100 dark:border-emerald-900/40">
                 <FaCheckCircle className="h-3.5 w-3.5" /> Verified Tutor
               </span>
             </div>
 
-            <p className="text-sm font-bold text-slate-650 dark:text-slate-300 flex items-center justify-center md:justify-start gap-1.5">
+            <p className="text-sm font-bold text-slate-655 dark:text-slate-300 flex items-center justify-center md:justify-start gap-1.5">
               <FaGraduationCap className="text-slate-450 text-lg shrink-0" />
-              <span>{tutor.qualification}</span>
+              <span>{qualification}</span>
             </p>
 
             <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5">
-                <FaBriefcase className="text-slate-405" /> {tutor.experience} Years Experience
+                <FaBriefcase className="text-slate-405" /> {experience} Years Experience
               </span>
-              <span className="flex items-center gap-1.5">
-                <FaMapMarkerAlt className="text-slate-405" /> Lives in {tutor.city}
+              <span className="flex items-center gap-1.5 text-left" title={fullAddress}>
+                <FaMapMarkerAlt className="text-slate-405 shrink-0" /> 
+                <span className="line-clamp-2">{fullAddress}</span>
               </span>
-              <span className="flex items-center gap-1.5">
-                <FaStar className="text-amber-500" /> {tutor.rating} ({tutor.reviewsCount} reviews)
-              </span>
+              {gender && (
+                <span className="flex items-center gap-1.5">
+                  <FaUser className="text-slate-405" /> {gender}
+                </span>
+              )}
+              {age && (
+                <span className="flex items-center gap-1.5">
+                  <FaCalendarAlt className="text-slate-405" /> {age}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-wrap justify-center md:justify-start gap-2 pt-1">
-              {tutor.modes.map((mode, i) => (
+              {modes.map((mode, i) => (
                 <span
                   key={i}
                   className="px-3 py-1 rounded-full bg-slate-50 border border-slate-150/40 text-[10px] font-bold text-slate-500 dark:bg-slate-850 dark:border-slate-800 dark:text-slate-400"
@@ -150,8 +188,8 @@ const TutorProfile = () => {
               <h3 className="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
                 Biography & Teaching Philosophy
               </h3>
-              <p className="text-sm text-slate-650 dark:text-slate-400 leading-relaxed font-medium">
-                {tutor.about}
+              <p className="text-sm text-slate-655 dark:text-slate-400 leading-relaxed font-medium">
+                {about}
               </p>
             </div>
 
@@ -166,7 +204,7 @@ const TutorProfile = () => {
                     Subjects Taught
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {tutor.subjects.map((sub, i) => (
+                    {subjects.map((sub, i) => (
                       <span
                         key={i}
                         className="px-3 py-1.5 bg-blue-50 text-primary dark:bg-blue-950/20 dark:text-blue-400 rounded-xl text-xs font-bold border border-blue-100/50 dark:border-blue-900/30"
@@ -182,7 +220,7 @@ const TutorProfile = () => {
                     Grade Classes
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {tutor.classes.map((cls, i) => (
+                    {classes.map((cls, i) => (
                       <span
                         key={i}
                         className="px-3 py-1.5 bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 rounded-xl text-xs font-bold border border-amber-100/50 dark:border-amber-900/30"
@@ -200,11 +238,11 @@ const TutorProfile = () => {
               <h3 className="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
                 Student Reviews & Feedback
               </h3>
-              {tutor.reviews.length === 0 ? (
+              {reviews.length === 0 ? (
                 <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">No reviews registered yet.</p>
               ) : (
                 <div className="space-y-6 divide-y divide-slate-100 dark:divide-slate-800">
-                  {tutor.reviews.map((rev, i) => (
+                  {reviews.map((rev, i) => (
                     <div key={rev.id} className={`space-y-2.5 ${i > 0 ? 'pt-6' : ''}`}>
                       <div className="flex justify-between items-center gap-3">
                         <div className="flex items-center gap-2">
@@ -219,7 +257,7 @@ const TutorProfile = () => {
                           <FaStar className="fill-current" /> {rev.rating}
                         </div>
                       </div>
-                      <p className="text-sm text-slate-650 dark:text-slate-400 italic leading-relaxed pl-10 font-medium">
+                      <p className="text-sm text-slate-655 dark:text-slate-400 italic leading-relaxed pl-10 font-medium">
                         "{rev.comment}"
                       </p>
                       <p className="text-[10px] text-slate-400 pl-10 font-semibold uppercase tracking-wider">{rev.date}</p>
@@ -240,27 +278,19 @@ const TutorProfile = () => {
               <div className="flex justify-between items-baseline border-b border-slate-100 dark:border-slate-800 pb-4">
                 <span className="text-slate-500 dark:text-slate-400 text-sm font-semibold">Hourly Rate</span>
                 <span className="text-3xl font-black text-slate-900 dark:text-white">
-                  ₹{tutor.hourlyRate}
+                  ₹{hourlyRate}
                   <span className="text-xs font-bold text-slate-400 ml-1">/ Hour</span>
                 </span>
               </div>
 
-              {/* Weekly schedules */}
-              <div className="space-y-3">
-                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
-                  <FaClock className="h-3.5 w-3.5" /> Weekly Availability
+              <div className="flex justify-between items-baseline border-b border-slate-100 dark:border-slate-800 pb-4">
+                <span className="text-slate-500 dark:text-slate-400 text-sm font-semibold">Monthly Charge</span>
+                <span className="text-3xl font-black text-slate-900 dark:text-white">
+                  ₹{monthlyRate}
+                  <span className="text-xs font-bold text-slate-400 ml-1">/ Month</span>
                 </span>
-                <div className="grid grid-cols-2 gap-2 text-xs font-bold text-slate-600 dark:text-slate-450">
-                  {tutor.availability.map((day, i) => (
-                    <div
-                      key={i}
-                      className="p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-center"
-                    >
-                      {day}
-                    </div>
-                  ))}
-                </div>
               </div>
+
 
               {/* Free demo class action button */}
               <div className="pt-2">
@@ -269,13 +299,15 @@ const TutorProfile = () => {
                   className="w-full py-4 text-sm font-bold shadow-md shadow-primary/10"
                   onClick={() => openBookingModal(tutor)}
                 >
-                  Book 30-Min Free Demo
+                  Book
                 </Button>
                 <p className="text-[10px] text-center text-slate-400 mt-3 font-semibold">
                   No commitment required for first session.
                 </p>
               </div>
             </div>
+
+
           </div>
 
         </div>

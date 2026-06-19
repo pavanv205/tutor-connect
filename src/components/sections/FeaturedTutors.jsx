@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaStar, FaBriefcase, FaGraduationCap, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaStar, FaBriefcase, FaGraduationCap, FaMapMarkerAlt, FaUser, FaCalendarAlt } from 'react-icons/fa';
 import { tutorService } from '../../services/tutorService';
 import { useBookingModal } from '../../context/BookingModalContext';
 import { TutorCardSkeleton } from '../common/Skeleton';
@@ -10,6 +10,33 @@ import Button from '../common/Button';
 export const TutorCard = ({ tutor }) => {
   const navigate = useNavigate();
   const { openBookingModal } = useBookingModal();
+
+  if (!tutor) return null;
+
+  // Safeguards for tutor properties to prevent UI crashes if some fields are missing
+  const photo = tutor.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80';
+  const name = tutor.name || 'Anonymous Tutor';
+  const qualification = (tutor.qualification || 'Verified Educator').split('(')[0];
+  const gender = tutor.gender || '';
+  const age = tutor.age ? `${tutor.age} yrs` : '';
+  const rating = tutor.rating !== undefined ? tutor.rating : 'New';
+  const reviewsCount = tutor.reviewsCount || 0;
+  const experience = tutor.experience !== undefined ? tutor.experience : 3;
+  
+  const state = tutor.state || '';
+  const city = tutor.city || '';
+  const street = tutor.streetAddress || tutor.address || '';
+  const fullAddressParts = [];
+  if (street) fullAddressParts.push(street);
+  if (city) fullAddressParts.push(city);
+  if (state) fullAddressParts.push(state);
+  const fullAddress = fullAddressParts.length > 0 ? fullAddressParts.join(', ') : (tutor.city || 'Bangalore');
+
+  const monthlyRate = tutor.monthlyRate || 3000;
+  const about = tutor.about || 'No biography details provided.';
+  const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : [];
+  const hourlyRate = tutor.hourlyRate || 500;
+  const id = tutor.id || '';
 
   return (
     <motion.div
@@ -23,46 +50,62 @@ export const TutorCard = ({ tutor }) => {
         {/* Header: Photo and Badges */}
         <div className="flex gap-4 items-start">
           <img
-            src={tutor.photo}
-            alt={tutor.name}
+            src={photo}
+            alt={name}
             className="h-16 w-16 rounded-2xl object-cover shrink-0 border border-slate-100 dark:border-slate-800"
           />
           <div className="flex-1 space-y-1">
-            <h4 className="font-bold text-slate-850 dark:text-slate-100 text-base group-hover:text-primary dark:group-hover:text-blue-450 transition-colors">
-              {tutor.name}
+            <h4 className="font-bold text-slate-855 dark:text-slate-100 text-base group-hover:text-primary dark:group-hover:text-blue-450 transition-colors">
+              {name}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1">
               <FaGraduationCap className="text-slate-400 text-sm" />
-              <span className="truncate max-w-[150px]">{tutor.qualification.split('(')[0]}</span>
+              <span className="truncate max-w-[150px]">{qualification}</span>
             </p>
             {/* Rating */}
             <div className="flex items-center gap-1.5 text-xs">
               <span className="flex items-center gap-0.5 text-amber-500 font-bold">
-                <FaStar className="h-3.5 w-3.5 fill-current" /> {tutor.rating}
+                <FaStar className="h-3.5 w-3.5 fill-current" /> {rating}
               </span>
-              <span className="text-slate-400">({tutor.reviewsCount} reviews)</span>
+              <span className="text-slate-400">({reviewsCount} reviews)</span>
             </div>
           </div>
         </div>
 
         {/* Experience & City */}
-        <div className="mt-5 flex gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+        <div className="mt-5 flex flex-wrap gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
           <span className="flex items-center gap-1">
-            <FaBriefcase className="text-slate-400 text-sm" /> {tutor.experience} Yrs Exp
+            <FaBriefcase className="text-slate-404 text-sm" /> {experience} Yrs Exp
           </span>
-          <span className="flex items-center gap-1">
-            <FaMapMarkerAlt className="text-slate-400 text-sm" /> {tutor.city}
+          <span className="flex items-center gap-1 flex-1">
+            <FaMapMarkerAlt className="text-slate-400 text-sm shrink-0" /> 
+            <span className="line-clamp-2" title={fullAddress}>{fullAddress}</span>
           </span>
+          {gender && (
+            <span className="flex items-center gap-1">
+              <FaUser className="text-slate-400 text-sm shrink-0" /> {gender}
+            </span>
+          )}
+          {age && (
+            <span className="flex items-center gap-1">
+              <FaCalendarAlt className="text-slate-400 text-sm shrink-0" /> {age}
+            </span>
+          )}
+          {tutor.distance !== undefined && (
+            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-450 font-extrabold shrink-0 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-0.5 rounded-lg border border-emerald-100/50 dark:border-emerald-900/30">
+              📍 {Number(tutor.distance).toFixed(1)} km
+            </span>
+          )}
         </div>
 
         {/* Short Bio */}
-        <p className="mt-4 text-slate-600 dark:text-slate-400 text-xs leading-relaxed font-medium line-clamp-2">
-          {tutor.about}
+        <p className="mt-4 text-slate-650 dark:text-slate-400 text-xs leading-relaxed font-medium line-clamp-2">
+          {about}
         </p>
 
         {/* Subjects Tags */}
         <div className="mt-5 flex flex-wrap gap-1.5">
-          {tutor.subjects.map((sub, idx) => (
+          {subjects.map((sub, idx) => (
             <span
               key={idx}
               className="px-2.5 py-1 bg-slate-50 text-slate-600 dark:bg-slate-850 dark:text-slate-350 rounded-lg text-[10px] font-bold border border-slate-100 dark:border-slate-800"
@@ -75,18 +118,26 @@ export const TutorCard = ({ tutor }) => {
 
       {/* Footer Details & Actions */}
       <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center gap-3">
-        <div>
-          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Rate / Hour</span>
-          <span className="text-base font-extrabold text-slate-850 dark:text-slate-100">
-            ₹{tutor.hourlyRate}
-          </span>
+        <div className="flex gap-4 shrink-0">
+          <div>
+            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Hourly</span>
+            <span className="text-sm font-extrabold text-slate-855 dark:text-slate-100">
+              ₹{hourlyRate}
+            </span>
+          </div>
+          <div>
+            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Monthly</span>
+            <span className="text-sm font-extrabold text-slate-855 dark:text-slate-100">
+              ₹{monthlyRate}
+            </span>
+          </div>
         </div>
 
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate(`/tutors/${tutor.id}`)}
+            onClick={() => navigate(`/tutors/${id}`)}
           >
             Details
           </Button>
@@ -95,7 +146,7 @@ export const TutorCard = ({ tutor }) => {
             size="sm"
             onClick={() => openBookingModal(tutor)}
           >
-            Book Demo
+            Book
           </Button>
         </div>
       </div>

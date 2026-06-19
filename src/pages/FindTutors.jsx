@@ -1,18 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FaSearch, FaFilter, FaTimes, FaUndo } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaTimes, FaUndo, FaMap, FaList, FaLocationArrow } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
 import { SUBJECTS, CLASSES, CITIES, MODES } from '../constants';
 import { tutorService } from '../services/tutorService';
 import { TutorCard } from '../components/sections/FeaturedTutors';
 import { TutorListSkeleton } from '../components/common/Skeleton';
 import Button from '../components/common/Button';
+import TutorMap from '../components/common/TutorMap';
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 const FindTutors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
+  const [userCoords, setUserCoords] = useState(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState(null);
 
   // Read initial states from URL query params
   const searchVal = searchParams.get('search') || '';
@@ -35,7 +52,24 @@ const FindTutors = () => {
           city: cityVal,
           maxPrice: maxPriceVal
         };
-        const data = await tutorService.getTutors(filters);
+        let data = await tutorService.getTutors(filters);
+
+        if (userCoords) {
+          data = data.map(tutor => {
+            if (tutor.lat && tutor.lng) {
+              const dist = calculateDistance(userCoords.lat, userCoords.lng, tutor.lat, tutor.lng);
+              return { ...tutor, distance: dist };
+            }
+            return tutor;
+          });
+          // Sort closest first
+          data.sort((a, b) => {
+            if (a.distance === undefined) return 1;
+            if (b.distance === undefined) return -1;
+            return a.distance - b.distance;
+          });
+        }
+
         setTutors(data);
       } catch (error) {
         console.error('Error fetching filtered tutors:', error);
@@ -45,7 +79,33 @@ const FindTutors = () => {
     };
 
     fetchFilteredTutors();
-  }, [searchVal, subjectVal, classVal, modeVal, cityVal, maxPriceVal]);
+  }, [searchVal, subjectVal, classVal, modeVal, cityVal, maxPriceVal, userCoords]);
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      setGeoError('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    setGeoLoading(true);
+    setGeoError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserCoords({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
+        setGeoLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching geolocation:', error);
+        setGeoError('Unable to retrieve location. Please allow location access.');
+        setGeoLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  };
 
   const updateParam = (key, value) => {
     const newParams = new URLSearchParams(searchParams);
@@ -79,26 +139,79 @@ const FindTutors = () => {
           </p>
         </div>
 
-        {/* Search Input Bar */}
-        <div className="mb-8 relative flex items-center bg-white dark:bg-slate-900 shadow-sm border border-slate-200/60 dark:border-slate-805 rounded-2xl p-2 w-full max-w-3xl mx-auto md:mx-0">
-          <FaSearch className="text-slate-400 ml-4 shrink-0" />
-          <input
-            type="text"
-            placeholder="Search by tutor name, qualification, or keywords..."
-            value={searchVal}
-            onChange={(e) => updateParam('search', e.target.value)}
-            className="w-full bg-transparent border-none text-slate-800 dark:text-slate-200 py-2.5 px-4 text-sm focus:outline-none focus:ring-0"
-          />
-          {searchVal && (
-            <button
-              onClick={() => updateParam('search', '')}
-              className="p-1 rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition mr-2"
-              aria-label="Clear search"
+        {/* Controls: Search, Location, View Mode Toggle */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+          {/* Search Input Bar */}
+          <div className="relative flex items-center flex-1 bg-white dark:bg-slate-900 shadow-sm border border-slate-200/60 dark:border-slate-800 rounded-2xl p-2 w-full max-w-2xl">
+            <FaSearch className="text-slate-400 ml-4 shrink-0" />
+            <input
+              type="text"
+              placeholder="Search by tutor name, qualification, or keywords..."
+              value={searchVal}
+              onChange={(e) => updateParam('search', e.target.value)}
+              className="w-full bg-transparent border-none text-slate-800 dark:text-slate-200 py-2 px-4 text-sm focus:outline-none focus:ring-0"
+            />
+            {searchVal && (
+              <button
+                onClick={() => updateParam('search', '')}
+                className="p-1 rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition mr-2"
+                aria-label="Clear search"
+              >
+                <FaTimes className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+
+          {/* Action buttons (Proximity Search and Map Toggle) */}
+          <div className="flex gap-3 items-center shrink-0">
+            {/* Find Near Me Button */}
+            <Button
+              variant={userCoords ? "success" : "outline"}
+              size="sm"
+              onClick={handleGetLocation}
+              disabled={geoLoading}
+              className={`py-3 px-4 text-xs font-bold gap-1.5 transition-all rounded-xl ${
+                userCoords 
+                  ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 border-emerald-200/80 dark:border-emerald-900/50" 
+                  : "border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              }`}
             >
-              <FaTimes className="h-3 w-3" />
-            </button>
-          )}
+              <FaLocationArrow className={`h-3 w-3 ${geoLoading ? 'animate-spin' : ''} ${userCoords ? 'text-emerald-500' : 'text-slate-400'}`} />
+              {geoLoading ? "Locating..." : userCoords ? "Location Active 📍" : "Find Near Me 📍"}
+            </Button>
+
+            {/* List / Map view mode toggle */}
+            <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200/20 dark:border-slate-850 shrink-0">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
+                  viewMode === 'list'
+                    ? 'bg-white dark:bg-slate-900 text-primary dark:text-blue-450 shadow-sm font-extrabold'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                }`}
+              >
+                <FaList className="h-3 w-3" /> List
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
+                  viewMode === 'map'
+                    ? 'bg-white dark:bg-slate-900 text-primary dark:text-blue-450 shadow-sm font-extrabold'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                }`}
+              >
+                <FaMap className="h-3 w-3" /> Map
+              </button>
+            </div>
+          </div>
         </div>
+
+        {geoError && (
+          <div className="mb-6 p-3 bg-rose-50 dark:bg-rose-950/10 border border-rose-200/50 dark:border-rose-900/30 text-rose-600 dark:text-rose-400 text-xs font-bold rounded-xl flex items-center gap-2 max-w-xl">
+            <span>⚠️</span> {geoError}
+            <button onClick={() => setGeoError(null)} className="ml-auto text-rose-400 hover:text-rose-650 bg-transparent border-none cursor-pointer">✕</button>
+          </div>
+        )}
 
         {/* Main Content Split: Filter Sidebar & Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -257,6 +370,8 @@ const FindTutors = () => {
                   Clear All Filters
                 </Button>
               </div>
+            ) : viewMode === 'map' ? (
+              <TutorMap tutors={tutors} userCoords={userCoords} />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {tutors.map((tutor) => (

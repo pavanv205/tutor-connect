@@ -1,7 +1,6 @@
-import React from 'react';
 import SEO from '../components/common/SEO';
 import ContactForm from '../components/forms/ContactForm';
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaClock, FaWhatsapp } from 'react-icons/fa';
+import { FaEnvelope, FaMapMarkerAlt, FaClock, FaWhatsapp } from 'react-icons/fa';
 
 const CONTACT_INFO = [
   {

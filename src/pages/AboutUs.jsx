@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { FaRocket, FaEye, FaGraduationCap, FaUserCheck, FaSmileBeam, FaAward } from 'react-icons/fa';
+import { FaRocket, FaEye, FaGraduationCap, FaUserCheck, FaSmileBeam } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
 import reviewsData from '../data/reviews.json';
 

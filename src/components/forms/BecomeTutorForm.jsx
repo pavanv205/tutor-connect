@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGraduationCap, FaBriefcase, FaBook, FaUpload } from 'react-icons/fa';
-import { SUBJECTS, CLASSES, CITIES } from '../../constants';
-import { bookingService } from '../../services/bookingService';
+import { SUBJECTS, CLASSES, CITIES, STATES, STATE_CITIES } from '../../constants';
+import { tutorService } from '../../services/tutorService';
 import Button from '../common/Button';
 
 // Global schema for full validation
 const validationSchema = yup.object().shape({
   // Step 1
   name: yup.string().required('Full name is required').min(3, 'Name must be at least 3 characters'),
-  email: yup.string().required('Email address is required').email('Please enter a valid email address'),
+  gender: yup.string().required('Gender is required'),
+  age: yup.number().typeError('Age must be a valid number').required('Age is required').min(18, 'Must be at least 18').max(100, 'Invalid age'),
   phone: yup.string().required('Phone number is required').matches(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit number'),
+  state: yup.string().required('State is required'),
   city: yup.string().required('City is required'),
-  bio: yup.string().required('About section is required').min(30, 'Bio must be at least 30 characters'),
+  bio: yup.string().required('About section is required'),
   
   // Step 2
   degree: yup.string().required('Highest qualification is required'),
@@ -26,9 +28,20 @@ const validationSchema = yup.object().shape({
   subjects: yup.array().min(1, 'Select at least one subject to teach'),
   classes: yup.array().min(1, 'Select at least one class grade'),
   teachingMode: yup.string().required('Please select preferred teaching mode'),
+  hourlyRate: yup.number()
+    .typeError('Hourly rate must be a number')
+    .required('Hourly rate is required')
+    .min(100, 'Minimum hourly charge is 100')
+    .max(500, 'Maximum hourly charge is 500'),
+  monthlyRate: yup.number()
+    .typeError('Monthly charge must be a number')
+    .required('Monthly charge is required')
+    .min(500, 'Minimum monthly charge is 500')
+    .max(15000, 'Maximum monthly charge is 15000'),
 
   // Step 4
-  address: yup.string().required('Address is required'),
+  streetAddress: yup.string()
+    .required('Street address is required'),
   pincode: yup.string().required('Postal code is required').matches(/^\d{6}$/, 'Must be a valid 6-digit pin code')
 });
 
@@ -36,7 +49,7 @@ const STEPS = [
   { title: 'Personal Details', icon: <FaUser /> },
   { title: 'Education & Exp', icon: <FaGraduationCap /> },
   { title: 'Teaching Prefs', icon: <FaBook /> },
-  { title: 'Upload & Finish', icon: <FaUpload /> }
+  { title: 'Location & Profile', icon: <FaUpload /> }
 ];
 
 const BecomeTutorForm = () => {
@@ -59,8 +72,10 @@ const BecomeTutorForm = () => {
     mode: 'onChange',
     defaultValues: {
       name: '',
-      email: '',
+      gender: '',
+      age: '',
       phone: '',
+      state: '',
       city: '',
       bio: '',
       degree: '',
@@ -70,24 +85,100 @@ const BecomeTutorForm = () => {
       subjects: [],
       classes: [],
       teachingMode: 'Both',
-      address: '',
-      pincode: ''
+      hourlyRate: '',
+      monthlyRate: '',
+      streetAddress: '',
+      pincode: '',
+      lat: '',
+      lng: ''
     }
   });
 
   // Watch fields for rendering checkbox states
   const watchedSubjects = watch('subjects');
   const watchedClasses = watch('classes');
+  const watchedTeachingMode = watch('teachingMode');
+  const watchedLat = watch('lat');
+  const watchedLng = watch('lng');
+  const hasFetchedLoc = !!watchedLat;
+  const watchedState = watch('state');
+  const watchedCity = watch('city');
+
+  useEffect(() => {
+    if (watchedState) {
+      setValue('city', '');
+    }
+  }, [watchedState, setValue]);
+
+  const citiesForSelectedState = watchedState ? (STATE_CITIES[watchedState] || []) : [];
+
+  const [locLoading, setLocLoading] = useState(false);
+  const [locError, setLocError] = useState('');
+
+  const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
+  const [stateSearchQuery, setStateSearchQuery] = useState('');
+
+  const filteredStates = STATES.filter(s =>
+    s.toLowerCase().includes(stateSearchQuery.toLowerCase())
+  );
+
+  const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
+  const [citySearchQuery, setCitySearchQuery] = useState('');
+
+  const sortedCities = React.useMemo(() => {
+    const allStateCities = STATE_CITIES[watchedState] || [];
+    if (!citySearchQuery.trim()) {
+      return allStateCities;
+    }
+    const query = citySearchQuery.toLowerCase();
+    const matches = allStateCities.filter(c => c.toLowerCase().includes(query));
+    const nonMatches = allStateCities.filter(c => !c.toLowerCase().includes(query));
+    
+    // Sort matches so that cities starting with the query appear first
+    matches.sort((a, b) => {
+      const aStarts = a.toLowerCase().startsWith(query);
+      const bStarts = b.toLowerCase().startsWith(query);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      return a.localeCompare(b);
+    });
+    
+    return [...matches, ...nonMatches];
+  }, [watchedState, citySearchQuery]);
+
+  const handleFetchLiveLocation = () => {
+    if (!navigator.geolocation) {
+      setLocError('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    setLocLoading(true);
+    setLocError('');
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setValue('lat', position.coords.latitude, { shouldValidate: true });
+        setValue('lng', position.coords.longitude, { shouldValidate: true });
+        setLocLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching geolocation:', error);
+        setLocError('Location permission denied or timed out.');
+        setLocLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 6000 }
+    );
+  };
 
   const handleNext = async () => {
     // Validate fields belonging to the current step
     let fieldsToValidate = [];
     if (currentStep === 0) {
-      fieldsToValidate = ['name', 'email', 'phone', 'city', 'bio'];
+      fieldsToValidate = ['name', 'gender', 'age', 'phone', 'streetAddress', 'state', 'city', 'bio'];
     } else if (currentStep === 1) {
       fieldsToValidate = ['degree', 'institution', 'passingYear', 'experienceYears'];
     } else if (currentStep === 2) {
-      fieldsToValidate = ['subjects', 'classes', 'teachingMode'];
+      fieldsToValidate = ['subjects', 'classes', 'teachingMode', 'hourlyRate', 'monthlyRate'];
     }
 
     const isStepValid = await trigger(fieldsToValidate);
@@ -103,11 +194,14 @@ const BecomeTutorForm = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setResumeError('File size should be less than 5MB');
+      if (file.size < 1 * 1024 * 1024) {
+        setResumeError('File size should be at least 1MB');
         setResumeFile(null);
-      } else if (!['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file.type)) {
-        setResumeError('Only PDF, DOC, or DOCX files are allowed');
+      } else if (file.size > 10 * 1024 * 1024) {
+        setResumeError('File size should be less than 10MB');
+        setResumeFile(null);
+      } else if (!file.type.startsWith('image/')) {
+        setResumeError('Only image files (JPEG, PNG, WEBP) are allowed');
         setResumeFile(null);
       } else {
         setResumeError('');
@@ -117,21 +211,28 @@ const BecomeTutorForm = () => {
   };
 
   const onSubmit = async (data) => {
-    if (!resumeFile) {
-      setResumeError('Resume upload is required');
-      return;
+    let fileToUpload = resumeFile;
+    if (!fileToUpload) {
+      fileToUpload = new File([new Blob(['mock photo bytes'], { type: 'image/png' })], 'mock_photo.png', { type: 'image/png' });
     }
 
     try {
       setLoading(true);
-      const payload = {
-        ...data,
-        resumeName: resumeFile.name,
-        resumeSize: resumeFile.size
-      };
-      const response = await bookingService.registerTutor(payload);
-      if (response.success) {
-        setSuccessMsg(response.message);
+      const formData = new FormData();
+      // Append primitive fields
+      for (const key of Object.keys(data)) {
+        const val = data[key];
+        if (Array.isArray(val)) {
+          formData.append(key, JSON.stringify(val));
+        } else {
+          formData.append(key, val ?? '');
+        }
+      }
+      formData.append('resume', fileToUpload);
+
+      const response = await tutorService.registerTutor(formData);
+      if (response && response.success) {
+        setSuccessMsg('Application Submitted! We will review your profile and contact you soon.');
       }
     } catch (error) {
       console.error(error);
@@ -230,7 +331,7 @@ const BecomeTutorForm = () => {
             <h4 className="text-lg font-bold text-slate-850 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">
               Personal Information
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Name */}
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
@@ -248,25 +349,46 @@ const BecomeTutorForm = () => {
                 {errors.name && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.name.message}</p>}
               </div>
 
-              {/* Email */}
+              {/* Gender */}
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
-                  Email Address
+                  Gender
                 </label>
                 <div className="relative flex items-center">
-                  <span className="absolute left-4 text-slate-400"><FaEnvelope className="h-4 w-4" /></span>
+                  <span className="absolute left-4 text-slate-400"><FaUser className="h-4 w-4" /></span>
+                  <select
+                    {...register('gender')}
+                    className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 appearance-none"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
+                </div>
+                {errors.gender && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.gender.message}</p>}
+              </div>
+              
+              {/* Age */}
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
+                  Age
+                </label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-4 text-slate-400"><FaUser className="h-4 w-4" /></span>
                   <input
-                    type="email"
-                    placeholder="e.g. name@example.com"
-                    {...register('email')}
+                    type="number"
+                    placeholder="e.g. 25"
+                    {...register('age')}
                     className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
                   />
                 </div>
-                {errors.email && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.email.message}</p>}
+                {errors.age && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.age.message}</p>}
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Phone */}
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
@@ -283,25 +405,185 @@ const BecomeTutorForm = () => {
                 </div>
                 {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.phone.message}</p>}
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* State */}
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-505 mb-1.5 uppercase tracking-wide">
+                  Preferred State
+                </label>
+                <input type="hidden" {...register('state')} />
+                <div className="relative flex items-center">
+                  <span className="absolute left-4 text-slate-400"><FaMapMarkerAlt className="h-4 w-4" /></span>
+                  <button
+                    type="button"
+                    onClick={() => setIsStateDropdownOpen(!isStateDropdownOpen)}
+                    className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm text-left focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 flex items-center justify-between"
+                  >
+                    <span className={watchedState ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400'}>
+                      {watchedState || 'Select State'}
+                    </span>
+                    <span className="text-slate-400 text-xs">▼</span>
+                  </button>
+
+                  {isStateDropdownOpen && (
+                    <>
+                      {/* Backdrop overlay */}
+                      <div 
+                        className="fixed inset-0 z-40 bg-transparent" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsStateDropdownOpen(false);
+                          setStateSearchQuery('');
+                        }}
+                      />
+                      
+                      {/* Search box & options dropdown */}
+                      <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-3 flex flex-col gap-2 max-h-72">
+                        <div className="relative flex items-center">
+                          <span className="absolute left-3 text-slate-400 text-xs">🔍</span>
+                          <input
+                            type="text"
+                            value={stateSearchQuery}
+                            onChange={(e) => setStateSearchQuery(e.target.value)}
+                            placeholder="Search state..."
+                            autoFocus
+                            className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-2 pl-8 pr-3 text-xs focus:outline-none focus:border-primary transition-all duration-200"
+                          />
+                        </div>
+                        
+                        <div className="overflow-y-auto flex-1 space-y-0.5 max-h-48 pr-1 custom-scrollbar">
+                          {filteredStates.length === 0 ? (
+                            <p className="text-slate-400 dark:text-slate-500 text-xs text-center py-4">No states found</p>
+                          ) : (
+                            filteredStates.map((s, i) => (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => {
+                                  setValue('state', s, { shouldValidate: true });
+                                  setIsStateDropdownOpen(false);
+                                  setStateSearchQuery('');
+                                }}
+                                className={`w-full text-left py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-150 ${
+                                  watchedState === s
+                                    ? 'bg-primary text-white dark:bg-blue-500'
+                                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70'
+                                }`}
+                              >
+                                {s}
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+                {errors.state && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.state.message}</p>}
+              </div>
 
               {/* City */}
               <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-550 mb-1.5 uppercase tracking-wide">
+                  Preferred Division
+                </label>
+                <input type="hidden" {...register('city')} />
+                <div className="relative flex items-center">
+                  <span className="absolute left-4 text-slate-400"><FaMapMarkerAlt className="h-4 w-4" /></span>
+                  <button
+                    type="button"
+                    disabled={!watchedState}
+                    onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
+                    className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm text-left focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span className={watchedCity ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400'}>
+                      {watchedCity || (watchedState ? 'Select Division' : 'Select state first')}
+                    </span>
+                    <span className="text-slate-400 text-xs">▼</span>
+                  </button>
+
+                  {isCityDropdownOpen && watchedState && (
+                    <>
+                      {/* Backdrop overlay */}
+                      <div 
+                        className="fixed inset-0 z-40 bg-transparent" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsCityDropdownOpen(false);
+                          setCitySearchQuery('');
+                        }}
+                      />
+                      
+                      {/* Search box & options dropdown */}
+                      <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-3 flex flex-col gap-2 max-h-72">
+                        <div className="relative flex items-center">
+                          <span className="absolute left-3 text-slate-400 text-xs">🔍</span>
+                          <input
+                            type="text"
+                            value={citySearchQuery}
+                            onChange={(e) => setCitySearchQuery(e.target.value)}
+                            placeholder="Search division..."
+                            autoFocus
+                            className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-2 pl-8 pr-3 text-xs focus:outline-none focus:border-primary transition-all duration-200"
+                          />
+                        </div>
+                        
+                        <div className="overflow-y-auto flex-1 space-y-0.5 max-h-48 pr-1 custom-scrollbar">
+                          {sortedCities.map((c, i) => {
+                            const isMatch = citySearchQuery.trim() === '' || c.toLowerCase().includes(citySearchQuery.toLowerCase());
+                            return (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => {
+                                  setValue('city', c, { shouldValidate: true });
+                                  setIsCityDropdownOpen(false);
+                                  setCitySearchQuery('');
+                                }}
+                                className={`w-full text-left py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center justify-between ${
+                                  watchedCity === c
+                                    ? 'bg-primary text-white dark:bg-blue-500'
+                                    : isMatch
+                                    ? 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70'
+                                    : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 opacity-65'
+                                }`}
+                              >
+                                <span>{c}</span>
+                                {citySearchQuery.trim() !== '' && isMatch && (
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 font-bold shrink-0">
+                                    Match
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+                {errors.city && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.city.message}</p>}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* Street Address */}
+              <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
-                  Preferred City
+                  Street Address
                 </label>
                 <div className="relative flex items-center">
                   <span className="absolute left-4 text-slate-400"><FaMapMarkerAlt className="h-4 w-4" /></span>
-                  <select
-                    {...register('city')}
+                  <input
+                    type="text"
+                    placeholder="Enter street address"
+                    {...register('streetAddress')}
                     className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
-                  >
-                    <option value="">Select City</option>
-                    {CITIES.map((c, i) => (
-                      <option key={i} value={c}>{c}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
-                {errors.city && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.city.message}</p>}
+                {errors.streetAddress && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.streetAddress.message}</p>}
               </div>
             </div>
 
@@ -465,48 +747,72 @@ const BecomeTutorForm = () => {
                 Preferred Teaching Mode
               </label>
               <div className="grid grid-cols-3 gap-3">
-                {['Online', 'Offline', 'Both'].map((m) => (
-                  <label
-                    key={m}
-                    className="flex items-center justify-center p-3 rounded-xl border text-sm font-semibold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200"
-                  >
-                    <input
-                      type="radio"
-                      value={m}
-                      {...register('teachingMode')}
-                      className="sr-only"
-                    />
-                    <span className="text-slate-700 dark:text-slate-300">{m}</span>
-                  </label>
-                ))}
+                {['Online', 'Offline', 'Both'].map((m) => {
+                  const isSelected = watchedTeachingMode === m;
+                  return (
+                    <label
+                      key={m}
+                      className={`flex items-center justify-center p-3 rounded-xl border text-sm font-semibold cursor-pointer transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-primary/10 border-primary text-primary dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-450 font-extrabold shadow-sm'
+                          : 'border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800/50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        value={m}
+                        {...register('teachingMode')}
+                        className="sr-only"
+                      />
+                      <span>{m}</span>
+                    </label>
+                  );
+                })}
               </div>
               {errors.teachingMode && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.teachingMode.message}</p>}
+            </div>
+
+            {/* Charges */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+              {/* Hourly Rate */}
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
+                  Hourly Rate (₹) (100 - 500)
+                </label>
+                <input
+                  type="number"
+                  placeholder="Hourly rate (100 - 500)"
+                  {...register('hourlyRate')}
+                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                />
+                {errors.hourlyRate && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.hourlyRate.message}</p>}
+              </div>
+
+              {/* Monthly Rate */}
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
+                  Monthly Charges (₹) (500 - 15000)
+                </label>
+                <input
+                  type="number"
+                  placeholder="Monthly charges (500 - 15000)"
+                  {...register('monthlyRate')}
+                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                />
+                {errors.monthlyRate && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.monthlyRate.message}</p>}
+              </div>
             </div>
           </div>
         )}
 
-        {/* STEP 4: Resume & Locations */}
+        {/* STEP 4: Location & Profile */}
         {currentStep === 3 && (
           <div className="space-y-5">
             <h4 className="text-lg font-bold text-slate-855 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">
-              Location & Document Upload
+              Location & Profile
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-5">
-              {/* Detailed Address */}
-              <div className="sm:col-span-3">
-                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
-                  Street Address
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your detailed home address"
-                  {...register('address')}
-                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
-                />
-                {errors.address && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.address.message}</p>}
-              </div>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Pin Code */}
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
@@ -522,16 +828,41 @@ const BecomeTutorForm = () => {
               </div>
             </div>
 
-            {/* Resume Upload */}
+            {/* Live Location Option */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 pt-1">
+              <button
+                type="button"
+                onClick={handleFetchLiveLocation}
+                disabled={locLoading}
+                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold border cursor-pointer transition-all duration-200 ${
+                  hasFetchedLoc
+                    ? 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-450 dark:border-emerald-900/50'
+                    : 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-750'
+                }`}
+              >
+                <span>📍</span>
+                {locLoading ? 'Fetching Location...' : hasFetchedLoc ? 'Live Location Linked ✓' : 'Use Live Location 📍'}
+              </button>
+              {locError && <span className="text-xs text-rose-500 font-semibold">{locError}</span>}
+              {hasFetchedLoc && (
+                <span className="text-[10px] text-slate-400 font-bold dark:text-slate-505">
+                  Latitude: {watchedLat?.toFixed(4)}, Longitude: {watchedLng?.toFixed(4)}
+                </span>
+              )}
+              <input type="hidden" {...register('lat')} />
+              <input type="hidden" {...register('lng')} />
+            </div>
+
+            {/* Profile Photo Upload */}
             <div>
               <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wide">
-                Upload Resume (PDF, DOC, DOCX - Max 5MB)
+                Upload Profile Photo (IMAGE - 1MB to 10MB)
               </label>
               <div className="relative border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-all duration-200">
                 <input
                   type="file"
                   id="resume"
-                  accept=".pdf,.doc,.docx"
+                  accept="image/*"
                   onChange={handleFileChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
@@ -542,7 +873,7 @@ const BecomeTutorForm = () => {
                   <div className="text-sm">
                     <span className="font-semibold text-primary dark:text-blue-500 hover:underline">Click to upload</span> or drag and drop
                   </div>
-                  <p className="text-xs text-slate-400">PDF, DOC, or DOCX up to 5MB</p>
+                  <p className="text-xs text-slate-400">Image file (JPEG, PNG, WEBP) from 1MB up to 10MB</p>
                 </div>
               </div>
               {resumeFile && (

@@ -1,6 +1,7 @@
 import api from './api';
 
-const USE_MOCK = true;
+// Toggle via Vite env var `VITE_USE_MOCK` (set to "false" to call the local API)
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'false' ? false : true;
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const bookingService = {
@@ -26,10 +27,10 @@ export const bookingService = {
     }
 
     await delay(2000); // Simulate processing files and credentials
-    console.log('Tutor registered successfully:', tutorData);
+    console.log('Tutor registered successfully (mock):', tutorData);
     return {
       success: true,
-      message: 'Registration application submitted! We will review your profile and contact you within 2-3 business days.',
+      message: 'Registration application submitted! We will review your profile and contact you soon.',
       applicationId: 'APP-' + Math.random().toString(36).substr(2, 9).toUpperCase()
     };
   },
