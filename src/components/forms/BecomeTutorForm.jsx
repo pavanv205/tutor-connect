@@ -5,12 +5,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGraduationCap, FaBriefcase, FaBook, FaUpload } from 'react-icons/fa';
 import { SUBJECTS, CLASSES, CITIES, STATES, STATE_CITIES } from '../../constants';
 import { tutorService } from '../../services/tutorService';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../common/Button';
 
 // Global schema for full validation
 const validationSchema = yup.object().shape({
   // Step 1
   name: yup.string().required('Full name is required').min(3, 'Name must be at least 3 characters'),
+  email: yup.string().email('Please enter a valid email').required('Email is required'),
+  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
   gender: yup.string().required('Gender is required'),
   age: yup.number().typeError('Age must be a valid number').required('Age is required').min(18, 'Must be at least 18').max(100, 'Invalid age'),
   phone: yup.string().required('Phone number is required').matches(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit number'),
@@ -53,6 +56,7 @@ const STEPS = [
 ];
 
 const BecomeTutorForm = () => {
+  const { registerTutor: registerTutorAuth } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -72,6 +76,8 @@ const BecomeTutorForm = () => {
     mode: 'onChange',
     defaultValues: {
       name: '',
+      email: '',
+      password: '',
       gender: '',
       age: '',
       phone: '',
@@ -174,7 +180,7 @@ const BecomeTutorForm = () => {
     // Validate fields belonging to the current step
     let fieldsToValidate = [];
     if (currentStep === 0) {
-      fieldsToValidate = ['name', 'gender', 'age', 'phone', 'streetAddress', 'state', 'city', 'bio'];
+      fieldsToValidate = ['name', 'email', 'password', 'gender', 'age', 'phone', 'streetAddress', 'state', 'city', 'bio'];
     } else if (currentStep === 1) {
       fieldsToValidate = ['degree', 'institution', 'passingYear', 'experienceYears'];
     } else if (currentStep === 2) {
@@ -230,9 +236,9 @@ const BecomeTutorForm = () => {
       }
       formData.append('resume', fileToUpload);
 
-      const response = await tutorService.registerTutor(formData);
-      if (response && response.success) {
-        setSuccessMsg('Application Submitted! We will review your profile and contact you soon.');
+      const response = await registerTutorAuth(formData);
+      if (response) {
+        setSuccessMsg('Application Submitted! We have created your tutor account. You can log in using your credentials after admin review.');
       }
     } catch (error) {
       console.error(error);
@@ -391,7 +397,7 @@ const BecomeTutorForm = () => {
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-505 mb-1.5 uppercase tracking-wide">
                   Phone Number
                 </label>
                 <div className="relative flex items-center">
@@ -404,6 +410,40 @@ const BecomeTutorForm = () => {
                   />
                 </div>
                 {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.phone.message}</p>}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-505 mb-1.5 uppercase tracking-wide">
+                  Email Address
+                </label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-4 text-slate-400">✉</span>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    {...register('email')}
+                    className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                  />
+                </div>
+                {errors.email && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.email.message}</p>}
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-505 mb-1.5 uppercase tracking-wide">
+                  Password
+                </label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-4 text-slate-400">🔒</span>
+                  <input
+                    type="password"
+                    placeholder="Create a password (min 6 chars)"
+                    {...register('password')}
+                    className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                  />
+                </div>
+                {errors.password && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.password.message}</p>}
               </div>
             </div>
 

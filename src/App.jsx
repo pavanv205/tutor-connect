@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 import { BookingModalProvider, useBookingModal } from './context/BookingModalContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -30,21 +31,23 @@ function App() {
   return (
     <HelmetProvider>
       <ThemeProvider>
-        <BookingModalProvider>
-          <Router>
-            <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-slate-705 dark:text-slate-200 transition-colors duration-300">
-              <Navbar />
-              <main className="flex-grow">
-                <ErrorBoundary>
-                  <AppRoutes />
-                </ErrorBoundary>
-              </main>
-              <Footer />
-              <ScrollToTop />
-              <BookingModalWrapper />
-            </div>
-          </Router>
-        </BookingModalProvider>
+        <AuthProvider>
+          <BookingModalProvider>
+            <Router>
+              <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-slate-705 dark:text-slate-200 transition-colors duration-300">
+                <Navbar />
+                <main className="flex-grow">
+                  <ErrorBoundary>
+                    <AppRoutes />
+                  </ErrorBoundary>
+                </main>
+                <Footer />
+                <ScrollToTop />
+                <BookingModalWrapper />
+              </div>
+            </Router>
+          </BookingModalProvider>
+        </AuthProvider>
       </ThemeProvider>
     </HelmetProvider>
   );

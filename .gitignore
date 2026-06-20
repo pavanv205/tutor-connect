@@ -28,3 +28,6 @@ dist-ssr
 .env.*
 *.env
 
+# Local database and uploads fallback
+backend/data/
+backend/uploads/

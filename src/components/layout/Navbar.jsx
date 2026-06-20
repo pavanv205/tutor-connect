@@ -6,11 +6,13 @@ import { NAV_LINKS } from '../../constants';
 import ThemeToggle from '../common/ThemeToggle';
 import Button from '../common/Button';
 import { useBookingModal } from '../../context/BookingModalContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { openBookingModal } = useBookingModal();
+  const { isAuthenticated, user, role, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,6 +87,52 @@ const Navbar = () => {
             {/* Header Right Actions */}
             <div className="hidden md:flex items-center gap-4">
               <ThemeToggle />
+              
+              {isAuthenticated ? (
+                <div className="relative group">
+                  <button className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 focus:outline-none cursor-pointer">
+                    <span>👋 Hi, {user?.name ? user.name.split(' ')[0] : 'User'}</span>
+                    <span className="text-[9px] text-slate-400">▼</span>
+                  </button>
+                  {/* Dropdown Menu */}
+                  <div className="absolute right-0 mt-1.5 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <Link
+                      to={role === 'Admin' ? '/admin/dashboard' : '/tutor/dashboard'}
+                      className="block w-full text-left py-2.5 px-3.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={logout}
+                      className="block w-full text-left py-2.5 px-3.5 rounded-xl text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 cursor-pointer"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative group">
+                  <button className="text-xs font-bold text-slate-600 hover:text-primary dark:text-slate-350 dark:hover:text-blue-400 py-2.5 px-3 cursor-pointer focus:outline-none">
+                    Login ▼
+                  </button>
+                  {/* Dropdown Menu */}
+                  <div className="absolute right-0 mt-1.5 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <Link
+                      to="/login"
+                      className="block py-2.5 px-3.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                    >
+                      Tutor Login
+                    </Link>
+                    <Link
+                      to="/login"
+                      className="block py-2.5 px-3.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                    >
+                      Admin Login
+                    </Link>
+                  </div>
+                </div>
+              )}
+
               <Button variant="primary" size="sm" onClick={() => openBookingModal(null)}>
                 Book Free Demo
               </Button>
@@ -145,6 +193,45 @@ const Navbar = () => {
                     {link.label}
                   </NavLink>
                 ))}
+
+                {/* Mobile Drawer Auth Links */}
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      to={role === 'Admin' ? '/admin/dashboard' : '/tutor/dashboard'}
+                      onClick={() => setIsOpen(false)}
+                      className="text-lg font-semibold text-slate-750 dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        logout();
+                      }}
+                      className="text-lg font-semibold text-left text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="text-lg font-semibold text-slate-755 dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors"
+                    >
+                      Tutor Login
+                    </Link>
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="text-lg font-semibold text-slate-755 dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors"
+                    >
+                      Admin Login
+                    </Link>
+                  </>
+                )}
               </nav>
 
               {/* Mobile CTA */}
