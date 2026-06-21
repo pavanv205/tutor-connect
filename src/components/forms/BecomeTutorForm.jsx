@@ -62,6 +62,8 @@ const BecomeTutorForm = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const [resumeError, setResumeError] = useState('');
+  const [certificateFile, setCertificateFile] = useState(null);
+  const [certificateError, setCertificateError] = useState('');
 
   const {
     register,
@@ -216,6 +218,25 @@ const BecomeTutorForm = () => {
     }
   };
 
+  const handleCertificateChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size < 1 * 1024 * 1024) {
+        setCertificateError('File size should be at least 1MB');
+        setCertificateFile(null);
+      } else if (file.size > 10 * 1024 * 1024) {
+        setCertificateError('File size should be less than 10MB');
+        setCertificateFile(null);
+      } else if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+        setCertificateError('Only image files (JPEG, PNG, WEBP) or PDFs are allowed');
+        setCertificateFile(null);
+      } else {
+        setCertificateError('');
+        setCertificateFile(file);
+      }
+    }
+  };
+
   const onSubmit = async (data) => {
     let fileToUpload = resumeFile;
     if (!fileToUpload) {
@@ -235,6 +256,9 @@ const BecomeTutorForm = () => {
         }
       }
       formData.append('resume', fileToUpload);
+      if (certificateFile) {
+        formData.append('certificate', certificateFile);
+      }
 
       const response = await registerTutorAuth(formData);
       if (response) {
@@ -939,6 +963,56 @@ const BecomeTutorForm = () => {
               {(resumeError || errors.resume) && (
                 <p className="text-red-500 text-xs mt-1.5 font-medium">
                   {resumeError || errors.resume?.message}
+                </p>
+              )}
+            </div>
+
+            {/* Educational Certificate Upload */}
+            <div>
+              <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wide">
+                Upload Educational Certificate (PDF or IMAGE - 1MB to 10MB)
+              </label>
+              <div className="relative border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-all duration-200">
+                <input
+                  type="file"
+                  id="certificate"
+                  accept="image/*,application/pdf"
+                  onChange={handleCertificateChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div className="space-y-2.5">
+                  <div className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+                    <FaUpload className="h-5 w-5" />
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-semibold text-primary dark:text-blue-500 hover:underline">Click to upload</span> or drag and drop
+                  </div>
+                  <p className="text-xs text-slate-400">PDF or Image file (JPEG, PNG, WEBP) from 1MB up to 10MB</p>
+                </div>
+              </div>
+              {certificateFile && (
+                <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-250/20 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 bg-primary/10 dark:bg-blue-500/10 text-primary dark:text-blue-450 rounded-lg flex items-center justify-center font-bold text-xs">
+                      {certificateFile.name.split('.').pop().toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-850 dark:text-slate-200 max-w-[200px] truncate">{certificateFile.name}</p>
+                      <p className="text-[10px] text-slate-400">{(certificateFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCertificateFile(null)}
+                    className="text-xs font-bold text-rose-500 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+              {certificateError && (
+                <p className="text-red-500 text-xs mt-1.5 font-medium">
+                  {certificateError}
                 </p>
               )}
             </div>

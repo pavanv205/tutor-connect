@@ -46,8 +46,14 @@ exports.registerTutor = async (req, res, next) => {
       };
 
       let photoUrl = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80';
-      if (req.file) {
+      let certificateUrl = '';
+      if (req.files && req.files['resume'] && req.files['resume'][0]) {
+        photoUrl = getFileUrl(req.files['resume'][0]);
+      } else if (req.file) {
         photoUrl = getFileUrl(req.file);
+      }
+      if (req.files && req.files['certificate'] && req.files['certificate'][0]) {
+        certificateUrl = getFileUrl(req.files['certificate'][0]);
       }
 
       const parseIfJson = (val) => {
@@ -85,6 +91,7 @@ exports.registerTutor = async (req, res, next) => {
         bio: data.bio,
         photo: photoUrl,
         resumeUrl: photoUrl,
+        certificateUrl: certificateUrl,
         isVerified: false,
         createdAt: new Date().toISOString()
       };
@@ -123,8 +130,14 @@ exports.registerTutor = async (req, res, next) => {
 
     // Handle file upload if present
     let photoUrl = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80';
-    if (req.file) {
-      photoUrl = getFileUrl(req.file); // Cloudinary secure URL or Local URL
+    let certificateUrl = '';
+    if (req.files && req.files['resume'] && req.files['resume'][0]) {
+      photoUrl = getFileUrl(req.files['resume'][0]); // Cloudinary secure URL or Local URL
+    } else if (req.file) {
+      photoUrl = getFileUrl(req.file);
+    }
+    if (req.files && req.files['certificate'] && req.files['certificate'][0]) {
+      certificateUrl = getFileUrl(req.files['certificate'][0]);
     }
 
     const parseIfJson = (val) => {
@@ -161,7 +174,8 @@ exports.registerTutor = async (req, res, next) => {
       lng: data.lng ? Number(data.lng) : undefined,
       bio: data.bio,
       photo: photoUrl,
-      resumeUrl: photoUrl
+      resumeUrl: photoUrl,
+      certificateUrl: certificateUrl
     });
 
     // Link Tutor profile back to User

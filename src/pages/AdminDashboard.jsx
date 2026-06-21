@@ -217,7 +217,22 @@ const AdminDashboard = () => {
                                   <img src={tutor.photo} alt={tutor.fullName} className="h-8 w-8 rounded-full object-cover border" />
                                   <div>
                                     <p className="font-bold text-slate-850 dark:text-slate-200">{tutor.fullName}</p>
-                                    <p className="text-[9px] text-slate-400">{tutor.email} • {tutor.mobile}</p>
+                                    <p className="text-[9px] text-slate-400">
+                                      {tutor.email} • {tutor.mobile}
+                                      {tutor.certificateUrl && (
+                                        <>
+                                          {' • '}
+                                          <a 
+                                            href={tutor.certificateUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="text-primary dark:text-blue-400 hover:underline font-bold"
+                                          >
+                                            📄 Certificate
+                                          </a>
+                                        </>
+                                      )}
+                                    </p>
                                   </div>
                                 </div>
                               </td>

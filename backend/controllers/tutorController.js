@@ -8,9 +8,17 @@ exports.createTutor = async (req, res, next) => {
   try {
     const data = req.body || {};
     let photoUrl = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80';
-    if (req.file) {
+    let certificateUrl = '';
+    if (req.files && req.files['resume'] && req.files['resume'][0]) {
+      photoUrl = getFileUrl(req.files['resume'][0]);
+      console.log('Uploaded image URL:', photoUrl);
+    } else if (req.file) {
       photoUrl = getFileUrl(req.file);
       console.log('Uploaded image URL:', photoUrl);
+    }
+    if (req.files && req.files['certificate'] && req.files['certificate'][0]) {
+      certificateUrl = getFileUrl(req.files['certificate'][0]);
+      console.log('Uploaded certificate URL:', certificateUrl);
     }
 
     // Fallback if MongoDB is offline
@@ -51,6 +59,7 @@ exports.createTutor = async (req, res, next) => {
         bio: data.bio,
         photo: photoUrl,
         resumeUrl: photoUrl,
+        certificateUrl: certificateUrl,
         isVerified: false,
         createdAt: new Date().toISOString()
       };
@@ -100,6 +109,7 @@ exports.createTutor = async (req, res, next) => {
       bio: data.bio,
       resumeUrl: photoUrl,
       photo: photoUrl,
+      certificateUrl: certificateUrl,
       streetAddress: data.streetAddress || data.address,
       city: data.city,
       state: data.state,
@@ -217,10 +227,17 @@ exports.getTutorById = async (req, res, next) => {
 exports.updateTutor = async (req, res, next) => {
   try {
     const data = req.body || {};
-    if (req.file) {
+    if (req.files && req.files['resume'] && req.files['resume'][0]) {
+      const fileUrl = getFileUrl(req.files['resume'][0]);
+      data.resumeUrl = fileUrl;
+      data.photo = fileUrl;
+    } else if (req.file) {
       const fileUrl = getFileUrl(req.file);
       data.resumeUrl = fileUrl;
       data.photo = fileUrl;
+    }
+    if (req.files && req.files['certificate'] && req.files['certificate'][0]) {
+      data.certificateUrl = getFileUrl(req.files['certificate'][0]);
     }
 
     // Fallback if MongoDB is offline

@@ -65,6 +65,7 @@ const initDb = async () => {
         bio: 'Dedicated physics and math tutor focused on building fundamental concepts.',
         photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&h=150&q=80',
         resumeUrl: '',
+        certificateUrl: '',
         isVerified: true,
         verifiedAt: new Date().toISOString(),
         verifiedDate: new Date().toISOString(),
