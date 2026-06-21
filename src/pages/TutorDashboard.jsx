@@ -159,23 +159,13 @@ const TutorDashboard = () => {
                   <h3 className="text-base font-extrabold text-slate-855 dark:text-slate-100 border-b pb-3">Edit Profile Details</h3>
                   
                   {/* Basic Details */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 gap-5">
                     <div>
                       <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">Hourly Rate (₹)</label>
                       <input
                         type="number"
                         name="hourlyRate"
                         value={tutorProfile.hourlyRate || ''}
-                        onChange={handleProfileChange}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border rounded-xl py-3 px-4 text-sm focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">Monthly Rate (₹)</label>
-                      <input
-                        type="number"
-                        name="monthlyRate"
-                        value={tutorProfile.monthlyRate || ''}
                         onChange={handleProfileChange}
                         className="w-full bg-slate-50 dark:bg-slate-800 border rounded-xl py-3 px-4 text-sm focus:outline-none"
                       />

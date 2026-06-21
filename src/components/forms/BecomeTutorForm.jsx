@@ -36,11 +36,7 @@ const validationSchema = yup.object().shape({
     .required('Hourly rate is required')
     .min(100, 'Minimum hourly charge is 100')
     .max(500, 'Maximum hourly charge is 500'),
-  monthlyRate: yup.number()
-    .typeError('Monthly charge must be a number')
-    .required('Monthly charge is required')
-    .min(500, 'Minimum monthly charge is 500')
-    .max(15000, 'Maximum monthly charge is 15000'),
+
 
   // Step 4
   streetAddress: yup.string()
@@ -94,7 +90,7 @@ const BecomeTutorForm = () => {
       classes: [],
       teachingMode: 'Both',
       hourlyRate: '',
-      monthlyRate: '',
+
       streetAddress: '',
       pincode: '',
       lat: '',
@@ -186,7 +182,7 @@ const BecomeTutorForm = () => {
     } else if (currentStep === 1) {
       fieldsToValidate = ['degree', 'institution', 'passingYear', 'experienceYears'];
     } else if (currentStep === 2) {
-      fieldsToValidate = ['subjects', 'classes', 'teachingMode', 'hourlyRate', 'monthlyRate'];
+      fieldsToValidate = ['subjects', 'classes', 'teachingMode', 'hourlyRate'];
     }
 
     const isStepValid = await trigger(fieldsToValidate);
@@ -837,7 +833,7 @@ const BecomeTutorForm = () => {
             </div>
 
             {/* Charges */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+            <div className="grid grid-cols-1 gap-5 pt-2">
               {/* Hourly Rate */}
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
@@ -850,20 +846,6 @@ const BecomeTutorForm = () => {
                   className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
                 />
                 {errors.hourlyRate && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.hourlyRate.message}</p>}
-              </div>
-
-              {/* Monthly Rate */}
-              <div>
-                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
-                  Monthly Charges (₹) (500 - 15000)
-                </label>
-                <input
-                  type="number"
-                  placeholder="Monthly charges (500 - 15000)"
-                  {...register('monthlyRate')}
-                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
-                />
-                {errors.monthlyRate && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.monthlyRate.message}</p>}
               </div>
             </div>
           </div>

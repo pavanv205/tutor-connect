@@ -271,22 +271,13 @@ const TutorProfile = () => {
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Tutoring Session Rate
               </h3>
-              <div className="flex justify-between items-baseline border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div className="flex justify-between items-baseline pb-2">
                 <span className="text-slate-500 dark:text-slate-400 text-sm font-semibold">Hourly Rate</span>
                 <span className="text-3xl font-black text-slate-900 dark:text-white">
                   ₹{hourlyRate}
                   <span className="text-xs font-bold text-slate-400 ml-1">/ Hour</span>
                 </span>
               </div>
-
-              <div className="flex justify-between items-baseline border-b border-slate-100 dark:border-slate-800 pb-4">
-                <span className="text-slate-500 dark:text-slate-400 text-sm font-semibold">Monthly Charge</span>
-                <span className="text-3xl font-black text-slate-900 dark:text-white">
-                  ₹{monthlyRate}
-                  <span className="text-xs font-bold text-slate-400 ml-1">/ Month</span>
-                </span>
-              </div>
-
 
               {/* Rate informational only - Booking system removed */}
             </div>
