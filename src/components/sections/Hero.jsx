@@ -58,7 +58,7 @@ const Hero = () => {
               variants={itemVariants}
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-slate-900 dark:text-white"
             >
-              Personalized Home & Online Tuition
+              Personalized <span className="text-blue-600 dark:text-blue-400">Home & Online</span> Tuition
             </motion.h1>
 
             {/* Subtitle */}
