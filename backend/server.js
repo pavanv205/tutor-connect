@@ -73,6 +73,59 @@ const connectDB = () => {
     } catch (seedErr) {
       console.error('Admin seeding failed:', seedErr.message);
     }
+
+    // Seed default tutor account if none exists
+    try {
+      const User = require('./models/User');
+      const Tutor = require('./models/Tutor');
+      const tutorExists = await User.findOne({ email: 'tutor@tutorconnect.com' });
+      if (!tutorExists) {
+        const user = await User.create({
+          name: 'Default Tutor',
+          email: 'tutor@tutorconnect.com',
+          password: 'tutor123',
+          role: 'Tutor'
+        });
+        
+        const tutor = await Tutor.create({
+          userId: user._id,
+          fullName: 'Default Tutor',
+          mobile: '9876543210',
+          email: 'tutor@tutorconnect.com',
+          gender: 'Male',
+          age: 30,
+          qualification: 'M.Sc. Physics',
+          university: 'Stanford University',
+          graduationYear: 2018,
+          experience: 5,
+          subjects: ['Mathematics', 'Physics'],
+          classes: ['Class 9-10', 'Class 11-12'],
+          teachingMode: 'Both',
+          hourlyRate: 50,
+          monthlyRate: 8000,
+          streetAddress: 'Madhapur',
+          city: 'Hyderabad',
+          state: 'Telangana',
+          pincode: '500081',
+          lat: 17.4483,
+          lng: 78.3741,
+          bio: 'Passionate mathematics and physics tutor with 5+ years of experience helping students achieve academic excellence.',
+          photo: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80',
+          resumeUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80',
+          isVerified: true
+        });
+
+        user.tutorProfile = tutor._id;
+        await user.save();
+
+        console.log('ℹ️ Default Tutor Account Seeded:');
+        console.log('   Email: tutor@tutorconnect.com');
+        console.log('   Password: tutor123');
+        console.log('=========================================');
+      }
+    } catch (seedErr) {
+      console.error('Tutor seeding failed:', seedErr.message);
+    }
   }).catch((err) => {
     console.log('MongoDB Connection Failed');
     console.error(err.message);
