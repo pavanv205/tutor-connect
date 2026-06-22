@@ -64,6 +64,7 @@ const BecomeTutorForm = () => {
   const [resumeError, setResumeError] = useState('');
   const [certificateFile, setCertificateFile] = useState(null);
   const [certificateError, setCertificateError] = useState('');
+  const [submitError, setSubmitError] = useState('');
 
   const {
     register,
@@ -202,11 +203,8 @@ const BecomeTutorForm = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size < 1 * 1024 * 1024) {
-        setResumeError('File size should be at least 1MB');
-        setResumeFile(null);
-      } else if (file.size > 10 * 1024 * 1024) {
-        setResumeError('File size should be less than 10MB');
+      if (file.size > 2 * 1024 * 1024) {
+        setResumeError('File size should be less than 2MB');
         setResumeFile(null);
       } else if (!file.type.startsWith('image/')) {
         setResumeError('Only image files (JPEG, PNG, WEBP) are allowed');
@@ -221,11 +219,8 @@ const BecomeTutorForm = () => {
   const handleCertificateChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size < 1 * 1024 * 1024) {
-        setCertificateError('File size should be at least 1MB');
-        setCertificateFile(null);
-      } else if (file.size > 10 * 1024 * 1024) {
-        setCertificateError('File size should be less than 10MB');
+      if (file.size > 2 * 1024 * 1024) {
+        setCertificateError('File size should be less than 2MB');
         setCertificateFile(null);
       } else if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
         setCertificateError('Only image files (JPEG, PNG, WEBP) or PDFs are allowed');
@@ -240,6 +235,7 @@ const BecomeTutorForm = () => {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
+      setSubmitError('');
       const formData = new FormData();
       // Append primitive fields
       for (const key of Object.keys(data)) {
@@ -263,6 +259,7 @@ const BecomeTutorForm = () => {
       }
     } catch (error) {
       console.error(error);
+      setSubmitError(error.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -925,7 +922,7 @@ const BecomeTutorForm = () => {
             {/* Profile Photo Upload */}
             <div>
               <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wide">
-                Upload Profile Photo (Optional) (IMAGE - 1MB to 10MB)
+                Upload Profile Photo (Optional) (IMAGE - Max 2MB)
               </label>
               <div className="relative border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-all duration-200">
                 <input
@@ -942,7 +939,7 @@ const BecomeTutorForm = () => {
                   <div className="text-sm">
                     <span className="font-semibold text-primary dark:text-blue-500 hover:underline">Click to upload</span> or drag and drop
                   </div>
-                  <p className="text-xs text-slate-400">Image file (JPEG, PNG, WEBP) from 1MB up to 10MB</p>
+                  <p className="text-xs text-slate-400">Image file (JPEG, PNG, WEBP) up to 2MB</p>
                 </div>
               </div>
               {resumeFile && (
@@ -975,9 +972,9 @@ const BecomeTutorForm = () => {
             {/* Educational Certificate Upload */}
             <div>
               <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wide">
-                Upload Educational Certificate (PDF or IMAGE - 1MB to 10MB)
+                Upload Educational Certificate (PDF or IMAGE - Max 2MB)
               </label>
-              <div className="relative border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-all duration-200">
+              <div className="relative border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-850/20 transition-all duration-200">
                 <input
                   type="file"
                   id="certificate"
@@ -992,7 +989,7 @@ const BecomeTutorForm = () => {
                   <div className="text-sm">
                     <span className="font-semibold text-primary dark:text-blue-500 hover:underline">Click to upload</span> or drag and drop
                   </div>
-                  <p className="text-xs text-slate-400">PDF or Image file (JPEG, PNG, WEBP) from 1MB up to 10MB</p>
+                  <p className="text-xs text-slate-400">PDF or Image file (JPEG, PNG, WEBP) up to 2MB</p>
                 </div>
               </div>
               {certificateFile && (
@@ -1021,6 +1018,13 @@ const BecomeTutorForm = () => {
                 </p>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Submit Error Message */}
+        {submitError && (
+          <div className="p-4 mb-4 text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-xl dark:bg-rose-950/20 dark:border-rose-900/50 dark:text-rose-450">
+            <strong>Submission Failed:</strong> {submitError}
           </div>
         )}
 
