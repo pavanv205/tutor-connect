@@ -290,10 +290,29 @@ exports.login = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Check if password matches
-    const isMatch = await user.matchPassword(password);
+    // Safety check to prevent crashes if user document doesn't have a password field
+    if (!user.password) {
+      console.error(`[AUTH ERROR] User document for ${email} is missing a password field in the database.`);
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // Check if password matches (wrapped in try-catch to prevent bcrypt crashes)
+    let isMatch = false;
+    try {
+      isMatch = await user.matchPassword(password);
+    } catch (bcryptErr) {
+      console.error('[AUTH ERROR] Password comparison failed:', bcryptErr.message);
+      return res.status(500).json({ success: false, message: 'Internal server error during authentication.' });
+    }
+
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // Safety check for JWT_SECRET before calling generateToken
+    if (!process.env.JWT_SECRET) {
+      console.error('[CRITICAL CONFIG ERROR] JWT_SECRET environment variable is missing on token generation request.');
+      return res.status(500).json({ success: false, message: 'Internal server configuration error.' });
     }
 
     // Generate token
@@ -313,6 +332,8 @@ exports.login = async (req, res, next) => {
       }
     });
   } catch (err) {
+    // Explicitly log the real error message to server stdout/stderr so it shows in Vercel logs
+    console.error('[LOGIN SYSTEM ERROR] Uncaught exception in login controller:', err);
     next(err);
   }
 };
