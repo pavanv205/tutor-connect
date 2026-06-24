@@ -55,6 +55,17 @@ This document walks through the implementation of the **Live Location Proximity 
 - **Relative Fallback**: If placeholders are present, the API Base URL in [config.js](file:///d:/desktop/Tutor%20connect/src/config.js) falls back to the relative `/api` route.
 - **Warning Banner UI**: Added a prominent red warning banner in [App.jsx](file:///d:/desktop/Tutor%20connect/src/App.jsx) that alerts developers/users if the placeholder is present, explaining that the system has safely fallen back to `/api`.
 
+### 8. Safe Tutor Fetching & Proximity UI Updates ([FindTutors.jsx](file:///d:/desktop/Tutor%20connect/src/pages/FindTutors.jsx))
+- **Robust Response Parsing**: Checked and supported multiple possible response shapes from `/api/tutors` (direct array, `.data` wrapper, or `.tutors` wrapper).
+- **Crashes Prevention**: Safeguarded `.map()` and `.forEach()` calls from throwing exceptions if the data fails to load or load as an array.
+- **Error UI States**: Integrated `error` state and introduced a red fallback warning card inside the tutors list grid.
+- **Race Condition Prevention**: Implemented the active/ignore cleanup pattern inside the `useEffect` hook to prevent overlapping state settings when changing filter parameters.
+
+### 9. Vercel Serverless Function 405 Method Not Allowed Fix
+- **Renamed entry point ([index.js](file:///d:/desktop/Tutor%20connect/api/index.js))**: Converted `api/index.cjs` to `api/index.js` to align with Vercel's zero-config supported Node.js file extensions.
+- **ESM CommonJS interoperability**: Leveraged `createRequire` in `api/index.js` to require the CommonJS-based Express server file (`backend/server.js`) inside the ESM runtime space.
+- **Config rewrites updating ([vercel.json](file:///d:/desktop/Tutor%20connect/vercel.json))**: Reconfigured the rewrite destination path from `/api/index.cjs` to `/api/index.js`.
+
 ---
 
 ## 🚀 Verification and Validation Results
