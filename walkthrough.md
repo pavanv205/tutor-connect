@@ -67,9 +67,8 @@ This document walks through the implementation of the **Live Location Proximity 
 - **Config rewrites updating ([vercel.json](file:///d:/desktop/Tutor%20connect/vercel.json))**: Reconfigured the rewrite destination path from `/api/index.cjs` to `/api/index.js`.
 
 ### 10. Serverless MongoDB Connection Orchestration
-- **Mongoose Connection Caching ([server.js](file:///d:/desktop/Tutor%20connect/backend/server.js))**: Added connection caching to avoid multiple parallel connections in serverless cold/warm starts, and exported the `connectDB` promise.
-- **Serverless Request Wrapping ([index.js](file:///d:/desktop/Tutor%20connect/api/index.js))**: Wrapped the main serverless function in `api/index.js` to explicitly await the database connection check on every invocation before Express processes routes. This eliminates the `"Cannot call users.findOne() before initial connection is complete"` race condition.
-- **Startup Connection Flow**: Updated the local start script to await the database connection before firing up the Express HTTP listener, maintaining robust startup synchronization.
+- **Serverless DB Lifecycle Management ([index.js](file:///d:/desktop/Tutor%20connect/api/index.js))**: Relocated the serverless `connectDB()` logic with connection caching, concurrent connection promise reuse, and DB account seeding directly into the serverless entrypoint `api/index.js`. Explicitly awaits this cached connection before passing execution to the Express request listener, resolving the `"Cannot call users.findOne() before initial connection is complete"` exception.
+- **Startup Local Connection Flow ([server.js](file:///d:/desktop/Tutor%20connect/backend/server.js))**: Cleaned up server.js from serverless connection variables and configured local startup (`!process.env.VERCEL`) to connect directly to Mongoose before booting up the local Express listener.
 
 ---
 
