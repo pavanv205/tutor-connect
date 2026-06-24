@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "serve-api": "node backend/server.js",
+    "db:seed": "node backend/seed.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

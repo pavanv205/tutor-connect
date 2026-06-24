@@ -27,74 +27,8 @@ const connectDB = async () => {
       socketTimeoutMS: 10000,
     };
 
-    cached.promise = mongoose.connect(uri, opts).then(async (mongooseInstance) => {
+    cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
       console.log(`[MongoDB Connection] Connected successfully to: ${maskedUri}`);
-      
-      // Seeding database default accounts inside connection callback
-      try {
-        const User = require('../backend/models/User');
-        const adminExists = await User.findOne({ role: 'Admin' });
-        if (!adminExists) {
-          await User.create({
-            name: 'System Admin',
-            email: 'admin@tutorconnect.com',
-            password: 'adminpassword123',
-            role: 'Admin'
-          });
-          console.log('[MongoDB Seeding] Default Admin Account Seeded');
-        }
-      } catch (seedErr) {
-        console.error('[MongoDB Seeding Error] Admin seeding failed:', seedErr.message);
-      }
-
-      try {
-        const User = require('../backend/models/User');
-        const Tutor = require('../backend/models/Tutor');
-        const tutorExists = await User.findOne({ email: 'tutor@tutorconnect.com' });
-        if (!tutorExists) {
-          const user = await User.create({
-            name: 'Default Tutor',
-            email: 'tutor@tutorconnect.com',
-            password: 'tutor123',
-            role: 'Tutor'
-          });
-          
-          const tutor = await Tutor.create({
-            userId: user._id,
-            fullName: 'Default Tutor',
-            mobile: '9876543210',
-            email: 'tutor@tutorconnect.com',
-            gender: 'Male',
-            age: 30,
-            qualification: 'M.Sc. Physics',
-            university: 'Stanford University',
-            graduationYear: 2018,
-            experience: 5,
-            subjects: ['Mathematics', 'Physics'],
-            classes: ['Class 9-10', 'Class 11-12'],
-            teachingMode: 'Both',
-            hourlyRate: 50,
-            monthlyRate: 8000,
-            streetAddress: 'Madhapur',
-            city: 'Hyderabad',
-            state: 'Telangana',
-            pincode: '500081',
-            lat: 17.4483,
-            lng: 78.3741,
-            bio: 'Passionate mathematics and physics tutor with 5+ years of experience helping students achieve academic excellence.',
-            photo: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80',
-            resumeUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80',
-            isVerified: true
-          });
-
-          user.tutorProfile = tutor._id;
-          await user.save();
-          console.log('[MongoDB Seeding] Default Tutor Account Seeded');
-        }
-      } catch (seedErr) {
-        console.error('[MongoDB Seeding Error] Tutor seeding failed:', seedErr.message);
-      }
-
       return mongooseInstance;
     }).catch((err) => {
       console.error(`[MongoDB Connection Error] Failed to connect: ${err.message}`);
