@@ -9,7 +9,10 @@ const errorHandler = (err, req, res, next) => {
   } else {
     console.error(`[API SYSTEM ERROR] ${req.method} ${req.originalUrl} - Status: ${err.status || 500} - Message: ${err.message}`);
   }
-  console.error('Stack:', err.stack);
+
+  if (process.env.NODE_ENV === 'development') {
+    console.error('Stack:', err.stack);
+  }
 
   // Mongoose validation errors
   if (err.name === 'ValidationError') {
@@ -43,9 +46,13 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  res.status(err.status || 500).json({
+  const statusCode = err.status || 500;
+  const devMode = process.env.NODE_ENV === 'development';
+
+  res.status(statusCode).json({
     success: false,
-    message: err.message || 'Server Error'
+    message: statusCode === 500 && !devMode ? 'An unexpected server error occurred.' : err.message || 'Server Error',
+    stack: devMode ? err.stack : undefined
   });
 };
 

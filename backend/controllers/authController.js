@@ -52,6 +52,23 @@ exports.registerTutor = async (req, res, next) => {
       });
     }
 
+    // Validate email format
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid email address'
+      });
+    }
+
+    // Validate password length
+    if (password && password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long'
+      });
+    }
+
     // 3. Log Uploaded File Details
     if (req.files) {
       Object.keys(req.files).forEach(fieldName => {

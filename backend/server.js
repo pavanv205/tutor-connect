@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 const errorHandler = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -11,6 +12,9 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Enable trust proxy so express-rate-limit can see the actual client IP behind Vercel reverse proxy
+app.set('trust proxy', 1);
 
 // ─── Environment Variable Validation ────────────────────────────────────────
 const requiredVars = ['MONGODB_URI'];
@@ -28,9 +32,22 @@ recommendedVars.forEach(varName => {
   }
 });
 
+// ─── Rate Limiter Configuration ─────────────────────────────────────────────
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests from this IP. Please try again after 15 minutes.'
+  }
+});
+
 // ─── Middleware ──────────────────────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
+app.use(apiLimiter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ─── MongoDB Connection ─────────────────────────────────────────────────────
