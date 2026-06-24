@@ -266,7 +266,7 @@ exports.login = async (req, res, next) => {
 exports.getMe = async (req, res, next) => {
   try {
     // req.user is attached by protect middleware
-    const user = await User.findById(req.user._id).populate('tutorProfile');
+    const user = await User.findById(req.user._id).populate('tutorProfile').lean();
     res.status(200).json({
       success: true,
       data: user

@@ -112,7 +112,7 @@ exports.getTutors = async (req, res, next) => {
       filters.hourlyRate = { $lte: Number(req.query.maxPrice) };
     }
 
-    const tutors = await Tutor.find(filters).sort({ createdAt: -1 }).limit(100);
+    const tutors = await Tutor.find(filters).sort({ createdAt: -1 }).limit(100).lean();
     res.json(tutors);
   } catch (err) {
     next(err);
@@ -121,7 +121,7 @@ exports.getTutors = async (req, res, next) => {
 
 exports.getTutorById = async (req, res, next) => {
   try {
-    const tutor = await Tutor.findById(req.params.id);
+    const tutor = await Tutor.findById(req.params.id).lean();
     if (!tutor) return res.status(404).json({ success: false, message: 'Tutor not found' });
     res.json(tutor);
   } catch (err) {

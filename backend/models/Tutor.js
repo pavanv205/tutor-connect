@@ -41,4 +41,11 @@ const TutorSchema = new mongoose.Schema({
   verifiedDate: { type: Date }
 }, { timestamps: true });
 
+// Optimize query performance for search filters, sorting, and geo Proximity
+TutorSchema.index({ state: 1, city: 1 });
+TutorSchema.index({ subjects: 1 });
+TutorSchema.index({ classes: 1 });
+TutorSchema.index({ isVerified: 1 });
+TutorSchema.index({ hourlyRate: 1 });
+
 module.exports = mongoose.model('Tutor', TutorSchema);
