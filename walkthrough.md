@@ -67,8 +67,9 @@ This document walks through the implementation of the **Live Location Proximity 
 - **Config rewrites updating ([vercel.json](file:///d:/desktop/Tutor%20connect/vercel.json))**: Reconfigured the rewrite destination path from `/api/index.cjs` to `/api/index.js`.
 
 ### 10. Serverless MongoDB Connection Orchestration
-- **Serverless DB Lifecycle Management ([index.js](file:///d:/desktop/Tutor%20connect/api/index.js))**: Relocated the serverless `connectDB()` logic with connection caching, concurrent connection promise reuse, and DB account seeding directly into the serverless entrypoint `api/index.js`. Explicitly awaits this cached connection before passing execution to the Express request listener, resolving the `"Cannot call users.findOne() before initial connection is complete"` exception.
-- **Startup Local Connection Flow ([server.js](file:///d:/desktop/Tutor%20connect/backend/server.js))**: Cleaned up server.js from serverless connection variables and configured local startup (`!process.env.VERCEL`) to connect directly to Mongoose before booting up the local Express listener.
+- **Global connection caching ([index.js](file:///d:/desktop/Tutor%20connect/api/index.js))**: Relocated `connectDB()` to `api/index.js` and implemented the standard `global.mongoose` caching pattern for serverless environments. This caches the database connection and the active connection promise, avoiding multiple concurrent handshakes on cold starts and ensuring that concurrent incoming requests await the same connection promise.
+- **State-free server import ([server.js](file:///d:/desktop/Tutor%20connect/backend/server.js))**: Cleaned up the Express application entrypoint (`backend/server.js`) so that importing it is entirely side-effect-free (no automatic database connections or listener initialization).
+- **Direct Local Executable block**: Updated the local startup inside `backend/server.js` to only connect to Mongoose and fire up the listener when the file is run directly (using `require.main === module` check).
 
 ---
 
