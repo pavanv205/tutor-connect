@@ -126,7 +126,10 @@ exports.registerTutor = async (req, res, next) => {
     try {
       userExists = await User.findOne({ email });
     } catch (dbErr) {
-      devError('[DATABASE ERROR] Failed to query existing user:', dbErr);
+      console.error(`[REGISTRATION DATABASE ERROR] Failed to query existing user | Method: ${req.method} | Path: ${req.originalUrl} | Email: ${email} | Error: ${dbErr.message}`);
+      if (dbErr.stack) {
+        console.error(dbErr.stack);
+      }
       return res.status(500).json({
         success: false,
         message: `Database save failed: Failed to check user existence.`
@@ -148,7 +151,10 @@ exports.registerTutor = async (req, res, next) => {
       });
       devLog(`[DATABASE SAVE] Created User document, ID: ${user._id}`);
     } catch (userErr) {
-      devError('[DATABASE ERROR] Failed to create User document:', userErr);
+      console.error(`[REGISTRATION USER ERROR] Failed to create User document | Method: ${req.method} | Path: ${req.originalUrl} | Email: ${email} | Error: ${userErr.message}`);
+      if (userErr.stack) {
+        console.error(userErr.stack);
+      }
       return res.status(500).json({
         success: false,
         message: `Database save failed: User registration failed.`
@@ -211,7 +217,10 @@ exports.registerTutor = async (req, res, next) => {
       });
       devLog(`[DATABASE SAVE] Created Tutor profile, ID: ${tutor._id}`);
     } catch (tutorErr) {
-      devError('[DATABASE ERROR] Failed to create Tutor profile:', tutorErr);
+      console.error(`[REGISTRATION TUTOR ERROR] Failed to create Tutor profile | Method: ${req.method} | Path: ${req.originalUrl} | Email: ${email} | Error: ${tutorErr.message}`);
+      if (tutorErr.stack) {
+        console.error(tutorErr.stack);
+      }
       
       // Rollback User creation to prevent orphan user documents
       if (user) {
@@ -231,7 +240,10 @@ exports.registerTutor = async (req, res, next) => {
       await user.save();
       devLog(`[DATABASE UPDATE] Linked Tutor profile ${tutor._id} back to User ${user._id}`);
     } catch (linkErr) {
-      devError('[DATABASE ERROR] Failed to link Tutor profile to User:', linkErr);
+      console.error(`[REGISTRATION LINK ERROR] Failed to link Tutor profile to User | Method: ${req.method} | Path: ${req.originalUrl} | Email: ${email} | Error: ${linkErr.message}`);
+      if (linkErr.stack) {
+        console.error(linkErr.stack);
+      }
       
       // Rollback both
       if (tutor) await Tutor.findByIdAndDelete(tutor._id);
@@ -261,7 +273,10 @@ exports.registerTutor = async (req, res, next) => {
       }
     });
   } catch (err) {
-    devError('[API SYSTEM ERROR] Uncaught error in registerTutor:', err);
+    console.error(`[REGISTRATION SYSTEM ERROR] Uncaught error in registerTutor | Method: ${req.method} | Path: ${req.originalUrl} | Error: ${err.message}`);
+    if (err.stack) {
+      console.error(err.stack);
+    }
     next(err);
   }
 };
@@ -275,7 +290,10 @@ exports.login = async (req, res, next) => {
     const { email, password } = req.body || {};
     requestEmail = email || 'unknown';
 
-    console.log(`[LOGIN START] Login process initiated for email: ${requestEmail}`);
+    console.log(`[LOGIN START] Login process initiated for email: ${requestEmail} | Method: ${req.method} | Path: ${req.originalUrl}`);
+
+    // Diagnostic: Request body validation
+    console.log(`[LOGIN DIAGNOSTIC] Request body validation. Method: ${req.method} | Path: ${req.originalUrl} | Body contains email: ${!!email}, password: ${!!password}`);
 
     // Validate email & password presence
     if (!email || !password) {
@@ -290,14 +308,15 @@ exports.login = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
     }
 
-    // Check for user
+    // Diagnostic: User lookup
+    console.log(`[LOGIN DIAGNOSTIC] User lookup started for email: ${email}. Method: ${req.method} | Path: ${req.originalUrl}`);
     const user = await User.findOne({ email }).select('+password');
+    console.log(`[LOGIN DIAGNOSTIC] User lookup completed for email: ${email}. Found user: ${!!user}`);
+
     if (!user) {
       console.log(`[LOGIN INFO] User lookup failed: User not found for email: ${email}`);
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
-
-    console.log(`[LOGIN INFO] User lookup succeeded: User found for email: ${email}`);
 
     // Safety check to prevent crashes if user document doesn't have a password field
     if (!user.password) {
@@ -305,19 +324,20 @@ exports.login = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Check if password matches (wrapped in try-catch to prevent bcrypt crashes)
+    // Diagnostic: Password comparison
+    console.log(`[LOGIN DIAGNOSTIC] Password comparison started for email: ${email}. Method: ${req.method} | Path: ${req.originalUrl}`);
     let isMatch = false;
     try {
       isMatch = await user.matchPassword(password);
     } catch (bcryptErr) {
-      console.error(`[LOGIN ERROR] Password comparison failed for email ${email}:`, bcryptErr.message);
+      console.error(`[LOGIN ERROR] Password comparison failed | Method: ${req.method} | Path: ${req.originalUrl} | Email: ${email} | Error: ${bcryptErr.message}`);
       if (bcryptErr.stack) {
         console.error(bcryptErr.stack);
       }
       return res.status(500).json({ success: false, message: 'Internal server error during authentication.' });
     }
 
-    console.log(`[LOGIN INFO] Password comparison result for ${email}: match = ${isMatch}`);
+    console.log(`[LOGIN DIAGNOSTIC] Password comparison completed for email: ${email}. Match: ${isMatch}`);
 
     if (!isMatch) {
       console.log(`[LOGIN INFO] Login failed: Password mismatch for email: ${email}`);
@@ -330,10 +350,13 @@ exports.login = async (req, res, next) => {
       return res.status(500).json({ success: false, message: 'Internal server configuration error.' });
     }
 
-    console.log(`[LOGIN INFO] Generating JWT token for user: ${email}`);
-
-    // Generate token
+    // Diagnostic: JWT generation
+    console.log(`[LOGIN DIAGNOSTIC] JWT generation started for User ID: ${user._id}. Method: ${req.method} | Path: ${req.originalUrl}`);
     const token = generateToken(user._id);
+    console.log(`[LOGIN DIAGNOSTIC] JWT generation completed for User ID: ${user._id}`);
+
+    // Diagnostic: Response creation
+    console.log(`[LOGIN DIAGNOSTIC] Response payload creation started. User ID: ${user._id} | Role: ${user.role}. Method: ${req.method} | Path: ${req.originalUrl}`);
 
     console.log(`[LOGIN SUCCESS] User successfully authenticated: ${email}`);
 
@@ -352,7 +375,7 @@ exports.login = async (req, res, next) => {
     });
   } catch (err) {
     // Explicitly log the real error message and stack trace to server stdout/stderr
-    console.error(`[LOGIN SYSTEM ERROR] Uncaught exception in login controller for email ${requestEmail}:`, err.message);
+    console.error(`[LOGIN SYSTEM ERROR] Uncaught exception in login controller | Method: ${req.method} | Path: ${req.originalUrl} | Email: ${requestEmail} | Error: ${err.message}`);
     if (err.stack) {
       console.error(err.stack);
     }
@@ -371,6 +394,10 @@ exports.getMe = async (req, res, next) => {
       data: user
     });
   } catch (err) {
+    console.error(`[ME SYSTEM ERROR] Uncaught error in getMe | Method: ${req.method} | Path: ${req.originalUrl} | User ID: ${req.user?._id} | Error: ${err.message}`);
+    if (err.stack) {
+      console.error(err.stack);
+    }
     next(err);
   }
 };

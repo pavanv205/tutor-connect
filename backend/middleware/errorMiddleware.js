@@ -15,11 +15,14 @@ const errorHandler = (err, req, res, next) => {
       console.error('Stack:', err.stack);
     }
   } else {
-    // In production, keep simple non-leaky logs
+    // In production, log full diagnostic error to console (securely visible only to developers in deployment logs)
     if (isAuthError) {
-      console.error(`[AUTH ERROR] ${req.method} ${req.originalUrl} - Status: ${err.status || 401}`);
+      console.error(`[AUTH ERROR] ${req.method} ${req.originalUrl} - Status: ${err.status || 401} - Message: ${err.message}`);
     } else {
-      console.error(`[API ERROR] ${req.method} ${req.originalUrl} - Status: ${err.status || 500}`);
+      console.error(`[API ERROR] ${req.method} ${req.originalUrl} - Status: ${err.status || 500} - Message: ${err.message}`);
+      if (err.stack) {
+        console.error('Stack:', err.stack);
+      }
     }
   }
 
