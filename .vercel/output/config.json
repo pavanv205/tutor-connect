@@ -1,0 +1,83 @@
+{
+  "version": 3,
+  "routes": [
+    {
+      "src": "^/api(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?$",
+      "headers": {
+        "Access-Control-Allow-Credentials": "false",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization"
+      },
+      "continue": true
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "^/api(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?$",
+      "dest": "/api/index.cjs?path=$1",
+      "check": true
+    },
+    {
+      "src": "^(?:/(.*))$",
+      "dest": "/index.html",
+      "check": true
+    },
+    {
+      "src": "^(?=/_/backend(?:/|$))(?:/_/backend(?:/(.*))?$)",
+      "dest": "/_svc/backend/index"
+    },
+    {
+      "src": "^(?!/_/backend(?:/|$))(?:/(.*))",
+      "dest": "/index.html"
+    }
+  ],
+  "framework": {
+    "slug": "vite",
+    "version": "8.0.16"
+  },
+  "crons": [],
+  "services": [
+    {
+      "schema": "experimentalServices",
+      "name": "frontend",
+      "type": "web",
+      "workspace": ".",
+      "routePrefix": "/",
+      "routePrefixSource": "configured",
+      "framework": "vite",
+      "builder": {
+        "src": "package.json",
+        "use": "@vercel/static-build",
+        "config": {
+          "zeroConfig": true,
+          "routePrefix": ".",
+          "framework": "vite"
+        }
+      }
+    },
+    {
+      "schema": "experimentalServices",
+      "name": "backend",
+      "type": "web",
+      "workspace": "backend",
+      "entrypoint": "server.js",
+      "routePrefix": "/_/backend",
+      "routePrefixSource": "configured",
+      "framework": "express",
+      "builder": {
+        "src": "backend/server.js",
+        "use": "@vercel/backends",
+        "config": {
+          "zeroConfig": true,
+          "serviceName": "backend",
+          "routePrefix": "_/backend",
+          "workspace": "backend",
+          "framework": "express"
+        }
+      },
+      "runtime": "node"
+    }
+  ]
+}

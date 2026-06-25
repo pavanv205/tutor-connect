@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaGraduationCap, FaBars, FaTimes } from 'react-icons/fa';
 import { NAV_LINKS } from '../../constants';
-import ThemeToggle from '../common/ThemeToggle';
+
 import Button from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 
@@ -84,7 +84,7 @@ const Navbar = () => {
 
             {/* Header Right Actions */}
             <div className="hidden md:flex items-center gap-4">
-              <ThemeToggle />
+
               
               {isAuthenticated ? (
                 <div className="relative group">
@@ -134,7 +134,7 @@ const Navbar = () => {
 
             {/* Mobile Actions Header */}
             <div className="flex md:hidden items-center gap-3">
-              <ThemeToggle />
+
               {/* Hamburger Button */}
               <button
                 onClick={() => setIsOpen(!isOpen)}

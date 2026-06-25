@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaBriefcase, FaGraduationCap, FaMapMarkerAlt, FaUser, FaCalendarAlt } from 'react-icons/fa';
 import { tutorService } from '../../services/tutorService';
+import { useBookingModal } from '../../context/BookingModalContext';
 import { TutorCardSkeleton } from '../common/Skeleton';
 import Button from '../common/Button';
 
@@ -10,6 +11,7 @@ import Button from '../common/Button';
 
 export const TutorCard = ({ tutor }) => {
   const navigate = useNavigate();
+  const { openBookingModal } = useBookingModal();
 
   if (!tutor) return null;
 
@@ -127,14 +129,22 @@ export const TutorCard = ({ tutor }) => {
           </div>
         </div>
 
-        <div className="flex gap-2 w-full">
+        <div className="card-actions">
+          <Button
+            variant="outline"
+            size="sm"
+            className="px-4 py-2 text-xs font-bold details-btn"
+            onClick={() => navigate(`/tutors/${id}`)}
+          >
+            Details
+          </Button>
           <Button
             variant="primary"
             size="sm"
-            className="w-full"
-            onClick={() => navigate(`/tutors/${id}`)}
+            className="flex-1 py-2 text-xs font-bold shadow-md shadow-primary/5 hover:scale-[1.02] transition-transform duration-200 book-btn"
+            onClick={() => openBookingModal(tutor)}
           >
-            View Profile
+            Book
           </Button>
         </div>
       </div>

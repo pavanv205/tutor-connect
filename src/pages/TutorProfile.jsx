@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
 import { tutorService } from '../services/tutorService';
+import { useBookingModal } from '../context/BookingModalContext';
 import { TutorProfileSkeleton } from '../components/common/Skeleton';
 import Button from '../components/common/Button';
 
@@ -22,6 +23,7 @@ import Button from '../components/common/Button';
 const TutorProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { openBookingModal } = useBookingModal();
   const [tutor, setTutor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -288,7 +290,19 @@ const TutorProfile = () => {
               </div>
 
 
-              {/* Rate informational only - Booking system removed */}
+              {/* Free demo class action button */}
+              <div className="pt-2">
+                <Button
+                  variant="primary"
+                  className="w-full py-4 text-sm font-bold shadow-md shadow-primary/10 animate-pulse hover:animate-none"
+                  onClick={() => openBookingModal(tutor)}
+                >
+                  Book Free Demo Class
+                </Button>
+                <p className="text-[10px] text-center text-slate-400 mt-3 font-semibold">
+                  No commitment required for first session.
+                </p>
+              </div>
             </div>
 
 

@@ -1,18 +1,35 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { ThemeProvider } from './context/ThemeContext';
+
 import { AuthProvider } from './context/AuthContext';
+import { BookingModalProvider, useBookingModal } from './context/BookingModalContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import AppRoutes from './routes/AppRoutes';
 import ScrollToTop from './components/common/ScrollToTop';
 import Modal from './components/common/Modal';
+import BookingForm from './components/forms/BookingForm';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 
 
 import { API_BASE_URL } from './config';
+
+const BookingModalWrapper = () => {
+  const { isOpen, selectedTutor, closeBookingModal } = useBookingModal();
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={closeBookingModal}
+      title={selectedTutor ? 'Book Free Demo Class' : 'Request a Trial Class'}
+      size="md"
+    >
+      <BookingForm tutor={selectedTutor} onSuccess={closeBookingModal} />
+    </Modal>
+  );
+};
 
 function App() {
   const rawApiUrl = import.meta.env.VITE_API_URL || '';
@@ -21,10 +38,10 @@ function App() {
 
   return (
     <HelmetProvider>
-      <ThemeProvider>
         <AuthProvider>
+          <BookingModalProvider>
             <Router>
-              <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-slate-705 dark:text-slate-200 transition-colors duration-300">
+              <div className="flex flex-col min-h-screen bg-slate-50 text-slate-705 transition-colors duration-300">
                 {hasPlaceholder && (
                   <div className="bg-red-600 text-white px-4 py-2.5 text-center text-xs font-bold z-50 sticky top-0 shadow-md">
                     ⚠️ API Configuration Warning: VITE_API_URL contains unresolved placeholders ( <code className="bg-white/20 px-1.5 py-0.5 rounded font-mono text-white">{rawApiUrl}</code> ). Please configure your actual deployment domain. Falling back to relative route <code className="bg-white/20 px-1.5 py-0.5 rounded font-mono text-white">/api</code>.
@@ -43,10 +60,11 @@ function App() {
                 </main>
                 <Footer />
                 <ScrollToTop />
+                <BookingModalWrapper />
               </div>
             </Router>
+          </BookingModalProvider>
         </AuthProvider>
-      </ThemeProvider>
     </HelmetProvider>
   );
 }
