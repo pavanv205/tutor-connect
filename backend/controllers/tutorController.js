@@ -174,17 +174,30 @@ exports.getTutors = async (req, res, next) => {
       filters.hourlyRate = { $lte: Number(req.query.maxPrice) };
     }
 
+    // Log incoming request details
+    console.log('[GET TUTORS] Query Params:', req.query);
+    console.log('[GET TUTORS] Mongoose readyState:', mongoose.connection.readyState);
+    console.log('[GET TUTORS] Built Filters:', JSON.stringify(filters));
+
+    // Ensure DB is connected
+    if (mongoose.connection.readyState !== 1) {
+      console.error('[GET TUTORS] DB not connected');
+      return res.status(503).json({ success: false, message: 'Database not connected' });
+    }
+
     const page = parseInt(req.query.page, 10);
     const limit = parseInt(req.query.limit, 10) || 10;
 
     if (!isNaN(page) && page >= 1) {
       const skip = (page - 1) * limit;
       const total = await Tutor.countDocuments(filters);
+      console.log('[GET TUTORS] Total matching docs:', total);
       const tutors = await Tutor.find(filters)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean();
+      console.log('[GET TUTORS] Returned page count:', tutors.length);
 
       return res.json({
         success: true,
@@ -200,10 +213,15 @@ exports.getTutors = async (req, res, next) => {
     }
 
     const tutors = await Tutor.find(filters).sort({ createdAt: -1 }).limit(100).lean();
-    
-    // Retain direct array return value for frontend compatibility (with lists/dashboard map crashes)
+    console.log('[GET TUTORS] Returned docs count (no pagination):', tutors.length);
     res.json(tutors);
   } catch (err) {
+    // Detailed error logging
+    console.error('[GET TUTORS] ERROR:', {
+      message: err.message,
+      name: err.name,
+      stack: err.stack
+    });
     next(err);
   }
 };
