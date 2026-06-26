@@ -1,0 +1,43 @@
+﻿.buttonRow {
+  display: flex;
+  gap: 0.75rem; /* space between buttons */
+  justify-content: flex-end; /* align to right side */
+}
+
+.buttonRow button {
+  min-width: 80px;
+  height: 44px; /* comfortable click target */
+  padding: 0 1rem;
+  border-radius: 9999px; /* capsule */
+  font-family: 'Inter', sans-serif;
+  font-weight: 600; /* semi-bold for details, overridden for book */
+  font-size: 0.875rem; /* 14px */
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.detailsBtn {
+  border: 1px solid #D1D5DB; /* light gray */
+  background: #fff;
+  color: #1F2937; /* dark charcoal */
+}
+
+.detailsBtn:hover {
+  background: #f9fafb; /* very light gray on hover */
+}
+
+.bookBtn {
+  border: none;
+  background: #2563EB; /* royal blue */
+  color: #fff;
+  font-weight: 700; /* bold */
+}
+
+.bookBtn:hover {
+  background: #1d4ed8; /* slightly darker on hover */
+}
+
+.bookBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
