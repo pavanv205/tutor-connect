@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FaUser, FaEnvelope, FaTag, FaComments, FaArrowRight } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaComments, FaArrowRight } from 'react-icons/fa';
 import { generalService } from '../../services/generalService';
 import Button from '../common/Button';
 
@@ -10,7 +10,6 @@ import Button from '../common/Button';
 const schema = yup.object().shape({
   name: yup.string().required('Your name is required').min(3, 'Name must be at least 3 characters'),
   email: yup.string().required('Email address is required').email('Please enter a valid email address'),
-  queryType: yup.string().required('Please select a topic').notOneOf([''], 'Please select a topic'),
   message: yup.string().required('Please enter your message').min(15, 'Message must be at least 15 characters').max(500, 'Message cannot exceed 500 characters')
 });
 
@@ -28,7 +27,6 @@ const ContactForm = () => {
     defaultValues: {
       name: '',
       email: '',
-      queryType: '',
       message: ''
     }
   });
@@ -36,7 +34,10 @@ const ContactForm = () => {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      const response = await generalService.submitContact(data);
+      const response = await generalService.submitContact({
+        ...data,
+        queryType: 'General Inquiry'
+      });
       if (response.success) {
         setSuccessMsg(response.message);
         reset();
@@ -113,31 +114,7 @@ const ContactForm = () => {
         {errors.email && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.email.message}</p>}
       </div>
 
-      {/* Query Subject */}
-      <div>
-        <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
-          Subject of Inquiry
-        </label>
-        <div className="relative flex items-center">
-          <span className="absolute left-4 text-slate-400">
-            <FaTag className="h-4 w-4" />
-          </span>
-          <select
-            {...register('queryType')}
-            className={`w-full bg-slate-50 dark:bg-slate-800/60 border ${
-              errors.queryType ? 'border-red-500 focus:border-red-500' : 'border-slate-200 dark:border-slate-700 focus:border-primary'
-            } text-slate-850 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all duration-200`}
-          >
-            <option value="">Select Topic</option>
-            <option value="General Inquiry">General Inquiry</option>
-            <option value="Tutor Search Assistance">Tutor Search Assistance</option>
-            <option value="Billing & Pricing">Billing & Pricing</option>
-            <option value="Tutor Application Help">Tutor Application Help</option>
-            <option value="Technical Support">Technical Support</option>
-          </select>
-        </div>
-        {errors.queryType && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.queryType.message}</p>}
-      </div>
+
 
       {/* Message */}
       <div>

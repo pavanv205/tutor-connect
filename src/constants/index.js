@@ -7104,43 +7104,43 @@ export const SUBJECT_CATEGORIES = [
     name: "Mathematics",
     count: "45+ Tutors",
     icon: "FaCalculator",
-    color: "from-blue-500 to-indigo-600"
+    color: "bg-blue-600"
   },
   {
     name: "Physics",
     count: "32+ Tutors",
     icon: "FaAtom",
-    color: "from-red-600 to-amber-900"
+    color: "bg-[#8B4513]"
   },
   {
     name: "Chemistry",
     count: "28+ Tutors",
     icon: "FaFlask",
-    color: "from-green-500 to-emerald-600"
+    color: "bg-green-600"
   },
   {
     name: "Biology",
     count: "30+ Tutors",
     icon: "FaDna",
-    color: "from-red-500 to-rose-600"
+    color: "bg-red-600"
   },
   {
     name: "Computer Science",
     count: "25+ Tutors",
     icon: "FaLaptopCode",
-    color: "from-cyan-500 to-blue-600"
+    color: "bg-sky-500"
   },
   {
     name: "English Lit & Grammar",
     count: "20+ Tutors",
     icon: "FaBookOpen",
-    color: "from-amber-500 to-orange-600"
+    color: "bg-[#8B4513]"
   },
   {
     name: "Economics & Commerce",
     count: "18+ Tutors",
     icon: "FaChartBar",
-    color: "from-teal-500 to-emerald-600"
+    color: "bg-blue-600"
   }
 ];
 

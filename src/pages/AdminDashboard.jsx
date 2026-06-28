@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { FaGraduationCap, FaUserCheck, FaInfoCircle } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { FaGraduationCap, FaCheck, FaTimes, FaUserSlash, FaUserCheck, FaInfoCircle } from 'react-icons/fa';
 import api from '../services/api';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
@@ -20,13 +21,13 @@ const AdminDashboard = () => {
     tutors: { total: 0, verified: 0, pending: 0 }
   });
   const [tutors, setTutors] = useState([]);
-  const [studentRequests, setStudentRequests] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
 
   // Fetch admin dashboard details
-  const fetchDashboardData = useCallback(async () => {
+  const fetchDashboardData = async () => {
     setLoading(true);
     setErrorMsg('');
     try {
@@ -40,25 +41,18 @@ const AdminDashboard = () => {
       const tutorsRes = await api.get('/tutors');
       setTutors(tutorsRes.data || []);
 
-      // 3. Fetch Student Requests
-      const requestsRes = await api.get('/student-requests');
-      if (requestsRes.data && requestsRes.data.success) {
-        setStudentRequests(requestsRes.data.data);
-      }
+
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
       setErrorMsg('Failed to fetch admin data. Make sure MongoDB is connected.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchDashboardData();
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [fetchDashboardData]);
+    fetchDashboardData();
+  }, []);
 
   // Verify / Approve Tutor profile
   const handleVerifyTutor = async (tutorId, isCurrentlyVerified) => {
@@ -145,7 +139,7 @@ const AdminDashboard = () => {
 
           {/* Navigation Tabs */}
           <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6">
-            {['Overview', 'Tutors', 'Requests'].map(tab => (
+            {['Overview', 'Tutors'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -192,25 +186,7 @@ const AdminDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400 flex items-center justify-center text-xl">
-                        <FaInfoCircle />
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Requests</p>
-                        <h4 className="text-2xl font-extrabold text-slate-850 dark:text-slate-100 mt-0.5">{stats.bookings.total}</h4>
-                      </div>
-                    </div>
 
-                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400 flex items-center justify-center text-xl">
-                        <FaInfoCircle />
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pending Requests</p>
-                        <h4 className="text-2xl font-extrabold text-slate-850 dark:text-slate-100 mt-0.5">{stats.bookings.pending}</h4>
-                      </div>
-                    </div>
                   </div>
 
 
@@ -312,60 +288,7 @@ const AdminDashboard = () => {
                     </table>
                   </div>
                 </div>
-              )}
-
-              {/* TAB 3: STUDENT REQUESTS */}
-              {activeTab === 'Requests' && (
-                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm overflow-hidden">
-                  <h3 className="text-base font-extrabold text-slate-850 dark:text-slate-100 mb-5">Student Requests</h3>
-                  
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-slate-100 dark:border-slate-800 text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
-                          <th className="pb-3 pl-2">Name & Email</th>
-                          <th className="pb-3">Query Type</th>
-                          <th className="pb-3">Message</th>
-                          <th className="pb-3">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-50 dark:divide-slate-800/60 text-xs text-slate-700 dark:text-slate-350">
-                        {studentRequests.length === 0 ? (
-                          <tr>
-                            <td colSpan="4" className="py-8 text-center text-slate-400 font-medium">No student requests yet.</td>
-                          </tr>
-                        ) : (
-                          studentRequests.map(req => (
-                            <tr key={req._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/40">
-                              <td className="py-3.5 pl-2">
-                                <p className="font-bold text-slate-850 dark:text-slate-200">{req.name}</p>
-                                <p className="text-[9px] text-slate-400">{req.email}</p>
-                              </td>
-                              <td className="py-3.5 font-semibold text-slate-800 dark:text-slate-350">
-                                {req.queryType}
-                              </td>
-                              <td className="py-3.5 max-w-xs truncate" title={req.message}>
-                                {req.message}
-                              </td>
-                              <td className="py-3.5">
-                                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[9px] font-bold ${
-                                  req.status === 'Resolved' 
-                                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-250 dark:bg-emerald-950/20' 
-                                    : req.status === 'Contacted'
-                                    ? 'bg-blue-50 text-blue-600 border border-blue-250 dark:bg-blue-950/20'
-                                    : 'bg-amber-50 text-amber-600 border border-amber-250 dark:bg-amber-950/20'
-                                }`}>
-                                  {req.status}
-                                </span>
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+                )}
 
             </>
           )}

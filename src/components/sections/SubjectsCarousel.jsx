@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -94,8 +94,7 @@ const SubjectsCarousel = () => {
               className="flex-shrink-0 w-64 snap-start cursor-pointer bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 transition-all duration-300 group flex flex-col"
             >
               <div>
-                {/* Icon box with gradient background on hover */}
-                <div className={`h-12 w-12 rounded-2xl flex items-center justify-center bg-gradient-to-tr ${cat.color} text-white shadow-md shadow-slate-100/10 group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${cat.color} text-white shadow-md shadow-slate-100/10 group-hover:scale-110 transition-transform duration-300`}>
                   {ICON_MAP[cat.icon] || <FaCalculator />}
                 </div>
 

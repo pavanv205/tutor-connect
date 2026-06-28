@@ -1,10 +1,7 @@
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  FaGraduationCap,
-  FaFacebookF,
-  FaTwitter,
-  FaInstagram,
-  FaLinkedinIn
+  FaGraduationCap
 } from 'react-icons/fa';
 import { NAV_LINKS, SUBJECTS } from '../../constants';
 
@@ -28,24 +25,7 @@ const Footer = () => {
             <p className="text-sm text-slate-400 leading-relaxed">
               Connecting students and parents with top-tier, qualified tutors for personalized home and online lessons. Spark learning, build confidence, and achieve academic excellence.
             </p>
-            {/* Social Icons */}
-            <div className="flex gap-3.5">
-              {[
-                { icon: <FaFacebookF />, label: 'Facebook' },
-                { icon: <FaTwitter />, label: 'Twitter' },
-                { icon: <FaInstagram />, label: 'Instagram' },
-                { icon: <FaLinkedinIn />, label: 'LinkedIn' }
-              ].map((social, index) => (
-                <a
-                  key={index}
-                  href="#"
-                  className="h-9 w-9 rounded-lg bg-slate-800 text-slate-400 hover:bg-primary hover:text-white flex items-center justify-center transition-all duration-200"
-                  aria-label={social.label}
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
+
           </div>
 
           {/* Quick Links */}

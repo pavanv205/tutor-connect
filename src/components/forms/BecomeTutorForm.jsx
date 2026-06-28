@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FaUser, FaPhone, FaMapMarkerAlt, FaGraduationCap, FaBriefcase, FaBook, FaUpload } from 'react-icons/fa';
-import { SUBJECTS, CLASSES, STATES, STATE_CITIES } from '../../constants';
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGraduationCap, FaBriefcase, FaBook, FaUpload } from 'react-icons/fa';
+import { SUBJECTS, CLASSES, CITIES, STATES, STATE_CITIES } from '../../constants';
+import { tutorService } from '../../services/tutorService';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../common/Button';
 
@@ -118,6 +119,8 @@ const BecomeTutorForm = () => {
     }
   }, [watchedState, setValue]);
 
+  const citiesForSelectedState = watchedState ? (STATE_CITIES[watchedState] || []) : [];
+
   const [locLoading, setLocLoading] = useState(false);
   const [locError, setLocError] = useState('');
 
@@ -131,7 +134,7 @@ const BecomeTutorForm = () => {
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [citySearchQuery, setCitySearchQuery] = useState('');
 
-  const sortedCities = useMemo(() => {
+  const sortedCities = React.useMemo(() => {
     const allStateCities = STATE_CITIES[watchedState] || [];
     if (!citySearchQuery.trim()) {
       return allStateCities;
@@ -689,7 +692,7 @@ const BecomeTutorForm = () => {
         {/* STEP 2: Qualifications & Experience */}
         {currentStep === 1 && (
           <div className="space-y-5">
-            <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h4 className="text-lg font-bold text-slate-855 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">
               Academic Qualifications & Work Experience
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -700,12 +703,21 @@ const BecomeTutorForm = () => {
                 </label>
                 <div className="relative flex items-center">
                   <span className="absolute left-4 text-slate-400"><FaGraduationCap className="h-4 w-4" /></span>
-                  <input
-                    type="text"
-                    placeholder="e.g. M.Sc. in Physics, B.Ed."
+                  <select
                     {...register('degree')}
-                    className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
-                  />
+                    className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 pl-11 pr-10 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 appearance-none"
+                  >
+                    <option value="">Select Qualification</option>
+                    <option value="10th Grade">10th Grade</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Degree">Degree</option>
+                    <option value="BTech">BTech</option>
+                    <option value="Post-Graduation">Post-Graduation</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
                 </div>
                 {errors.degree && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.degree.message}</p>}
               </div>
@@ -766,7 +778,7 @@ const BecomeTutorForm = () => {
         {/* STEP 3: Teaching Preferences */}
         {currentStep === 2 && (
           <div className="space-y-5">
-            <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h4 className="text-lg font-bold text-slate-855 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">
               Teaching Preferences
             </h4>
 
@@ -891,7 +903,7 @@ const BecomeTutorForm = () => {
         {/* STEP 4: Location & Profile */}
         {currentStep === 3 && (
           <div className="space-y-5">
-            <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h4 className="text-lg font-bold text-slate-855 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">
               Location & Profile
             </h4>
 
