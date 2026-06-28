@@ -211,8 +211,15 @@ exports.getTutors = async (req, res, next) => {
       const dbFallback = require('../utils/dbFallback');
       const tutorsList = await dbFallback.getTutors();
       
-      const isAdmin = await checkIsAdmin(req);
-      const tutorsListFiltered = isAdmin ? tutorsList : tutorsList.filter(t => t.isVerified);
+      const adminView = req.query.adminView === 'true';
+      let showAll = false;
+      if (adminView) {
+        const isAdmin = await checkIsAdmin(req);
+        if (isAdmin) {
+          showAll = true;
+        }
+      }
+      const tutorsListFiltered = showAll ? tutorsList : tutorsList.filter(t => t.isVerified);
       
       const filtered = applyFallbackFilters(tutorsListFiltered, req.query);
       
@@ -240,10 +247,17 @@ exports.getTutors = async (req, res, next) => {
 
     // Build filters object for MongoDB query
     const filters = {};
-    const { search, subject, gradeClass, mode, state, division, maxPrice } = req.query || {};
+    const { search, subject, gradeClass, mode, state, division, maxPrice, adminView } = req.query || {};
 
-    const isAdmin = await checkIsAdmin(req);
-    if (!isAdmin) {
+    let showAll = false;
+    if (adminView === 'true') {
+      const isAdmin = await checkIsAdmin(req);
+      if (isAdmin) {
+        showAll = true;
+      }
+    }
+
+    if (!showAll) {
       filters.isVerified = true;
     }
 

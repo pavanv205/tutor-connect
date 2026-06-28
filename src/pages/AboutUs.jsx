@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaRocket, FaEye, FaGraduationCap, FaUserCheck, FaSmileBeam } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
-import reviewsData from '../data/reviews.json';
 
 const VALUES = [
   {
@@ -22,25 +21,6 @@ const VALUES = [
 ];
 
 const AboutUs = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: 'spring', stiffness: 100, damping: 12 }
-    }
-  };
-
   return (
     <>
       <SEO
@@ -129,53 +109,6 @@ const AboutUs = () => {
               </div>
             ))}
           </div>
-        </section>
-
-        {/* Testimonials Review Grid */}
-        <section className="space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-xs font-bold text-primary dark:text-blue-500 uppercase tracking-widest">
-              Verified Reviews
-            </h2>
-            <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
-              Feedback from Our Community
-            </h3>
-          </div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
-            {reviewsData.map((rev) => (
-              <motion.div
-                key={rev.id}
-                variants={cardVariants}
-                className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between"
-              >
-                <p className="text-sm text-slate-700 dark:text-slate-300 italic leading-relaxed font-medium mb-6">
-                  "{rev.comment}"
-                </p>
-                <div className="flex items-center gap-3">
-                  <img
-                    src={rev.avatar}
-                    alt={rev.name}
-                    className="h-10 w-10 rounded-full object-cover shrink-0"
-                  />
-                  <div>
-                    <h5 className="font-bold text-slate-850 dark:text-slate-200 text-xs">
-                      {rev.name}
-                    </h5>
-                    <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold">
-                      {rev.role}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
         </section>
 
       </div>

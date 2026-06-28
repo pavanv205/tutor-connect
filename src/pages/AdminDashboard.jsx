@@ -38,7 +38,7 @@ const AdminDashboard = () => {
       }
 
       // 2. Fetch Tutors
-      const tutorsRes = await api.get('/tutors');
+      const tutorsRes = await api.get('/tutors', { params: { adminView: true } });
       setTutors(tutorsRes.data || []);
 
 
