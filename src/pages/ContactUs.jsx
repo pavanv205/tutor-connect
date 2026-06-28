@@ -1,5 +1,5 @@
 import SEO from '../components/common/SEO';
-import ContactForm from '../components/forms/ContactForm';
+
 import { FaEnvelope, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 
 const CONTACT_INFO = [
@@ -89,13 +89,7 @@ const ContactUs = () => {
           ))}
         </section>
 
-        {/* Centered Query Form */}
-        <section className="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm">
-          <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6 text-center">
-            Send Us a Message
-          </h3>
-          <ContactForm />
-        </section>
+
 
       </div>
     </>
