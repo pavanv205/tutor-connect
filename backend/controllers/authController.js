@@ -636,3 +636,50 @@ exports.getMe = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc    Check if email already exists
+// @route   POST /api/auth/check-email
+// @access  Public
+exports.checkEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body || {};
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Please provide an email' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    
+    // Check User model
+    let userExists;
+    const isOffline = mongoose.connection.readyState !== 1;
+    if (isOffline) {
+      const dbFallback = require('../utils/dbFallback');
+      const usersList = await dbFallback.getUsers();
+      userExists = usersList.find(u => u.email.toLowerCase() === normalizedEmail);
+    } else {
+      userExists = await User.findOne({ email: normalizedEmail });
+    }
+
+    if (userExists) {
+      return res.json({ success: true, exists: true, message: 'Email already registered' });
+    }
+
+    // Check Tutor model
+    let tutorExists;
+    if (isOffline) {
+      const dbFallback = require('../utils/dbFallback');
+      const tutorsList = await dbFallback.getTutors();
+      tutorExists = tutorsList.find(t => t.email.toLowerCase() === normalizedEmail);
+    } else {
+      tutorExists = await Tutor.findOne({ email: normalizedEmail });
+    }
+
+    if (tutorExists) {
+      return res.json({ success: true, exists: true, message: 'Email already registered' });
+    }
+
+    return res.json({ success: true, exists: false });
+  } catch (err) {
+    next(err);
+  }
+};

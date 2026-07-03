@@ -7,6 +7,7 @@ import { SUBJECTS, CLASSES, CITIES, STATES, STATE_CITIES } from '../../constants
 import { tutorService } from '../../services/tutorService';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../common/Button';
+import api from '../../services/api';
 
 // Global schema for full validation
 const validationSchema = yup.object().shape({
@@ -73,6 +74,7 @@ const BecomeTutorForm = () => {
     formState: { errors },
     getValues,
     setValue,
+    setError,
     watch
   } = useForm({
     resolver: yupResolver(validationSchema),
@@ -192,6 +194,22 @@ const BecomeTutorForm = () => {
 
     const isStepValid = await trigger(fieldsToValidate);
     if (isStepValid) {
+      if (currentStep === 0) {
+        try {
+          setLoading(true);
+          setSubmitError('');
+          const emailVal = getValues('email');
+          const res = await api.post('/auth/check-email', { email: emailVal });
+          if (res.data && res.data.success && res.data.exists) {
+            setError('email', { type: 'manual', message: 'Email already registered' });
+            return;
+          }
+        } catch (err) {
+          console.error('Email check failed:', err);
+        } finally {
+          setLoading(false);
+        }
+      }
       setCurrentStep((prev) => prev + 1);
     }
   };
