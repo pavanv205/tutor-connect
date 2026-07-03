@@ -246,17 +246,15 @@ const BecomeTutorForm = () => {
       const hasAllowedExt = allowedExts.some(ext => filename.endsWith(ext));
       const isAllowedType = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type);
       
-      if (file.size > 2 * 1024 * 1024) {
-        setResumeError('File size should be less than 2MB');
-        setResumeFile(null);
-        setCompressedPreviewUrl(null);
-        setOriginalSize(null);
-      } else if (!isAllowedType && !hasAllowedExt) {
-        setResumeError('Only image files (JPEG, PNG, WEBP) are allowed');
-        setResumeFile(null);
-        setCompressedPreviewUrl(null);
-        setOriginalSize(null);
-      } else {
+        // Validate file type
+        if (!isAllowedType && !hasAllowedExt) {
+          setResumeError('Only image files (JPEG, PNG, WEBP) are allowed');
+          setResumeFile(null);
+          setCompressedPreviewUrl(null);
+          setOriginalSize(null);
+          return;
+        }
+        // Proceed with compression for any size (no 2MB restriction)
         setResumeError('');
         try {
           setCompressionLoading(true);
@@ -266,13 +264,14 @@ const BecomeTutorForm = () => {
           setOriginalSize(result.originalSize);
         } catch (err) {
           console.error('Image compression failed:', err);
+          // Fallback to original
           setResumeFile(file);
           setCompressedPreviewUrl(URL.createObjectURL(file));
           setOriginalSize(file.size);
         } finally {
           setCompressionLoading(false);
         }
-      }
+        return;
     }
   };
 
@@ -293,10 +292,7 @@ const BecomeTutorForm = () => {
       const hasAllowedExt = allowedExts.some(ext => filename.endsWith(ext));
       const isAllowedType = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'].includes(file.type);
       
-      if (file.size > 2 * 1024 * 1024) {
-        setCertificateError('File size should be less than 2MB');
-        setCertificateFile(null);
-      } else if (!isAllowedType && !hasAllowedExt) {
+      if (!isAllowedType && !hasAllowedExt) {
         setCertificateError('Only image files (JPEG, PNG, WEBP) or PDFs are allowed');
         setCertificateFile(null);
       } else {
