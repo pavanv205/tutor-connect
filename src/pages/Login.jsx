@@ -274,6 +274,18 @@ const Login = () => {
             </motion.div>
           )}
 
+          {/* Error messages */}
+          {errorMsg && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-4 text-xs font-semibold text-rose-650 dark:text-rose-450 flex items-center gap-3"
+            >
+              <FaExclamationTriangle className="h-4 w-4 shrink-0 text-rose-500" />
+              <p>{errorMsg}</p>
+            </motion.div>
+          )}
+
           {/* Form */}
           {forgotPasswordStep === 'login' && (
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
