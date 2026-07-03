@@ -109,3 +109,30 @@ exports.updateTutor = async (id, updatedTutor) => {
   }
   return updatedTutor;
 };
+
+exports.getTutorById = async (id) => {
+  return memoryTutors.find(t => String(t._id) === String(id));
+};
+
+exports.deleteUser = async (userId) => {
+  const idx = memoryUsers.findIndex(u => String(u._id) === String(userId));
+  if (idx !== -1) {
+    memoryUsers.splice(idx, 1);
+  }
+};
+
+exports.deleteBookingsForTutor = async (tutorId) => {
+  let i = memoryBookings.length;
+  while (i--) {
+    if (String(memoryBookings[i].assignedTutor) === String(tutorId)) {
+      memoryBookings.splice(i, 1);
+    }
+  }
+};
+
+exports.deleteTutor = async (tutorId) => {
+  const idx = memoryTutors.findIndex(t => String(t._id) === String(tutorId));
+  if (idx !== -1) {
+    memoryTutors.splice(idx, 1);
+  }
+};

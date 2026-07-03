@@ -404,6 +404,35 @@ exports.updateTutor = async (req, res, next) => {
 
 exports.deleteTutor = async (req, res, next) => {
   try {
+    const isOffline = mongoose.connection.readyState !== 1;
+    if (isOffline) {
+      console.log('🔌 MongoDB is offline. Running deleteTutor in Fallback mode.');
+      const dbFallback = require('../utils/dbFallback');
+      
+      const tutor = await dbFallback.getTutorById(req.params.id);
+      if (!tutor) {
+        return res.status(404).json({ success: false, message: 'Tutor not found' });
+      }
+
+      // Route security: Only the profile owner or an Admin can delete
+      if (tutor.userId && tutor.userId.toString() !== req.user._id.toString() && req.user.role !== 'Admin') {
+        return res.status(403).json({ success: false, message: 'Not authorized to delete this profile' });
+      }
+
+      // 1. Delete associated User account in fallback
+      if (tutor.userId) {
+        await dbFallback.deleteUser(tutor.userId);
+      }
+
+      // 2. Delete bookings associated with this tutor in fallback
+      await dbFallback.deleteBookingsForTutor(req.params.id);
+
+      // 3. Delete tutor profile in fallback
+      await dbFallback.deleteTutor(req.params.id);
+
+      return res.json({ success: true, data: { message: 'Tutor removed' } });
+    }
+
     const tutor = await Tutor.findById(req.params.id);
     if (!tutor) {
       return res.status(404).json({ success: false, message: 'Tutor not found' });
@@ -414,7 +443,18 @@ exports.deleteTutor = async (req, res, next) => {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this profile' });
     }
 
+    // 1. Delete associated User account in MongoDB
+    if (tutor.userId) {
+      await User.findByIdAndDelete(tutor.userId);
+    }
+
+    // 2. Delete bookings associated with this tutor in MongoDB
+    const Booking = require('../models/Booking');
+    await Booking.deleteMany({ assignedTutor: tutor._id });
+
+    // 3. Delete tutor profile
     await Tutor.findByIdAndDelete(req.params.id);
+    
     res.json({ success: true, data: { message: 'Tutor removed' } });
   } catch (err) {
     next(err);
