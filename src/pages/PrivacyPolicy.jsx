@@ -142,7 +142,7 @@ const PrivacyPolicy = () => {
             If you need clarification about this policy, want to request account deletion, or have questions about how geolocation details are processed, please reach out.
           </p>
           <p className="text-xs font-bold text-primary dark:text-blue-400">
-            support@tutorconnect.com
+            supporttutorconnect@gmail.com
           </p>
         </section>
       </div>

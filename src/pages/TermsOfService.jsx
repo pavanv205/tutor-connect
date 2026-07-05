@@ -138,7 +138,7 @@ const TermsOfService = () => {
             If you represent an educational institution, have inquiries regarding policy compliance, or wish to clarify billing and dispute guidelines, please contact support.
           </p>
           <p className="text-xs font-bold text-primary dark:text-blue-400">
-            support@tutorconnect.com
+            supporttutorconnect@gmail.com
           </p>
         </section>
       </div>
