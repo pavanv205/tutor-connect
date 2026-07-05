@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
 import { SUBJECTS, CLASSES } from '../constants';
-import { FaLock, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBookOpen, FaUser, FaCheck, FaTimes, FaGraduationCap } from 'react-icons/fa';
+import { FaLock, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBookOpen, FaUser, FaCheck, FaTimes, FaGraduationCap, FaGift } from 'react-icons/fa';
 
 const TutorDashboard = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('Profile'); // 'Profile', 'Student Requests', 'Settings'
+  const [activeTab, setActiveTab] = useState('Profile'); // 'Profile', 'Student Requests', 'Referrals', 'Settings'
   const [tutorProfile, setTutorProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -16,6 +16,70 @@ const TutorDashboard = () => {
   const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '' });
   const [bookings, setBookings] = useState([]);
   const [updatingBookingId, setUpdatingBookingId] = useState(null);
+
+  const [referrals, setReferrals] = useState([]);
+  const [selectedMonthYear, setSelectedMonthYear] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth()}`;
+  });
+  const [referralSearch, setReferralSearch] = useState('');
+
+  const uniqueMonths = useMemo(() => {
+    const months = [];
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    
+    let earliestYear = currentYear;
+    if (referrals.length > 0) {
+      const years = referrals
+        .map(r => r.createdAt ? new Date(r.createdAt).getFullYear() : null)
+        .filter(y => y !== null && !isNaN(y));
+      if (years.length > 0) {
+        earliestYear = Math.min(...years);
+      }
+    }
+    
+    for (let y = earliestYear; y <= currentYear; y++) {
+      for (let m = 0; m < 12; m++) {
+        months.push({
+          year: y,
+          month: m,
+          label: new Date(y, m).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
+          value: `${y}-${m}`
+        });
+      }
+    }
+    
+    return months.sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year;
+      return b.month - a.month;
+    });
+  }, [referrals]);
+
+  const selectedMonthLabel = uniqueMonths.find(m => m.value === selectedMonthYear)?.label || 'Selected Month';
+
+  const referralStats = useMemo(() => {
+    const [selYear, selMonth] = selectedMonthYear.split('-').map(Number);
+    
+    let joinsInSelectedMonth = 0;
+    const list = referrals.map(r => {
+      const created = new Date(r.createdAt);
+      const isSelectedMonth = created.getFullYear() === selYear && created.getMonth() === selMonth;
+      if (isSelectedMonth) {
+        joinsInSelectedMonth++;
+      }
+      return {
+        ...r,
+        joinedInSelectedMonth: isSelectedMonth
+      };
+    });
+
+    return {
+      totalReferrals: referrals.length,
+      joinsInSelectedMonth,
+      list
+    };
+  }, [referrals, selectedMonthYear]);
 
   // Load Tutor Profile
   const loadDashboardData = useCallback(async () => {
@@ -35,6 +99,12 @@ const TutorDashboard = () => {
       const bookingsRes = await api.get('/bookings');
       if (bookingsRes.data && bookingsRes.data.success) {
         setBookings(bookingsRes.data.data || []);
+      }
+
+      // 3. Fetch referrals
+      const referralsRes = await api.get('/tutors/my-referrals');
+      if (referralsRes.data && referralsRes.data.success) {
+        setReferrals(referralsRes.data.data || []);
       }
     } catch (err) {
       console.error(err);
@@ -157,7 +227,7 @@ const TutorDashboard = () => {
 
           {/* Navigation Tabs */}
           <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6">
-            {['Profile', 'Student Requests', 'Settings'].map(tab => (
+            {['Profile', 'Student Requests', 'Referrals', 'Settings'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -180,7 +250,7 @@ const TutorDashboard = () => {
           ) : (
             <>
               {/* Metrics Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {/* Profile Verification Status Card */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
                   <div className={`h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 ${
@@ -241,6 +311,19 @@ const TutorDashboard = () => {
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Total Views</p>
                     <p className="text-xl font-extrabold text-slate-850 dark:text-slate-100">
                       {tutorProfile?.viewsCount ?? 142}
+                    </p>
+                  </div>
+                </div>
+
+                {/* My Referral Code Card */}
+                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                    <FaGift className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider">My Referral Code</p>
+                    <p className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/20 px-2.5 py-0.5 rounded border border-indigo-100 dark:border-indigo-900/30 select-all tracking-wider font-mono">
+                      {tutorProfile?.ownReferralCode || 'TC-PENDING'}
                     </p>
                   </div>
                 </div>
@@ -549,7 +632,130 @@ const TutorDashboard = () => {
                 </div>
               )}
 
-              {/* TAB 3: SETTINGS */}
+              {/* TAB 3: REFERRALS ANALYTICS */}
+              {activeTab === 'Referrals' && (
+                <div className="space-y-8">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:scale-[1.01] transition-all">
+                      <div className="h-12 w-12 rounded-2xl bg-indigo-50/70 text-indigo-600 dark:bg-indigo-950/30 dark:text-indigo-400 flex items-center justify-center text-xl shrink-0">
+                        <FaGift className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Referred Signups</p>
+                        <h4 className="text-2xl font-extrabold text-slate-850 dark:text-slate-100 mt-0.5">{referralStats.totalReferrals}</h4>
+                      </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:scale-[1.01] transition-all">
+                      <div className="h-12 w-12 rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0">
+                        <FaUser className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Referred in {selectedMonthLabel}</p>
+                        <h4 className="text-2xl font-extrabold text-slate-850 dark:text-slate-100 mt-0.5">{referralStats.joinsInSelectedMonth}</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* List Section */}
+                  <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:items-center gap-3">
+                        <div>
+                          <h3 className="text-base font-extrabold text-slate-850 dark:text-slate-100">Referrals Directory</h3>
+                          <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Tutors who registered using your unique referral code.</p>
+                        </div>
+                        
+                        {/* Month Selector dropdown */}
+                        <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-150 dark:border-slate-700/80 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-750 dark:text-slate-300">
+                          <span>Month:</span>
+                          <select
+                            value={selectedMonthYear}
+                            onChange={(e) => setSelectedMonthYear(e.target.value)}
+                            className="bg-transparent focus:outline-none cursor-pointer text-primary dark:text-blue-400 font-extrabold pr-1"
+                          >
+                            {uniqueMonths.map(opt => (
+                              <option key={opt.value} value={opt.value} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-semibold">
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      
+                      {/* Search */}
+                      <div className="relative flex items-center max-w-xs w-full">
+                        <span className="absolute left-3 text-slate-400 text-xs">🔍</span>
+                        <input
+                          type="text"
+                          value={referralSearch}
+                          onChange={(e) => setReferralSearch(e.target.value)}
+                          placeholder="Search referred tutor..."
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-205 dark:border-slate-700 text-slate-800 dark:text-slate-205 rounded-xl py-2 pl-9 pr-3 text-xs focus:outline-none focus:border-primary transition-all duration-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 dark:border-slate-800 text-[10px] font-extrabold text-slate-400 dark:text-slate-505 uppercase tracking-wide">
+                            <th className="pb-3 pl-2">Referred Tutor</th>
+                            <th className="pb-3">Email / Mobile</th>
+                            <th className="pb-3 text-center">Registration Date</th>
+                            <th className="pb-3 pr-2 text-right">Joined in {selectedMonthLabel}</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50 dark:divide-slate-800/60 text-xs text-slate-700 dark:text-slate-350">
+                          {referralStats.list.filter(r => {
+                            const query = referralSearch.toLowerCase();
+                            return r.name.toLowerCase().includes(query) || r.email.toLowerCase().includes(query);
+                          }).length === 0 ? (
+                            <tr>
+                              <td colSpan="4" className="py-8 text-center text-slate-400 font-medium">No referred tutors found.</td>
+                            </tr>
+                          ) : (
+                            referralStats.list
+                              .filter(r => {
+                                const query = referralSearch.toLowerCase();
+                                return r.name.toLowerCase().includes(query) || r.email.toLowerCase().includes(query);
+                              })
+                              .map(ref => (
+                                <tr key={ref.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/40">
+                                  <td className="py-3.5 pl-2">
+                                    <div className="flex items-center gap-3">
+                                      <img src={ref.photo} alt={ref.name} className="h-8 w-8 rounded-full object-cover border" />
+                                      <span className="font-bold text-slate-850 dark:text-slate-200">{ref.name}</span>
+                                    </div>
+                                  </td>
+                                  <td className="py-3.5">
+                                    <p className="font-semibold text-slate-700 dark:text-slate-300">{ref.email}</p>
+                                    <p className="text-[10px] text-slate-400">{ref.mobile}</p>
+                                  </td>
+                                  <td className="py-3.5 text-center font-semibold text-slate-650 dark:text-slate-300">
+                                    {new Date(ref.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                  </td>
+                                  <td className="py-3.5 pr-2 text-right">
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                      ref.joinedInSelectedMonth
+                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400'
+                                        : 'bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                                    }`}>
+                                      {ref.joinedInSelectedMonth ? 'Yes' : 'No'}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: SETTINGS */}
               {activeTab === 'Settings' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* Password Form */}

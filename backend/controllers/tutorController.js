@@ -185,6 +185,7 @@ exports.createTutor = async (req, res, next) => {
       city: data.city,
       state: data.state,
       pincode: data.pincode,
+      referralCode: data.referralCode || '',
       lat: data.lat ? Number(data.lat) : undefined,
       lng: data.lng ? Number(data.lng) : undefined,
       hourlyRate: data.hourlyRate ? Number(data.hourlyRate) : undefined,
@@ -378,6 +379,19 @@ exports.getTutorById = async (req, res, next) => {
     if (!tutor) {
       return res.status(404).json({ success: false, message: 'Tutor not found' });
     }
+    
+    // Auto-generate ownReferralCode if missing
+    if (!tutor.ownReferralCode) {
+      let generated = 'TC';
+      for (let i = 0; i < 6; i++) {
+        generated += Math.floor(Math.random() * 6) + 1;
+      }
+      if (mongoose.connection.readyState === 1) {
+        await Tutor.findByIdAndUpdate(req.params.id, { ownReferralCode: generated });
+      }
+      tutor.ownReferralCode = generated;
+    }
+
     // Retain direct object return value for frontend compatibility
     res.json(tutor);
   } catch (err) {
@@ -520,6 +534,50 @@ exports.deleteTutor = async (req, res, next) => {
     await Tutor.findByIdAndDelete(req.params.id);
     
     res.json({ success: true, data: { message: 'Tutor removed' } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getMyReferrals = async (req, res, next) => {
+  try {
+    const isOffline = mongoose.connection.readyState !== 1;
+    let ownTutorProfile;
+
+    if (isOffline) {
+      const dbFallback = require('../utils/dbFallback');
+      const tutorsList = await dbFallback.getTutors();
+      ownTutorProfile = tutorsList.find(t => String(t.userId) === String(req.user._id));
+    } else {
+      ownTutorProfile = await Tutor.findOne({ userId: req.user._id }).lean();
+    }
+
+    if (!ownTutorProfile || !ownTutorProfile.ownReferralCode) {
+      return res.json({ success: true, data: [] });
+    }
+
+    const referCode = ownTutorProfile.ownReferralCode;
+    let referredTutors = [];
+
+    if (isOffline) {
+      const dbFallback = require('../utils/dbFallback');
+      const tutorsList = await dbFallback.getTutors();
+      referredTutors = tutorsList.filter(t => t.referralCode === referCode);
+    } else {
+      referredTutors = await Tutor.find({ referralCode: referCode }).sort({ createdAt: -1 }).lean();
+    }
+
+    // Format referred tutors details
+    const formatted = referredTutors.map(t => ({
+      id: t._id,
+      name: t.fullName,
+      email: t.email,
+      mobile: t.mobile,
+      photo: t.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80',
+      createdAt: t.createdAt
+    }));
+
+    res.json({ success: true, data: formatted });
   } catch (err) {
     next(err);
   }

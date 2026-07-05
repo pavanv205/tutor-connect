@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGraduationCap, FaBriefcase, FaBook, FaUpload } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGraduationCap, FaBriefcase, FaBook, FaUpload, FaSearch } from 'react-icons/fa';
 import { SUBJECTS, CLASSES, CITIES, STATES, STATE_CITIES } from '../../constants';
 import { tutorService } from '../../services/tutorService';
 import { useAuth } from '../../context/AuthContext';
@@ -47,7 +47,8 @@ const validationSchema = yup.object().shape({
   // Step 4
   streetAddress: yup.string()
     .required('Street address is required'),
-  pincode: yup.string().required('Postal code is required').matches(/^\d{6}$/, 'Must be a valid 6-digit pin code')
+  pincode: yup.string().required('Postal code is required').matches(/^\d{6}$/, 'Must be a valid 6-digit pin code'),
+  referralCode: yup.string().optional()
 });
 
 const STEPS = [
@@ -108,6 +109,7 @@ const BecomeTutorForm = () => {
       monthlyRate: '',
       streetAddress: '',
       pincode: '',
+      referralCode: '',
       lat: '',
       lng: ''
     }
@@ -615,7 +617,7 @@ const BecomeTutorForm = () => {
                       {/* Search box & options dropdown */}
                       <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-3 flex flex-col gap-2 max-h-72">
                         <div className="relative flex items-center">
-                          <span className="absolute left-3 text-slate-400 text-xs">🔍</span>
+                          <span className="absolute left-3 text-slate-400 text-xs"><FaSearch className="absolute left-3 text-slate-400 text-xs pointer-events-none" /></span>
                           <input
                             type="text"
                             value={stateSearchQuery}
@@ -692,7 +694,7 @@ const BecomeTutorForm = () => {
                       {/* Search box & options dropdown */}
                       <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-3 flex flex-col gap-2 max-h-72">
                         <div className="relative flex items-center">
-                          <span className="absolute left-3 text-slate-400 text-xs">🔍</span>
+                          <span className="absolute left-3 text-slate-400 text-xs"><FaSearch className="absolute left-3 text-slate-400 text-xs pointer-events-none" /></span>
                           <input
                             type="text"
                             value={citySearchQuery}
@@ -1008,6 +1010,20 @@ const BecomeTutorForm = () => {
                 />
                 {errors.pincode && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.pincode.message}</p>}
               </div>
+
+              {/* Referral Code */}
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
+                  Referral Code (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter referral code if any"
+                  {...register('referralCode')}
+                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                />
+                {errors.referralCode && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.referralCode.message}</p>}
+              </div>
             </div>
 
             {/* Live Location Option */}
@@ -1026,7 +1042,7 @@ const BecomeTutorForm = () => {
                   {locLoading ? (
                     <span>Fetching Location...</span>
                   ) : hasFetchedLoc ? (
-                    <span>Live Location Linked ✓</span>
+                    <span>Live Location Linked <FaCheck className="h-3.5 w-3.5 text-emerald-500 inline ml-1" /></span>
                   ) : (
                     <>
                       <span>Use Live Location</span>
@@ -1046,7 +1062,7 @@ const BecomeTutorForm = () => {
 
               {/* Persistent Amber Warning Text */}
               <span className="text-[11px] text-amber-600 dark:text-amber-450 font-bold bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30 px-3 py-2 rounded-xl flex items-center gap-1.5">
-                ⚠️ Use only at your home location.
+                <FaExclamationTriangle className="h-4 w-4 shrink-0 text-amber-500" /> Use only at your home location.
               </span>
 
               {locError && <span className="text-xs text-rose-500 font-semibold">{locError}</span>}

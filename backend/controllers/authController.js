@@ -190,6 +190,10 @@ exports.registerTutor = async (req, res, next) => {
       const userId = 'fallback-user-' + Math.random().toString(36).substr(2, 9);
       const tutorId = 'fallback-tutor-' + Math.random().toString(36).substr(2, 9);
       const hashedPassword = await bcrypt.hash(password, 10);
+      let fallbackOwnReferralCode = 'TC';
+      for (let i = 0; i < 6; i++) {
+        fallbackOwnReferralCode += Math.floor(Math.random() * 6) + 1;
+      }
       
       user = {
         _id: userId,
@@ -222,6 +226,8 @@ exports.registerTutor = async (req, res, next) => {
         city: data.city,
         state: data.state,
         pincode: data.pincode,
+        referralCode: data.referralCode || '',
+        ownReferralCode: fallbackOwnReferralCode,
         lat: data.lat ? Number(data.lat) : undefined,
         lng: data.lng ? Number(data.lng) : undefined,
         bio: data.bio,
@@ -291,6 +297,7 @@ exports.registerTutor = async (req, res, next) => {
         city: data.city,
         state: data.state,
         pincode: data.pincode,
+        referralCode: data.referralCode || '',
         lat: data.lat ? Number(data.lat) : undefined,
         lng: data.lng ? Number(data.lng) : undefined,
         bio: data.bio,

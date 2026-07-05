@@ -130,7 +130,7 @@ const RegisterStudent = () => {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-4 text-xs font-semibold text-rose-650 dark:text-rose-400 flex items-center gap-3"
             >
-              <span className="text-sm">⚠️</span>
+              <span className="text-sm"><FaExclamationTriangle className="h-4 w-4 shrink-0 text-rose-500" /></span>
               <p>{errorMsg}</p>
             </motion.div>
           )}
@@ -142,7 +142,7 @@ const RegisterStudent = () => {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-4 text-xs font-semibold text-emerald-650 dark:text-emerald-400 flex items-center gap-3"
             >
-              <span>✓</span>
+              <span><FaCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" /></span>
               <p>{successMsg}</p>
             </motion.div>
           )}

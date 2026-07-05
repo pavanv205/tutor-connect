@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
-  FaStar,
   FaBriefcase,
   FaGraduationCap,
   FaMapMarkerAlt,
   FaArrowLeft,
-  FaUserGraduate,
-  FaUser,
   FaCalendarAlt,
   FaEnvelope,
   FaPhone,
@@ -395,39 +392,7 @@ const TutorProfile = () => {
               </div>
             </div>
 
-            {/* Reviews list */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
-                Student Reviews & Feedback
-              </h3>
-              {reviews.length === 0 ? (
-                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">No reviews registered yet.</p>
-              ) : (
-                <div className="space-y-6 divide-y divide-slate-100 dark:divide-slate-800">
-                  {reviews.map((rev, i) => (
-                    <div key={rev.id} className={`space-y-2.5 ${i > 0 ? 'pt-6' : ''}`}>
-                      <div className="flex justify-between items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 font-bold text-xs">
-                            <FaUserGraduate className="h-4.5 w-4.5" />
-                          </div>
-                          <span className="text-sm font-bold text-slate-850 dark:text-slate-200">
-                            {rev.reviewer}
-                          </span>
-                        </div>
-                        <div className="flex items-center text-amber-500 text-xs font-bold gap-1 shrink-0">
-                          <FaStar className="fill-current" /> {rev.rating}
-                        </div>
-                      </div>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 italic leading-relaxed pl-10 font-medium">
-                        "{rev.comment}"
-                      </p>
-                      <p className="text-[10px] text-slate-400 pl-10 font-semibold uppercase tracking-wider">{rev.date}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            
 
           </div>
 

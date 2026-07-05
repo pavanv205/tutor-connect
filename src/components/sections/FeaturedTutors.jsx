@@ -89,7 +89,7 @@ export const TutorCard = ({ tutor }) => {
           )}
           {tutor.distance !== undefined && (
             <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-450 font-extrabold shrink-0 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-0.5 rounded-lg border border-emerald-100/50 dark:border-emerald-900/30">
-              📍 {Number(tutor.distance).toFixed(1)} km
+              <FaMapMarkerAlt className="h-3 w-3 text-red-500 inline mr-1" /> {Number(tutor.distance).toFixed(1)} km
             </span>
           )}
         </div>

@@ -52,7 +52,7 @@ const TutorMap = ({ tutors, userCoords }) => {
       });
 
       const userMarker = window.L.marker(userLatLng, { icon: pulsingIcon });
-      userMarker.bindPopup('<div class="text-xs font-bold text-center text-slate-800">You are here 📍</div>');
+      userMarker.bindPopup('<div class="text-xs font-bold text-center text-slate-800">You are here</div>');
       markersGroup.addLayer(userMarker);
     }
 

@@ -36,6 +36,8 @@ const TutorSchema = new mongoose.Schema({
   lng: { type: Number },
   hourlyRate: { type: Number },
   monthlyRate: { type: Number },
+  referralCode: { type: String, default: '' },
+  ownReferralCode: { type: String, unique: true, sparse: true },
   isVerified: { type: Boolean, default: false },
   verifiedAt: { type: Date },
   verifiedDate: { type: Date }
@@ -47,5 +49,25 @@ TutorSchema.index({ subjects: 1 });
 TutorSchema.index({ classes: 1 });
 TutorSchema.index({ isVerified: 1 });
 TutorSchema.index({ hourlyRate: 1 });
+
+// Pre-save hook to generate a unique referral code if missing
+TutorSchema.pre('save', async function(next) {
+  if (!this.ownReferralCode) {
+    let code;
+    let exists = true;
+    while (exists) {
+      code = 'TC';
+      for (let i = 0; i < 6; i++) {
+        code += Math.floor(Math.random() * 6) + 1;
+      }
+      const count = await this.constructor.countDocuments({ ownReferralCode: code });
+      if (count === 0) {
+        exists = false;
+      }
+    }
+    this.ownReferralCode = code;
+  }
+  next();
+});
 
 module.exports = mongoose.model('Tutor', TutorSchema);

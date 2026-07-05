@@ -94,7 +94,7 @@ const BookingForm = ({ tutor, onSuccess, onSetTitle }) => {
         };
         const response = await bookingService.bookDemo(payload);
         if (response.success) {
-          setSuccessMsg('Request Sent Successfully! 🎉 Redirecting to your dashboard...');
+          setSuccessMsg('Request Sent Successfully! Redirecting to your dashboard...');
           if (onSuccess) {
             setTimeout(() => {
               onSuccess();
@@ -125,7 +125,7 @@ const BookingForm = ({ tutor, onSuccess, onSetTitle }) => {
       };
       const response = await bookingService.bookDemo(payload);
       if (response.success) {
-        setSuccessMsg(response.message || 'Request Sent Successfully! 🎉 Redirecting to your dashboard...');
+        setSuccessMsg(response.message || 'Request Sent Successfully! Redirecting to your dashboard...');
         reset();
         if (onSuccess) {
           setTimeout(() => {
