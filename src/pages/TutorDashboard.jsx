@@ -416,7 +416,7 @@ const TutorDashboard = () => {
                       </div>
                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-1">No Student Requests</h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto font-medium">
-                        When students request a trial class with you, their contact details and requirements will appear here.
+                        When students request a class with you, their contact details and requirements will appear here.
                       </p>
                     </div>
                   ) : (
@@ -438,7 +438,7 @@ const TutorDashboard = () => {
                                     {booking.studentName}
                                   </h4>
                                   <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-0.5">
-                                    Trial Lead
+                                    Tutoring Lead
                                   </p>
                                 </div>
                               </div>

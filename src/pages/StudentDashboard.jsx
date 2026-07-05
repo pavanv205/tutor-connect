@@ -56,7 +56,7 @@ const StudentDashboard = () => {
 
   return (
     <>
-      <SEO title="Student Dashboard" description="Track the status of your requested home and online tuition trial classes." />
+      <SEO title="Student Dashboard" description="Track the status of your requested home and online tuition classes." />
 
       <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto space-y-8">
@@ -65,7 +65,7 @@ const StudentDashboard = () => {
             <div>
               <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Student Dashboard</h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold mt-1">
-                Welcome back, {user?.name || 'Student'}. Track your trial session requests and tutor details here.
+                Welcome back, {user?.name || 'Student'}. Track your session requests and tutor details here.
               </p>
             </div>
             <div>
@@ -100,9 +100,9 @@ const StudentDashboard = () => {
                   <div className="w-16 h-16 bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
                     <FaGraduationCap className="h-6 w-6" />
                   </div>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-1">No Trial Requests Yet</h4>
+                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-1">No Booking Requests Yet</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto font-medium mb-6">
-                    You have not requested any trial classes. Connect with our highly qualified teachers to get started.
+                    You have not requested any tutoring sessions. Connect with our highly qualified teachers to get started.
                   </p>
                   <Button onClick={() => navigate('/tutors')} variant="outline" size="sm">
                     Browse Teachers

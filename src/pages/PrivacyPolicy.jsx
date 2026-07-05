@@ -35,10 +35,10 @@ const PrivacyPolicy = () => {
             Introduction & Scope
           </h3>
           <p className="text-sm text-slate-650 dark:text-slate-400 leading-relaxed font-medium">
-            Welcome to TutorConnect ("we," "our," or "us"). We are committed to protecting your privacy and ensuring your personal data is handled securely and transparently. This Privacy Policy details how we collect, store, process, and protect your personal information when you use our web application, search for tutors, book trial classes, or register as an educator.
+            Welcome to TutorConnect ("we," "our," or "us"). We are committed to protecting your privacy and ensuring your personal data is handled securely and transparently. This Privacy Policy details how we collect, store, process, and protect your personal information when you use our web application, search for tutors, book tutoring classes, or register as an educator.
           </p>
           <p className="text-sm text-slate-650 dark:text-slate-405 leading-relaxed font-medium">
-            By registering an account or booking trial classes on our platform, you acknowledge and agree to the practices outlined in this Privacy Policy.
+            By registering an account or booking tutoring classes on our platform, you acknowledge and agree to the practices outlined in this Privacy Policy.
           </p>
         </section>
 
@@ -66,7 +66,7 @@ const PrivacyPolicy = () => {
                 <strong>Geolocation Data:</strong> If you use the "Live Location" features to assist with offline tuition matches, we capture latitude and longitude coordinates.
               </li>
               <li>
-                <strong>Booking Inquiries:</strong> Trial class details, requested slots, selected subjects, and personalized note messages sent during trial request submissions.
+                <strong>Booking Inquiries:</strong> Booking details, requested slots, selected subjects, and personalized note messages sent during request submissions.
               </li>
             </ul>
           </div>
@@ -82,7 +82,7 @@ const PrivacyPolicy = () => {
             <ul className="list-disc pl-5 text-sm text-slate-600 dark:text-slate-400 space-y-2 font-medium">
               <li>To match student learning demands with relevant nearby tutors.</li>
               <li>To verify the authenticity of educator qualifications through backend administrative reviews.</li>
-              <li>To handle trial bookings and display scheduling statuses (Pending, Assigned, Completed, Cancelled) on user dashboards.</li>
+              <li>To handle bookings and display scheduling statuses (Pending, Assigned, Completed, Cancelled) on user dashboards.</li>
               <li>To share contact details (mobile numbers) between students and teachers once a tutor accepts a requested booking.</li>
               <li>To improve web performance, coordinate geolocation proximity searches, and troubleshoot app errors.</li>
             </ul>
@@ -110,7 +110,7 @@ const PrivacyPolicy = () => {
               We respect your privacy. We do not sell or rent your personal information to third-party advertisers. Information sharing is restricted to:
             </p>
             <ul className="list-disc pl-5 text-sm text-slate-600 dark:text-slate-400 space-y-2 font-medium">
-              <li><strong>Tutors & Students:</strong> Exchanging contact info only after a trial booking is approved and accepted.</li>
+              <li><strong>Tutors & Students:</strong> Exchanging contact info only after a booking is approved and accepted.</li>
               <li><strong>Cloud Storage:</strong> Securing uploaded photos/resumes via integrated cloud platforms (e.g. Cloudinary).</li>
               <li><strong>Legal Compliance:</strong> Releasing records if required by local regulations, judicial mandates, or law enforcement requests.</li>
             </ul>

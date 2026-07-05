@@ -18,7 +18,7 @@ const BookingModalWrapper = () => {
 
   useEffect(() => {
     if (isOpen) {
-      setModalTitle(selectedTutor ? 'Book' : 'Request a Trial Class');
+      setModalTitle(selectedTutor ? 'Book' : 'Book a Session');
     }
   }, [isOpen, selectedTutor]);
 

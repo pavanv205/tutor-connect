@@ -196,7 +196,7 @@ const BookingForm = ({ tutor, onSuccess, onSetTitle }) => {
             className="h-10 w-10 rounded-full object-cover shrink-0 border border-slate-200 dark:border-slate-700"
           />
           <div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Booking trial class with</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Booking session with</p>
             <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{tutor.name}</p>
           </div>
         </div>
@@ -376,7 +376,7 @@ const BookingForm = ({ tutor, onSuccess, onSetTitle }) => {
       {/* Submit */}
       <div className="pt-3">
         <Button type="submit" variant="primary" className="w-full py-3.5 font-semibold text-sm" loading={loading}>
-          Book Trial Session
+          Book Session
         </Button>
       </div>
     </form>

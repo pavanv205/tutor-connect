@@ -223,7 +223,7 @@ const TutorProfile = () => {
           </div>
         </section>
 
-        {/* Received Trial Requests (Visible only to the Profile Owner) */}
+        {/* Received Booking Requests (Visible only to the Profile Owner) */}
         {isProfileOwner && (
           <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
             <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-850 pb-4">
@@ -232,10 +232,10 @@ const TutorProfile = () => {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  Received Trial Requests ({profileBookings.length})
+                  Received Booking Requests ({profileBookings.length})
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
-                  Manage trials requested directly by students on your profile.
+                  Manage sessions requested directly by students on your profile.
                 </p>
               </div>
             </div>
@@ -479,7 +479,7 @@ const TutorProfile = () => {
                       Book
                     </Button>
                     <p className="text-[10px] text-center text-rose-500 font-bold">
-                      Only students can book trial sessions. Log in as a student to book.
+                      Only students can book tutoring sessions. Log in as a student to book.
                     </p>
                   </div>
                 )}

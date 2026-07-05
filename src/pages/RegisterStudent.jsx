@@ -92,7 +92,7 @@ const RegisterStudent = () => {
     <>
       <SEO
         title="Student Registration"
-        description="Sign up as a student on TutorConnect to browse and book trial classes with verified tutors."
+        description="Sign up as a student on TutorConnect to browse and book tutoring classes with verified tutors."
       />
 
       <div className="min-h-[85vh] flex items-center justify-center bg-slate-50 dark:bg-[#0B0F19] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">

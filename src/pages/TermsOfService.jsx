@@ -8,7 +8,7 @@ const TermsOfService = () => {
     <>
       <SEO
         title="Terms of Service"
-        description="Read the terms and conditions for using TutorConnect, managing trial classes, student/tutor accounts, and booking guidelines."
+        description="Read the terms and conditions for using TutorConnect, managing bookings, student/tutor accounts, and booking guidelines."
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 space-y-12">
@@ -35,7 +35,7 @@ const TermsOfService = () => {
             Terms Agreement
           </h3>
           <p className="text-sm text-slate-650 dark:text-slate-400 leading-relaxed font-medium">
-            Welcome to TutorConnect. These Terms of Service ("Terms") govern your access to and use of our website, databases, matchmaking algorithms, and services. By registering as a Student or a Tutor, booking trial classes, or accessing any section of the platform, you agree to comply with and be bound by these legal terms.
+            Welcome to TutorConnect. These Terms of Service ("Terms") govern your access to and use of our website, databases, matchmaking algorithms, and services. By registering as a Student or a Tutor, booking sessions, or accessing any section of the platform, you agree to comply with and be bound by these legal terms.
           </p>
           <p className="text-sm text-slate-650 dark:text-slate-405 leading-relaxed font-medium">
             Please read these Terms carefully before proceeding. If you do not agree to all terms and conditions set forth herein, you must immediately cease using the platform.
@@ -54,7 +54,7 @@ const TermsOfService = () => {
             </p>
             <ul className="list-disc pl-5 text-sm text-slate-600 dark:text-slate-400 space-y-2 font-medium">
               <li>Profile listings of verified and pre-screened private tutors.</li>
-              <li>Booking engines for free or paid trial lessons.</li>
+              <li>Booking engines for free or paid lessons.</li>
               <li>Dashboard tracking systems allowing both tutors and students to manage booking states (Pending, Assigned, Completed, Cancelled).</li>
               <li>Proximity geolocation calculations to aid matching offline/home lessons.</li>
             </ul>
@@ -83,7 +83,7 @@ const TermsOfService = () => {
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium flex items-start gap-2.5">
               <FaExclamationTriangle className="text-amber-500 text-lg shrink-0 mt-0.5" />
               <span>
-                <strong>Verification Limits:</strong> Although TutorConnect screens qualification certificates and profile photos, we do not perform comprehensive background checks or criminal vetting. Parents and students are strongly encouraged to inspect physical identification, verify credentials in person, and supervise the first trial sessions.
+                <strong>Verification Limits:</strong> Although TutorConnect screens qualification certificates and profile photos, we do not perform comprehensive background checks or criminal vetting. Parents and students are strongly encouraged to inspect physical identification, verify credentials in person, and supervise the first sessions.
               </span>
             </p>
             <p className="text-sm text-slate-600 dark:text-slate-405 leading-relaxed font-medium">

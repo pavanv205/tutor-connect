@@ -12,10 +12,10 @@ export const bookingService = {
     }
 
     await delay(1200); // Simulate API latency
-    console.log('Trial booked successfully:', bookingData);
+    console.log('Session booked successfully:', bookingData);
     return {
       success: true,
-      message: 'Trial class booked successfully! Our team will reach out to you within 2 hours.',
+      message: 'Session booked successfully! Our team will reach out to you within 2 hours.',
       bookingId: 'BK-' + Math.random().toString(36).substr(2, 9).toUpperCase()
     };
   },
