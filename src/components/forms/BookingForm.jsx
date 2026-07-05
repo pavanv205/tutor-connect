@@ -94,7 +94,13 @@ const BookingForm = ({ tutor, onSuccess, onSetTitle }) => {
         };
         const response = await bookingService.bookDemo(payload);
         if (response.success) {
-          setSuccessMsg('Request Sent Successfully! 🎉 The tutor will review your request and contact you shortly.');
+          setSuccessMsg('Request Sent Successfully! 🎉 Redirecting to your dashboard...');
+          if (onSuccess) {
+            setTimeout(() => {
+              onSuccess();
+              navigate('/student/dashboard');
+            }, 2500);
+          }
         }
       } catch (err) {
         console.error(err);
@@ -119,11 +125,12 @@ const BookingForm = ({ tutor, onSuccess, onSetTitle }) => {
       };
       const response = await bookingService.bookDemo(payload);
       if (response.success) {
-        setSuccessMsg(response.message);
+        setSuccessMsg(response.message || 'Request Sent Successfully! 🎉 Redirecting to your dashboard...');
         reset();
         if (onSuccess) {
           setTimeout(() => {
             onSuccess();
+            navigate('/student/dashboard');
           }, 3000);
         }
       }
