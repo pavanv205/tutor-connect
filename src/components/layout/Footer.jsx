@@ -69,8 +69,8 @@ const Footer = () => {
         <div className="mt-16 pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} TutorConnect. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-slate-400 transition-colors">Terms of Service</a>
+            <Link to="/privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-slate-400 transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

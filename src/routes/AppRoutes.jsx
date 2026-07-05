@@ -21,6 +21,8 @@ const RegisterStudent = lazy(() => import('../pages/RegisterStudent'));
 const AboutUs = lazy(() => import('../pages/AboutUs'));
 const ContactUs = lazy(() => import('../pages/ContactUs'));
 const Login = lazy(() => import('../pages/Login'));
+const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('../pages/TermsOfService'));
 const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 const TutorDashboard = lazy(() => import('../pages/TutorDashboard'));
 const StudentDashboard = lazy(() => import('../pages/StudentDashboard'));
@@ -38,6 +40,8 @@ const AppRoutes = () => {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
         
         {/* Protected Dashboard Routes */}
         <Route
