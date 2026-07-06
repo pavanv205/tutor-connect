@@ -1249,7 +1249,7 @@ const BecomeTutorForm = () => {
                     </div>
                   </div>
                    <div className="text-right">
-                    <span className="text-xs text-slate-400 font-semibold block">Subscription Fee</span>
+                    <span className="text-xs text-slate-400 font-semibold block">Application Fee</span>
                     <span className="text-base font-extrabold text-primary dark:text-blue-400">₹29</span>
                   </div>
                 </div>
