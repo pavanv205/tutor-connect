@@ -6,17 +6,20 @@ const VALUES = [
   {
     icon: <FaGraduationCap />,
     title: 'Academic Excellence',
-    description: 'We prioritize personalized, high-quality learning that supports academic success and unlocks students\' potential.'
+    description: 'We prioritize personalized, high-quality learning that supports academic success and unlocks students\' potential.',
+    iconClass: 'bg-blue-50 text-blue-600 border-blue-100/50 dark:bg-blue-950/20 dark:border-blue-900/30 dark:text-blue-400'
   },
   {
     icon: <FaUserCheck />,
     title: 'Trust & Safety',
-    description: 'Every tutor undergoes thorough identification, background, and academic credential screening before joining.'
+    description: 'Every tutor undergoes thorough identification, background, and academic credential screening before joining.',
+    iconClass: 'bg-emerald-50 text-emerald-600 border-emerald-100/50 dark:bg-emerald-950/20 dark:border-emerald-900/30 dark:text-emerald-400'
   },
   {
     icon: <FaSmileBeam />,
     title: 'Student Centricity',
-    description: 'We match teaching methodologies to the student\'s learning style, ensuring interest, pace compatibility, and conceptual clarity.'
+    description: 'We match teaching methodologies to the student\'s learning style, ensuring interest, pace compatibility, and conceptual clarity.',
+    iconClass: 'bg-purple-50 text-purple-600 border-purple-100/50 dark:bg-purple-950/20 dark:border-purple-900/30 dark:text-purple-400'
   }
 ];
 
@@ -95,18 +98,22 @@ const AboutUs = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {VALUES.map((val, idx) => (
-              <div
+              <motion.div
                 key={idx}
-                className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col items-center text-center space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.15 }}
+                className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center space-y-4 group"
               >
-                <div className="h-12 w-12 rounded-2xl bg-slate-50 text-slate-500 border border-slate-100 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 flex items-center justify-center text-xl shadow-sm">
+                <div className={`h-12 w-12 rounded-2xl border flex items-center justify-center text-xl shadow-sm transition-transform duration-300 group-hover:scale-110 ${val.iconClass}`}>
                   {val.icon}
                 </div>
                 <h4 className="font-bold text-slate-850 dark:text-slate-205 text-base">{val.title}</h4>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                <p className="text-xs text-slate-655 dark:text-slate-400 leading-relaxed font-medium">
                   {val.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </section>
