@@ -14,8 +14,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand & Description */}
           <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-2.5 focus:outline-none group">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-blue-500 flex items-center justify-center text-white transition-transform duration-300 group-hover:scale-105">
+            <Link to="/" className="flex items-center gap-2.5 focus:outline-none">
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #e5b0ad 0%, #b76e79 50%, #111115 100%)',
+                  boxShadow: '0 4px 12px rgba(183, 110, 121, 0.25)'
+                }}
+                className="h-10 w-10 rounded-xl flex items-center justify-center text-white shrink-0"
+              >
                 <FaGraduationCap className="h-6 w-6" />
               </div>
               <span className="text-xl font-bold tracking-tight text-white">
