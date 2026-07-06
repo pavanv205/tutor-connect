@@ -19,7 +19,7 @@ const VALUES = [
     icon: <FaSmileBeam />,
     title: 'Student Centricity',
     description: 'We match teaching methodologies to the student\'s learning style, ensuring interest, pace compatibility, and conceptual clarity.',
-    iconClass: 'bg-purple-50 text-purple-600 border-purple-100/50 dark:bg-purple-950/20 dark:border-purple-900/30 dark:text-purple-400'
+    iconClass: 'bg-amber-50 text-amber-600 border-amber-100/50 dark:bg-amber-950/20 dark:border-amber-900/30 dark:text-amber-400'
   }
 ];
 
