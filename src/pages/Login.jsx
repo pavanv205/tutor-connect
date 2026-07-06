@@ -175,9 +175,9 @@ const Login = () => {
   return (
     <>
       <SEO
-        title={`${activeTab === 'Tutor' ? 'Teacher' : activeTab} Login`}
+        title={`${activeTab} Login`}
         description="Access the secure Tutor Connect portal to manage classes, tutor profile, and settings."
-        keywords="login, teacher login, admin portal, tutor connect auth"
+        keywords="login, tutor login, admin portal, tutor connect auth"
       />
 
       <div className="min-h-[85vh] flex items-center justify-center bg-slate-50 dark:bg-[#0B0F19] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -222,7 +222,7 @@ const Login = () => {
                   disabled={hasRoleQuery}
                 >
                   <FaChalkboardTeacher className="h-4 w-4" />
-                  Teacher Login
+                  Tutor Login
                 </button>
               )}
               {(!hasRoleQuery || activeTab === 'Student') && (

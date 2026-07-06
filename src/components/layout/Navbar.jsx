@@ -150,7 +150,7 @@ const Navbar = () => {
                           to="/login?role=teacher"
                           className="block py-2.5 px-3.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
                         >
-                          Teacher Login
+                          Tutor Login
                         </Link>
                         <Link
                           to="/login?role=admin"
@@ -254,7 +254,7 @@ const Navbar = () => {
                       onClick={() => setIsOpen(false)}
                       className="text-lg font-bold text-slate-950 dark:text-slate-950 hover:text-primary dark:hover:text-primary transition-colors"
                     >
-                      Teacher Login
+                      Tutor Login
                     </Link>
                     <Link
                       to="/login?role=admin"
