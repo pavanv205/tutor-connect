@@ -79,8 +79,24 @@ const AboutUs = () => {
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Mission */}
           <div className="bg-gradient-to-br from-primary/5 to-blue-500/5 dark:from-slate-900 dark:to-slate-850 border border-slate-100 dark:border-slate-800 rounded-3xl p-8 space-y-4">
-            <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary dark:bg-blue-500/10 dark:text-blue-400 flex items-center justify-center">
-              <FaRocket className="h-5 w-5" />
+            <div className="h-12 w-12 rounded-2xl bg-pink-500/10 dark:bg-pink-500/20 flex items-center justify-center relative overflow-visible">
+              <svg width="0" height="0" className="absolute">
+                <linearGradient id="rocket-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#ff007f" />
+                  <stop offset="50%" stopColor="#7c3aed" />
+                  <stop offset="100%" stopColor="#3b82f6" />
+                </linearGradient>
+              </svg>
+              <motion.div
+                whileHover={{ y: -3, x: 3 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                className="flex items-center justify-center"
+              >
+                <FaRocket
+                  style={{ fill: "url(#rocket-gradient)" }}
+                  className="h-5 w-5 filter drop-shadow-[0_2px_6px_rgba(236,72,153,0.4)]"
+                />
+              </motion.div>
             </div>
             <h3 className="text-xl font-bold text-slate-850 dark:text-white">Our Mission</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
