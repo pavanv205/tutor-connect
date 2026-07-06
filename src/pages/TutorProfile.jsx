@@ -11,7 +11,8 @@ import {
   FaBookOpen,
   FaCheck,
   FaTimes,
-  FaHistory
+  FaHistory,
+  FaUser
 } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
 import { tutorService } from '../services/tutorService';
