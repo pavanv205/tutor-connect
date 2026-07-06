@@ -43,7 +43,7 @@ const AboutUs = () => {
                TutorConnect was founded in 2026 to address a common parent struggle: finding qualified, reliable home tutors who genuinely understand a student's individual learning speed and requirements. 
             </p>
             <p className="text-sm text-slate-650 dark:text-slate-455 leading-relaxed font-medium">
-              What started as a localized tutor directory in Bangalore has evolved into a robust nationwide platform connecting thousands of parents with pre-screened, certified subject matter experts. We combine the personal touch of face-to-face home tuition with modern scheduling tools.
+              What started as a localized tutor directory in Vizianagaram has evolved into a robust nationwide platform connecting thousands of parents with pre-screened, certified subject matter experts. We combine the personal touch of face-to-face home tuition with modern scheduling tools.
             </p>
           </div>
           <div className="lg:col-span-5 relative">
