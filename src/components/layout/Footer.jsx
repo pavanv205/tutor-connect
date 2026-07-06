@@ -26,7 +26,7 @@ const Footer = () => {
                 <FaGraduationCap style={{ fill: "url(#footer-cap-gradient)" }} className="h-6 w-6 filter drop-shadow-[0_1px_3px_rgba(212,175,55,0.4)]" />
               </div>
               <span className="text-xl font-bold tracking-tight text-white">
-                Tutor<span style={{ color: '#d4af37' }} className="font-extrabold">Connect</span>
+                Tutor<span className="text-primary dark:text-blue-500">Connect</span>
               </span>
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed">

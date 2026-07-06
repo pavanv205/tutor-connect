@@ -39,7 +39,7 @@ const Navbar = () => {
     `relative text-sm font-extrabold tracking-tight transition-colors duration-200 py-2 ${
       isActive
         ? 'text-primary dark:text-blue-400 font-black'
-        : 'text-slate-950 hover:text-primary dark:text-slate-950 dark:hover:text-primary'
+        : 'text-slate-950 hover:text-primary dark:text-slate-200 dark:hover:text-primary'
     }`;
 
   return (
@@ -65,8 +65,8 @@ const Navbar = () => {
                 </svg>
                 <FaGraduationCap style={{ fill: "url(#nav-cap-gradient)" }} className="h-6 w-6 filter drop-shadow-[0_1px_3px_rgba(212,175,55,0.4)]" />
               </div>
-              <span className="text-xl font-black tracking-tight text-slate-950 dark:text-slate-950">
-                Tutor<span style={{ color: '#d4af37' }} className="font-extrabold">Connect</span>
+              <span className="text-xl font-black tracking-tight text-slate-950 dark:text-white">
+                Tutor<span className="text-primary dark:text-blue-500 font-extrabold">Connect</span>
               </span>
             </Link>
 
@@ -98,7 +98,7 @@ const Navbar = () => {
                   onMouseEnter={() => setIsProfileOpen(true)}
                   onMouseLeave={() => setIsProfileOpen(false)}
                 >
-                  <button className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-950 dark:text-slate-950 hover:bg-slate-50 dark:hover:bg-slate-800/80 focus:outline-none cursor-pointer">
+                  <button className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-950 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 focus:outline-none cursor-pointer">
                     <span>Hi, {user?.name ? user.name.split(' ')[0] : 'User'}</span>
                     <span className="text-[9px] text-slate-400">▼</span>
                   </button>
@@ -134,7 +134,7 @@ const Navbar = () => {
                   onMouseEnter={() => setIsLoginOpen(true)}
                   onMouseLeave={() => setIsLoginOpen(false)}
                 >
-                  <button className="text-xs font-bold text-slate-950 hover:text-primary dark:text-slate-950 dark:hover:text-primary py-2.5 px-3 cursor-pointer focus:outline-none">
+                  <button className="text-xs font-bold text-slate-950 hover:text-primary dark:text-white dark:hover:text-primary py-2.5 px-3 cursor-pointer focus:outline-none">
                     Login ▼
                   </button>
                   {/* Dropdown Menu */}
@@ -177,7 +177,7 @@ const Navbar = () => {
               {/* Hamburger Button */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-950 dark:text-slate-950 hover:bg-slate-50 dark:hover:bg-slate-800/80 focus:outline-none"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-950 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 focus:outline-none"
                 aria-label="Toggle navigation menu"
               >
                 {isOpen ? <FaTimes className="h-5 w-5" /> : <FaBars className="h-5 w-5" />}
@@ -219,7 +219,7 @@ const Navbar = () => {
                       `text-lg font-bold transition-colors duration-200 ${
                         isActive
                           ? 'text-primary dark:text-blue-400 font-extrabold'
-                          : 'text-slate-950 hover:text-primary dark:text-slate-950 dark:hover:text-primary'
+                          : 'text-slate-950 hover:text-primary dark:text-slate-200 dark:hover:text-primary'
                       }`
                     }
                   >
@@ -233,7 +233,7 @@ const Navbar = () => {
                     <Link
                       to={role === 'Admin' ? '/admin/dashboard' : role === 'Tutor' ? '/tutor/dashboard' : '/student/dashboard'}
                       onClick={() => setIsOpen(false)}
-                      className="text-lg font-bold text-slate-950 dark:text-slate-950 hover:text-primary dark:hover:text-primary transition-colors"
+                      className="text-lg font-bold text-slate-950 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-colors"
                     >
                       Dashboard
                     </Link>
@@ -252,21 +252,21 @@ const Navbar = () => {
                     <Link
                       to="/login?role=student"
                       onClick={() => setIsOpen(false)}
-                      className="text-lg font-bold text-slate-950 dark:text-slate-950 hover:text-primary dark:hover:text-primary transition-colors"
+                      className="text-lg font-bold text-slate-950 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-colors"
                     >
                       Student Login
                     </Link>
                     <Link
                       to="/login?role=teacher"
                       onClick={() => setIsOpen(false)}
-                      className="text-lg font-bold text-slate-950 dark:text-slate-950 hover:text-primary dark:hover:text-primary transition-colors"
+                      className="text-lg font-bold text-slate-950 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-colors"
                     >
                       Tutor Login
                     </Link>
                     <Link
                       to="/login?role=admin"
                       onClick={() => setIsOpen(false)}
-                      className="text-lg font-bold text-slate-950 dark:text-slate-950 hover:text-primary dark:hover:text-primary transition-colors"
+                      className="text-lg font-bold text-slate-950 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-colors"
                     >
                       Admin Login
                     </Link>
