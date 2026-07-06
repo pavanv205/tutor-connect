@@ -4,10 +4,21 @@ import SEO from '../components/common/SEO';
 
 const VALUES = [
   {
-    icon: <FaGraduationCap />,
+    icon: (
+      <>
+        <svg width="0" height="0" className="absolute">
+          <linearGradient id="cap-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#d4af37" />
+            <stop offset="50%" stopColor="#f59e0b" />
+            <stop offset="100%" stopColor="#fffbdf" />
+          </linearGradient>
+        </svg>
+        <FaGraduationCap style={{ fill: "url(#cap-gradient)" }} className="filter drop-shadow-[0_1px_4px_rgba(212,175,55,0.5)]" />
+      </>
+    ),
     title: 'Academic Excellence',
     description: 'We prioritize personalized, high-quality learning that supports academic success and unlocks students\' potential.',
-    iconClass: 'bg-slate-100 text-slate-900 border-slate-200/50 dark:bg-slate-800/40 dark:border-slate-700/50 dark:text-slate-100'
+    iconClass: 'bg-slate-950 border-slate-900 shadow-md dark:bg-black dark:border-slate-950'
   },
   {
     icon: <FaUserCheck />,
