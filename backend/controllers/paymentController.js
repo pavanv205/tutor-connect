@@ -64,10 +64,11 @@ exports.createOrder = async (req, res, next) => {
       isMock: false
     });
   } catch (err) {
-    console.error('[PAYMENT ERROR] Razorpay order creation failed:', err.message);
+    const errorMsg = err.description || err.error?.description || err.message || JSON.stringify(err);
+    console.error('[PAYMENT ERROR] Razorpay order creation failed:', errorMsg, err);
     res.status(500).json({
       success: false,
-      message: 'Failed to initialize payment gateway order: ' + err.message
+      message: 'Failed to initialize payment gateway order: ' + errorMsg
     });
   }
 };
