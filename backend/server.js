@@ -99,12 +99,14 @@ const adminRoutes = require('./routes/adminRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
 const studentRequestRoutes = require('./routes/studentRequestRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/tutors', tutorRoutes);
 app.use('/api/student-requests', studentRequestRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // ─── Global Error Handler ───────────────────────────────────────────────────
 app.use(errorHandler);

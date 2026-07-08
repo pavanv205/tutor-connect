@@ -363,18 +363,30 @@ const BecomeTutorForm = () => {
         return;
       }
 
+      // Create Razorpay Order on the server
+      const orderRes = await api.post('/payments/create-order');
+      if (!orderRes.data || !orderRes.data.success) {
+        throw new Error(orderRes.data?.message || 'Failed to initialize order with payment gateway.');
+      }
+      const orderData = orderRes.data.data;
+      const isMock = orderRes.data.isMock;
+
       // Initialize Razorpay Options
       const options = {
-        key: 'rzp_test_tutorconnectkey', // Sandbox test key
-        amount: 2900, // ₹29.00 in paise
-        currency: 'INR',
+        key: 'rzp_test_tutorconnectkey', // Fallback key
+        amount: orderData.amount, // ₹29.00 in paise
+        currency: orderData.currency,
         name: 'TutorConnect',
         description: '6-Month Tutor Subscription Plan',
         image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80',
+        order_id: isMock ? undefined : orderData.id,
         handler: async function (response) {
           try {
             setLoading(true);
             const razorpayPaymentId = response.razorpay_payment_id;
+            const razorpayOrderId = response.razorpay_order_id || orderData.id;
+            const razorpaySignature = response.razorpay_signature || 'mock_signature';
+
             console.log('Payment Successful. Payment ID:', razorpayPaymentId);
 
             const formData = new FormData();
@@ -397,6 +409,9 @@ const BecomeTutorForm = () => {
             // Append payment fields
             formData.append('paymentStatus', 'Paid');
             formData.append('paymentId', razorpayPaymentId);
+            formData.append('razorpay_order_id', razorpayOrderId);
+            formData.append('razorpay_payment_id', razorpayPaymentId);
+            formData.append('razorpay_signature', razorpaySignature);
 
             const regResponse = await registerTutorAuth(formData);
             if (regResponse) {
@@ -426,13 +441,17 @@ const BecomeTutorForm = () => {
       };
 
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_tutorconnectkey';
-      if (razorpayKey === 'rzp_test_tutorconnectkey') {
+      if (razorpayKey === 'rzp_test_tutorconnectkey' || isMock) {
         const simulateSuccess = window.confirm(
           "TutorConnect Demo: Razorpay sandbox key is not configured.\n\nWould you like to simulate a successful Razorpay payment of ₹29 for this registration?"
         );
         if (simulateSuccess) {
           const mockPaymentId = `pay_mock_${Math.random().toString(36).substring(2, 11)}`;
-          options.handler({ razorpay_payment_id: mockPaymentId });
+          options.handler({ 
+            razorpay_payment_id: mockPaymentId,
+            razorpay_order_id: orderData.id,
+            razorpay_signature: 'mock_signature'
+          });
         } else {
           options.modal.ondismiss();
         }

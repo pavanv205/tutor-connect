@@ -5,6 +5,7 @@ import { FaUser, FaPhone, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaArrowRight, F
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
+import api from '../services/api';
 
 const RegisterStudent = () => {
   const [step, setStep] = useState(1);
@@ -89,18 +90,30 @@ const RegisterStudent = () => {
         return;
       }
 
-      // 2. Initialize Razorpay Options
+      // 2. Create Razorpay Order on the server
+      const orderRes = await api.post('/payments/create-order');
+      if (!orderRes.data || !orderRes.data.success) {
+        throw new Error(orderRes.data?.message || 'Failed to initialize order with payment gateway.');
+      }
+      const orderData = orderRes.data.data;
+      const isMock = orderRes.data.isMock;
+
+      // 3. Initialize Razorpay Options
       const options = {
-        key: 'rzp_test_tutorconnectkey', // Sandbox test key
-        amount: 2900, // ₹29.00 in paise
-        currency: 'INR',
+        key: 'rzp_test_tutorconnectkey', // Fallback key
+        amount: orderData.amount, // ₹29.00 in paise
+        currency: orderData.currency,
         name: 'TutorConnect',
         description: 'Student Registration Fee',
         image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80',
+        order_id: isMock ? undefined : orderData.id,
         handler: async function (response) {
           try {
             setLoading(true);
             const razorpayPaymentId = response.razorpay_payment_id;
+            const razorpayOrderId = response.razorpay_order_id || orderData.id;
+            const razorpaySignature = response.razorpay_signature || 'mock_signature';
+
             console.log('Student Payment Successful. Payment ID:', razorpayPaymentId);
 
             await registerStudent({
@@ -109,7 +122,10 @@ const RegisterStudent = () => {
               email,
               password,
               paymentStatus: 'Paid',
-              paymentId: razorpayPaymentId
+              paymentId: razorpayPaymentId,
+              razorpay_order_id: razorpayOrderId,
+              razorpay_payment_id: razorpayPaymentId,
+              razorpay_signature: razorpaySignature
             });
 
             setSuccessMsg('Registration successful! Welcome to TutorConnect.');
@@ -140,13 +156,17 @@ const RegisterStudent = () => {
       };
 
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_tutorconnectkey';
-      if (razorpayKey === 'rzp_test_tutorconnectkey') {
+      if (razorpayKey === 'rzp_test_tutorconnectkey' || isMock) {
         const simulateSuccess = window.confirm(
           "TutorConnect Demo: Razorpay sandbox key is not configured.\n\nWould you like to simulate a successful Razorpay payment of ₹29 for this student registration?"
         );
         if (simulateSuccess) {
           const mockPaymentId = `pay_mock_${Math.random().toString(36).substring(2, 11)}`;
-          options.handler({ razorpay_payment_id: mockPaymentId });
+          options.handler({ 
+            razorpay_payment_id: mockPaymentId,
+            razorpay_order_id: orderData.id,
+            razorpay_signature: 'mock_signature'
+          });
         } else {
           options.modal.ondismiss();
         }

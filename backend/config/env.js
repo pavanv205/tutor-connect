@@ -18,7 +18,9 @@ const REQUIRED_VARS = {
   },
   CLOUDINARY_CLOUD_NAME: { required: true },
   CLOUDINARY_API_KEY: { required: true },
-  CLOUDINARY_API_SECRET: { required: true }
+  CLOUDINARY_API_SECRET: { required: true },
+  RAZORPAY_KEY_ID: { required: true },
+  RAZORPAY_KEY_SECRET: { required: true }
 };
 
 const validateEnv = () => {

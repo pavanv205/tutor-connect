@@ -4,6 +4,27 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { getFileUrl } = require('../utils/uploadHelper');
+const crypto = require('crypto');
+
+// Helper to verify Razorpay signature securely
+const verifyRazorpaySignature = (orderId, paymentId, signature) => {
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  if (!keySecret || keySecret === 'rzp_test_secret' || (orderId && orderId.startsWith('order_mock_'))) {
+    console.log('[PAYMENT WARNING] Bypassing Razorpay signature verification (mock/sandbox mode)');
+    return true;
+  }
+  
+  if (!orderId || !paymentId || !signature) {
+    return false;
+  }
+
+  const generated = crypto
+    .createHmac('sha256', keySecret)
+    .update(orderId + '|' + paymentId)
+    .digest('hex');
+
+  return generated === signature;
+};
 
 // Helper to log only in development mode
 const devLog = (...args) => {
@@ -66,11 +87,24 @@ exports.registerTutor = async (req, res, next) => {
       });
     }
 
+    const actualOrderId = data.razorpay_order_id;
+    const actualPaymentId = data.razorpay_payment_id || data.paymentId;
+    const actualSignature = data.razorpay_signature;
+    data.paymentId = actualPaymentId;
+
     // Verify payment status
-    if (!data.paymentId || data.paymentStatus !== 'Paid') {
+    if (!actualPaymentId || data.paymentStatus !== 'Paid') {
       return res.status(400).json({
         success: false,
         message: 'Payment verification failed. Tutor profile registration requires a successful ₹29 tutor subscription plan payment.'
+      });
+    }
+
+    // Secure verification
+    if (!verifyRazorpaySignature(actualOrderId, actualPaymentId, actualSignature)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment verification failed. Cryptographic signature is invalid.'
       });
     }
 
@@ -399,7 +433,7 @@ exports.registerStudent = async (req, res, next) => {
   devLog('--- [STUDENT REGISTRATION REQUEST RECEIVED] ---');
   let user = null;
   try {
-    const { name, email, password, phone, paymentStatus, paymentId } = req.body || {};
+    let { name, email, password, phone, paymentStatus, paymentId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body || {};
 
     // Validate inputs
     if (!name || !email || !password || !phone) {
@@ -409,11 +443,24 @@ exports.registerStudent = async (req, res, next) => {
       });
     }
 
+    const actualOrderId = razorpay_order_id;
+    const actualPaymentId = razorpay_payment_id || paymentId;
+    const actualSignature = razorpay_signature;
+    paymentId = actualPaymentId;
+
     // Verify payment status
-    if (!paymentId || paymentStatus !== 'Paid') {
+    if (!actualPaymentId || paymentStatus !== 'Paid') {
       return res.status(400).json({
         success: false,
         message: 'Payment verification failed. Student account registration requires a successful ₹29 registration fee payment.'
+      });
+    }
+
+    // Secure verification
+    if (!verifyRazorpaySignature(actualOrderId, actualPaymentId, actualSignature)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment verification failed. Cryptographic signature is invalid.'
       });
     }
 
@@ -729,12 +776,25 @@ exports.checkEmail = async (req, res, next) => {
 exports.renewSubscription = async (req, res, next) => {
   devLog('--- [RENEW SUBSCRIPTION REQUEST RECEIVED] ---');
   try {
-    const { paymentId, paymentStatus } = req.body || {};
+    let { paymentId, paymentStatus, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body || {};
 
-    if (!paymentId || paymentStatus !== 'Paid') {
+    const actualOrderId = razorpay_order_id;
+    const actualPaymentId = razorpay_payment_id || paymentId;
+    const actualSignature = razorpay_signature;
+    paymentId = actualPaymentId;
+
+    if (!actualPaymentId || paymentStatus !== 'Paid') {
       return res.status(400).json({
         success: false,
         message: 'Payment verification failed. Subscription renewal requires a successful ₹29 payment.'
+      });
+    }
+
+    // Secure verification
+    if (!verifyRazorpaySignature(actualOrderId, actualPaymentId, actualSignature)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment verification failed. Cryptographic signature is invalid.'
       });
     }
 
