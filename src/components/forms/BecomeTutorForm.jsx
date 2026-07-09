@@ -39,7 +39,7 @@ const validationSchema = yup.object().shape({
     .typeError('Monthly charge must be a number')
     .required('Monthly charge is required')
     .min(500, 'Minimum monthly charge is 500')
-    .max(15000, 'Maximum monthly charge is 15000'),
+    .max(25000, 'Maximum monthly charge is 25000'),
 
   // Step 4
   streetAddress: yup.string()
@@ -131,6 +131,11 @@ const BecomeTutorForm = () => {
       if (certificatePreviewUrl) URL.revokeObjectURL(certificatePreviewUrl);
     };
   }, []);
+
+  // Scroll to top when form step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
 
   const citiesForSelectedState = watchedState ? (STATE_CITIES[watchedState] || []) : [];
 
@@ -998,11 +1003,11 @@ const BecomeTutorForm = () => {
               {/* Monthly Rate */}
               <div>
                 <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">
-                  Monthly Charges (₹) (500 - 15000)
+                  Monthly Charges (₹) (500 - 25000)
                 </label>
                 <input
                   type="number"
-                  placeholder="Monthly charges (500 - 15000)"
+                  placeholder="Monthly charges (500 - 25000)"
                   {...register('monthlyRate')}
                   className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
                 />

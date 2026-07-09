@@ -43,6 +43,30 @@ function App() {
   const hasPlaceholder = rawApiUrl.includes('<') || rawApiUrl.includes('>') || rawApiUrl.includes('placeholder');
   const isApiUrlMissing = !rawApiUrl && import.meta.env.DEV;
 
+  useEffect(() => {
+    const checkAndSetTheme = () => {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (prefersDark && !isMobile) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    checkAndSetTheme();
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    window.addEventListener('resize', checkAndSetTheme);
+    mediaQuery.addEventListener('change', checkAndSetTheme);
+
+    return () => {
+      window.removeEventListener('resize', checkAndSetTheme);
+      mediaQuery.removeEventListener('change', checkAndSetTheme);
+    };
+  }, []);
+
   return (
     <HelmetProvider>
         <AuthProvider>

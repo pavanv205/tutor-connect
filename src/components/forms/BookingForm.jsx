@@ -8,6 +8,75 @@ import { CLASSES, SUBJECTS } from '../../constants';
 import { bookingService } from '../../services/bookingService';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../common/Button';
+import { getAvatarStyle } from '../../utils/avatarHelper';
+
+const CelebrationIcon = () => (
+  <div className="relative h-20 w-20 mx-auto mb-6 flex items-center justify-center select-none pointer-events-none">
+    <style>
+      {`
+        @keyframes popCone {
+          0% { transform: scale(0.6) rotate(-15deg); }
+          50% { transform: scale(1.1) rotate(15deg); }
+          100% { transform: scale(1) rotate(0deg); }
+        }
+        @keyframes confettiPop1 {
+          0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+          20% { opacity: 1; }
+          100% { transform: translate(-32px, -35px) scale(1) rotate(135deg); opacity: 0; }
+        }
+        @keyframes confettiPop2 {
+          0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+          20% { opacity: 1; }
+          100% { transform: translate(32px, -35px) scale(0.9) rotate(-135deg); opacity: 0; }
+        }
+        @keyframes confettiPop3 {
+          0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+          20% { opacity: 1; }
+          100% { transform: translate(-10px, -45px) scale(0.8) rotate(45deg); opacity: 0; }
+        }
+        @keyframes confettiPop4 {
+          0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+          20% { opacity: 1; }
+          100% { transform: translate(20px, -42px) scale(0.9) rotate(-45deg); opacity: 0; }
+        }
+        .pop-cone {
+          animation: popCone 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          transform-origin: bottom left;
+        }
+        .confetti-1 {
+          animation: confettiPop1 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+        }
+        .confetti-2 {
+          animation: confettiPop2 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+          animation-delay: 0.15s;
+        }
+        .confetti-3 {
+          animation: confettiPop3 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+          animation-delay: 0.3s;
+        }
+        .confetti-4 {
+          animation: confettiPop4 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+          animation-delay: 0.45s;
+        }
+      `}
+    </style>
+    
+    {/* Confetti Particles (glowing colored paths flying out) */}
+    <svg className="absolute inset-0 h-full w-full overflow-visible" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(50, 55)">
+        <rect className="confetti-1" x="-4" y="-4" width="8" height="4" rx="1" fill="#EC4899" />
+        <circle className="confetti-2" cx="0" cy="0" r="3.5" fill="#06B6D4" />
+        <rect className="confetti-3" x="-2" y="-5" width="4" height="8" rx="2" fill="#F59E0B" />
+        <rect className="confetti-4" x="-3" y="-3" width="6" height="6" rx="1" fill="#10B981" />
+      </g>
+    </svg>
+
+    {/* Popper Cone */}
+    <div className="pop-cone text-5xl select-none">
+      🎉
+    </div>
+  </div>
+);
 
 // Validation schema
 const schema = yup.object().shape({
@@ -179,13 +248,9 @@ const BookingForm = ({ tutor, onSuccess, onSetTitle }) => {
   if (successMsg) {
     return (
       <div className="text-center py-8 px-4">
-        <div className="h-16 w-16 bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
+        <CelebrationIcon />
         <h4 className="text-xl font-extrabold text-slate-900 dark:text-white mb-2 leading-snug">
-          Request Sent Successfully! 🎉
+          Request Sent Successfully!
         </h4>
         <p className="text-slate-650 dark:text-slate-350 text-sm leading-relaxed max-w-sm mx-auto font-medium">
           The tutor will review your request and contact you shortly.
@@ -198,11 +263,17 @@ const BookingForm = ({ tutor, onSuccess, onSetTitle }) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {tutor && (
         <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl mb-4 border border-slate-100 dark:border-slate-800">
-          <img
-            src={tutor.photo}
-            alt={tutor.name}
-            className="h-10 w-10 rounded-full object-cover shrink-0 border border-slate-200 dark:border-slate-700"
-          />
+          {tutor.photo && !tutor.photo.includes('photo-1535713875002-d1d0cf377fde') ? (
+            <img
+              src={tutor.photo}
+              alt={tutor.name}
+              className="h-10 w-10 rounded-full object-cover shrink-0 border border-slate-200 dark:border-slate-700"
+            />
+          ) : (
+            <div className={`h-10 w-10 rounded-full font-extrabold flex items-center justify-center text-sm shrink-0 ${getAvatarStyle(tutor.name)}`}>
+              {tutor.name.trim().charAt(0).toUpperCase()}
+            </div>
+          )}
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400">Booking session with</p>
             <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{tutor.name}</p>

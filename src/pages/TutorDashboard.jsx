@@ -6,6 +6,71 @@ import SEO from '../components/common/SEO';
 import { SUBJECTS, CLASSES } from '../constants';
 import { FaLock, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBookOpen, FaUser, FaCheck, FaTimes, FaGraduationCap, FaGift } from 'react-icons/fa';
 
+const ColorfulGiftIcon = ({ className = "h-6 w-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="lidGrad" x1="5" y1="11" x2="19" y2="14">
+        <stop offset="0%" stopColor="#FB7185" />
+        <stop offset="100%" stopColor="#E11D48" />
+      </linearGradient>
+      <linearGradient id="bodyGrad" x1="6" y1="14" x2="18" y2="21">
+        <stop offset="0%" stopColor="#F43F5E" />
+        <stop offset="100%" stopColor="#BE123C" />
+      </linearGradient>
+      <linearGradient id="ribbonGrad" x1="7" y1="6" x2="17" y2="21">
+        <stop offset="0%" stopColor="#FDE047" />
+        <stop offset="100%" stopColor="#CA8A04" />
+      </linearGradient>
+    </defs>
+    {/* Bow */}
+    <path d="M12 9C13.8 6 17 6 17 9C17 11 14.5 11 12 11C9.5 11 7 11 7 9C7 6 10.2 6 12 9Z" fill="url(#ribbonGrad)" />
+    {/* Lid */}
+    <rect x="5" y="11" width="14" height="3" rx="1.5" fill="url(#lidGrad)" />
+    {/* Body */}
+    <path d="M6 14H18V19.5C18 20.33 17.33 21 16.5 21H7.5C6.67 21 6 20.33 6 19.5V14Z" fill="url(#bodyGrad)" />
+    {/* Vertical Ribbon */}
+    <rect x="11" y="11" width="2" height="10" fill="url(#ribbonGrad)" />
+    {/* Horizontal Ribbon under lid */}
+    <rect x="5" y="12.2" width="14" height="0.6" fill="url(#ribbonGrad)" opacity="0.3" />
+  </svg>
+);
+
+const ColorfulUsersIcon = ({ className = "h-6 w-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      {/* Central User Gradient */}
+      <linearGradient id="centerGrad" x1="9" y1="4" x2="15" y2="20">
+        <stop offset="0%" stopColor="#818CF8" />
+        <stop offset="100%" stopColor="#4F46E5" />
+      </linearGradient>
+      {/* Left User Gradient */}
+      <linearGradient id="leftGrad" x1="2" y1="7" x2="9" y2="20">
+        <stop offset="0%" stopColor="#38BDF8" />
+        <stop offset="100%" stopColor="#0284C7" />
+      </linearGradient>
+      {/* Right User Gradient */}
+      <linearGradient id="rightGrad" x1="15" y1="7" x2="22" y2="20">
+        <stop offset="0%" stopColor="#34D399" />
+        <stop offset="100%" stopColor="#059669" />
+      </linearGradient>
+    </defs>
+    
+    {/* Left User */}
+    <circle cx="6" cy="8.5" r="2.5" fill="url(#leftGrad)" />
+    <path d="M6 12C3.79 12 2 13.79 2 16V18C2 18.55 2.45 19 3 19H9C9.55 19 10 18.55 10 18V16C10 13.79 8.21 12 6 12Z" fill="url(#leftGrad)" />
+
+    {/* Right User */}
+    <circle cx="18" cy="8.5" r="2.5" fill="url(#rightGrad)" />
+    <path d="M18 12C15.79 12 14 13.79 14 16V18C14 18.55 14.45 19 15 19H21C21.55 19 22 18.55 22 18V16C22 13.79 20.21 12 18 12Z" fill="url(#rightGrad)" />
+
+    {/* Center User (Drawn last to overlap left/right) */}
+    <circle cx="12" cy="7" r="3" fill="url(#centerGrad)" className="stroke-white dark:stroke-slate-900" strokeWidth="1.5" />
+    <path d="M12 11C9.24 11 7 13.24 7 16V18.5C7 19.33 7.67 20 8.5 20H15.5C16.33 20 17 19.33 17 18.5V16C17 13.24 14.76 11 12 11Z" fill="url(#centerGrad)" className="stroke-white dark:stroke-slate-900" strokeWidth="1.5" />
+  </svg>
+);
+
+import { getAvatarStyle } from '../utils/avatarHelper';
+
 const TutorDashboard = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('Profile'); // 'Profile', 'Student Requests', 'Referrals', 'Settings'
@@ -303,10 +368,8 @@ const TutorDashboard = () => {
 
                 {/* Total Student Leads Card */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-                  <div className="h-12 w-12 rounded-2xl bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+                  <div className="h-12 w-12 rounded-2xl bg-blue-50/70 dark:bg-blue-950/20 flex items-center justify-center shrink-0">
+                    <ColorfulUsersIcon className="h-6 w-6" />
                   </div>
                   <div>
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Total Student Leads</p>
@@ -318,14 +381,15 @@ const TutorDashboard = () => {
 
                 {/* Total Views Card */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-                  <div className="h-12 w-12 rounded-2xl bg-violet-50 dark:bg-violet-950/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0">
-                    <div className="relative h-6 w-6 text-violet-650 dark:text-violet-400 flex items-center justify-center">
-                      <svg className="absolute inset-0 h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      <span className="absolute h-2.5 w-2.5 rounded-full bg-violet-400 dark:bg-violet-500 animate-ping"></span>
-                      <span className="absolute h-2 w-2 rounded-full bg-violet-600 dark:bg-violet-400"></span>
+                  <div className="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 flex items-center justify-center relative overflow-hidden shrink-0">
+                    <div className="scale-[0.16] transform-gpu origin-center absolute select-none pointer-events-none">
+                      <div className="eye-lid">
+                        <div className="eye">
+                          <div className="cornea">
+                            <div className="white-pupil"></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div>
@@ -336,15 +400,14 @@ const TutorDashboard = () => {
                   </div>
                 </div>
 
-                {/* My Referral Code Card */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-                  <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                    <FaGift className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-2xl bg-indigo-50/75 dark:bg-indigo-950/20 flex items-center justify-center shrink-0">
+                    <ColorfulGiftIcon className="h-6 w-6" />
                   </div>
                   <div>
                     <p className="text-[10px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider">My Referral Code</p>
                     <p className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/20 px-2.5 py-0.5 rounded border border-indigo-100 dark:border-indigo-900/30 select-all tracking-wider font-mono">
-                      {tutorProfile?.ownReferralCode || 'TC-PENDING'}
+                      {tutorProfile?.ownReferralCode || 'HT-PENDING'}
                     </p>
                   </div>
                 </div>
@@ -651,8 +714,8 @@ const TutorDashboard = () => {
                   {/* Summary Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:scale-[1.01] transition-all">
-                      <div className="h-12 w-12 rounded-2xl bg-indigo-50/70 text-indigo-600 dark:bg-indigo-950/30 dark:text-indigo-400 flex items-center justify-center text-xl shrink-0">
-                        <FaGift className="h-6 w-6" />
+                      <div className="h-12 w-12 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 flex items-center justify-center text-xl shrink-0">
+                        <ColorfulGiftIcon className="h-6 w-6" />
                       </div>
                       <div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Referred Signups</p>
@@ -737,7 +800,13 @@ const TutorDashboard = () => {
                                 <tr key={ref.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/40">
                                   <td className="py-3.5 pl-2">
                                     <div className="flex items-center gap-3">
-                                      <img src={ref.photo} alt={ref.name} className="h-8 w-8 rounded-full object-cover border" />
+                                      {ref.photo && !ref.photo.includes('photo-1535713875002-d1d0cf377fde') ? (
+                                        <img src={ref.photo} alt={ref.name} className="h-8 w-8 rounded-full object-cover border" />
+                                      ) : (
+                                        <div className={`h-8 w-8 rounded-full font-extrabold flex items-center justify-center text-xs ${getAvatarStyle(ref.name)}`}>
+                                          {ref.name.trim().charAt(0).toUpperCase()}
+                                        </div>
+                                      )}
                                       <span className="font-bold text-slate-850 dark:text-slate-200">{ref.name}</span>
                                     </div>
                                   </td>

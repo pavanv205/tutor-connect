@@ -190,7 +190,7 @@ const StudentDashboard = () => {
                         ) : (
                           <div className="bg-slate-50/50 dark:bg-slate-800/20 p-3.5 rounded-2xl text-[11px] font-semibold text-slate-500 dark:text-slate-450 italic flex items-center gap-2">
                             <span>⏳</span>
-                            <span>Tutor Connect support team is reviewing your profile to match the best tutor.</span>
+                            <span>HomeTutorX support team is reviewing your profile to match the best tutor.</span>
                           </div>
                         )}
 

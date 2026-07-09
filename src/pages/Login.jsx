@@ -25,6 +25,9 @@ const Login = () => {
   const [showUserNotFoundModal, setShowUserNotFoundModal] = useState(false);
   const [showIncorrectPasswordModal, setShowIncorrectPasswordModal] = useState(false);
   
+  const [isOtpStep, setIsOtpStep] = useState(false);
+  const [savedEmail, setSavedEmail] = useState('');
+  
   const { login, isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -131,8 +134,9 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setErrorMsg('Please enter both email and OTP.');
+    const targetEmail = isOtpStep ? savedEmail : email;
+    if (!targetEmail || !password) {
+      setErrorMsg(`Please enter both email and ${isOtpStep ? 'OTP' : 'password'}.`);
       return;
     }
 
@@ -140,7 +144,16 @@ const Login = () => {
     setLoadingLocal(true);
 
     try {
-      await login(email, password);
+      const result = await login(targetEmail, password);
+      if (result && result.requireOtp) {
+        setSuccessMsg(result.message);
+        setIsOtpStep(true);
+        setSavedEmail(targetEmail);
+        setPassword('');
+      } else {
+        setIsOtpStep(false);
+        setSavedEmail('');
+      }
     } catch (err) {
       console.error(err);
       const errMsg = err.message || '';
@@ -176,8 +189,8 @@ const Login = () => {
     <>
       <SEO
         title={`${activeTab} Login`}
-        description="Access the secure Tutor Connect portal to manage classes, tutor profile, and settings."
-        keywords="login, tutor login, admin portal, tutor connect auth"
+        description="Access the secure HomeTutorX portal to manage classes, tutor profile, and settings."
+        keywords="login, tutor login, admin portal, hometutorx auth"
       />
 
       <div className="min-h-[85vh] flex items-center justify-center bg-slate-50 dark:bg-[#0B0F19] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -199,7 +212,7 @@ const Login = () => {
               {forgotPasswordStep === 'reset' && 'Reset Password'}
             </h2>
             <p className="mt-2 text-sm text-slate-550 dark:text-slate-400 font-medium">
-              {forgotPasswordStep === 'login' && 'Sign in to manage your Tutor Connect account'}
+              {forgotPasswordStep === 'login' && 'Sign in to manage your HomeTutorX account'}
               {forgotPasswordStep === 'request' && 'Enter your email to receive a password reset OTP'}
               {forgotPasswordStep === 'reset' && 'Enter the OTP sent to your email and set your new password'}
             </p>
@@ -213,6 +226,9 @@ const Login = () => {
                   onClick={() => {
                     setActiveTab('Tutor');
                     setErrorMsg('');
+                    setIsOtpStep(false);
+                    setPassword('');
+                    setSuccessMsg('');
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-xl transition-all duration-200 ${
                     activeTab === 'Tutor'
@@ -230,6 +246,9 @@ const Login = () => {
                   onClick={() => {
                     setActiveTab('Student');
                     setErrorMsg('');
+                    setIsOtpStep(false);
+                    setPassword('');
+                    setSuccessMsg('');
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-xl transition-all duration-200 ${
                     activeTab === 'Student'
@@ -247,6 +266,9 @@ const Login = () => {
                   onClick={() => {
                     setActiveTab('Admin');
                     setErrorMsg('');
+                    setIsOtpStep(false);
+                    setPassword('');
+                    setSuccessMsg('');
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-xl transition-all duration-200 ${
                     activeTab === 'Admin'
@@ -290,55 +312,97 @@ const Login = () => {
           {forgotPasswordStep === 'login' && (
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-4">
-                {/* Email */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wider">{activeTab === 'Admin' ? 'Admin Email' : 'Email Address'}</label>
-                  <div className="relative flex items-center">
-                    <span className="absolute left-4 text-slate-400"><FaEnvelope className="h-4 w-4" /></span>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={activeTab === 'Admin' ? 'admin@hometutorx.com' : activeTab === 'Student' ? 'student@example.com' : 'tutor@example.com'}
-                      className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
-                    />
-                  </div>
-                </div>
-
-                {/* OTP */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wider">
-                    OTP
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="absolute left-4 text-slate-400"><FaLock className="h-4 w-4" /></span>
-                    <input
-                      type="text"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter OTP"
-                      className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl py-3.5 pl-11 pr-12 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
-                    />
-                  </div>
-                  {(activeTab === 'Tutor' || activeTab === 'Student') && (
-                    <div className="flex justify-end mt-2">
+                {isOtpStep ? (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wider">
+                      6-Digit OTP
+                    </label>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-4 text-slate-400"><FaLock className="h-4 w-4" /></span>
+                      <input
+                        type="text"
+                        required
+                        maxLength={6}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value.replace(/\D/g, ''))}
+                        placeholder="Enter OTP"
+                        className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-center font-extrabold tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                      />
+                    </div>
+                    <div className="flex justify-between mt-2">
                       <button
                         type="button"
                         onClick={() => {
-                          setForgotPasswordStep('request');
-                          setErrorMsg('');
+                          setIsOtpStep(false);
+                          setPassword('');
                           setSuccessMsg('');
-                          setResetEmail(email); // Autofill reset with whatever is typed
                         }}
-                        className="text-xs font-extrabold text-primary hover:underline dark:text-blue-450 focus:outline-none cursor-pointer"
+                        className="text-xs font-extrabold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 focus:outline-none cursor-pointer"
                       >
-                        Forgot Password?
+                        Back to Password
                       </button>
                     </div>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Email */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 dark:text-slate-505 mb-2 uppercase tracking-wider">{activeTab === 'Admin' ? 'Admin Email' : 'Email Address'}</label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-400"><FaEnvelope className="h-4 w-4" /></span>
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder={activeTab === 'Admin' ? 'admin@hometutorx.com' : activeTab === 'Student' ? 'student@example.com' : 'tutor@example.com'}
+                          className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 dark:text-slate-505 mb-2 uppercase tracking-wider">
+                        Password
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-400"><FaLock className="h-4 w-4" /></span>
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Enter Password"
+                          className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl py-3.5 pl-11 pr-12 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none cursor-pointer"
+                        >
+                          {showPassword ? <FaEyeSlash className="h-4 w-4" /> : <FaEye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                      {(activeTab === 'Tutor' || activeTab === 'Student') && (
+                        <div className="flex justify-end mt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForgotPasswordStep('request');
+                              setErrorMsg('');
+                              setSuccessMsg('');
+                              setResetEmail(email); // Autofill reset with whatever is typed
+                            }}
+                            className="text-xs font-extrabold text-primary hover:underline dark:text-blue-450 focus:outline-none cursor-pointer"
+                          >
+                            Forgot Password?
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Actions */}
@@ -480,45 +544,9 @@ const Login = () => {
             </form>
           )}
 
-          {/* Quick Helper Links / Accounts Seeding */}
-          {forgotPasswordStep === 'login' && (
+          {/* Registration Links */}
+          {(activeTab === 'Tutor' || activeTab === 'Student') && forgotPasswordStep === 'login' && (
             <div className="pt-6 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
-              <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-center">
-                Testing helper credentials
-              </h4>
-              <div className={`grid ${hasRoleQuery ? 'grid-cols-1' : 'grid-cols-3'} gap-2`}>
-                {(!hasRoleQuery || activeTab === 'Tutor') && (
-                  <button
-                    type="button"
-                    onClick={() => handleQuickFill('Tutor')}
-                    className="border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 p-2 rounded-xl text-left focus:outline-none cursor-pointer"
-                  >
-                    <p className="text-[9px] font-bold text-primary dark:text-blue-400 uppercase tracking-wider mb-0.5 text-center">Teacher</p>
-                    <p className="text-[8px] text-slate-450 dark:text-slate-500 font-semibold truncate text-center">tutor@hometutorx.com</p>
-                  </button>
-                )}
-                {(!hasRoleQuery || activeTab === 'Student') && (
-                  <button
-                    type="button"
-                    onClick={() => handleQuickFill('Student')}
-                    className="border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 p-2 rounded-xl text-left focus:outline-none cursor-pointer"
-                  >
-                    <p className="text-[9px] font-bold text-primary dark:text-blue-400 uppercase tracking-wider mb-0.5 text-center">Student</p>
-                    <p className="text-[8px] text-slate-450 dark:text-slate-500 font-semibold truncate text-center">student@hometutorx.com</p>
-                  </button>
-                )}
-                {(!hasRoleQuery || activeTab === 'Admin') && (
-                  <button
-                    type="button"
-                    onClick={() => handleQuickFill('Admin')}
-                    className="border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 p-2 rounded-xl text-left focus:outline-none cursor-pointer"
-                  >
-                    <p className="text-[9px] font-bold text-primary dark:text-blue-400 uppercase tracking-wider mb-0.5 text-center">Admin</p>
-                    <p className="text-[8px] text-slate-450 dark:text-slate-500 font-semibold truncate text-center">admin@hometutorx.com</p>
-                  </button>
-                )}
-              </div>
-              
               {activeTab === 'Tutor' && (
                 <p className="text-[11px] text-slate-550 dark:text-slate-400 text-center font-medium">
                   Don't have a tutor account?{' '}
@@ -550,47 +578,67 @@ const Login = () => {
       <Modal
         isOpen={showUserNotFoundModal}
         onClose={() => setShowUserNotFoundModal(false)}
-        title="Login Failed"
+        title={activeTab === 'Admin' ? "Access Restricted" : "Login Failed"}
         size="sm"
       >
-        <div className="flex flex-col items-center text-center p-2">
-          <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center text-amber-600 dark:text-amber-450 mb-4 animate-bounce">
-            <FaExclamationTriangle className="h-6 w-6" />
-          </div>
-          <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
-            Wrong username or password
-          </p>
-          <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-6">
-            Create an account
-          </p>
-          <div className="flex gap-3 w-full">
+        {activeTab === 'Admin' ? (
+          <div className="flex flex-col items-center text-center p-2">
+            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/30 flex items-center justify-center text-rose-600 dark:text-rose-450 mb-4 animate-bounce">
+              <FaUserShield className="h-6 w-6" />
+            </div>
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+              Wrong username or password
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-450 mb-6">
+              Only authorized administrators are allowed access.
+            </p>
             <button
-              onClick={() => {
-                setShowUserNotFoundModal(false);
-                if (activeTab === 'Student') {
-                  navigate('/register-student');
-                } else {
-                  navigate('/become-tutor');
-                }
-              }}
-              className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-4 rounded-xl text-[11px] shadow-md cursor-pointer transition-colors"
+              onClick={() => setShowUserNotFoundModal(false)}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-4 rounded-xl text-[11px] shadow-md cursor-pointer transition-colors"
             >
+              Try Again
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center text-center p-2">
+            <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center text-amber-600 dark:text-amber-450 mb-4 animate-bounce">
+              <FaExclamationTriangle className="h-6 w-6" />
+            </div>
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+              Wrong username or password
+            </p>
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-6">
               Create an account
-            </button>
-            <button
-              onClick={() => {
-                setShowUserNotFoundModal(false);
-                setForgotPasswordStep('request');
-                setErrorMsg('');
-                setSuccessMsg('');
-                setResetEmail(email);
-              }}
-              className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3.5 px-4 rounded-xl text-[11px] cursor-pointer transition-colors"
-            >
-              Forget password
-            </button>
+            </p>
+            <div className="flex gap-3 w-full">
+              <button
+                onClick={() => {
+                  setShowUserNotFoundModal(false);
+                  if (activeTab === 'Student') {
+                    navigate('/register-student');
+                  } else {
+                    navigate('/become-tutor');
+                  }
+                }}
+                className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-4 rounded-xl text-[11px] shadow-md cursor-pointer transition-colors"
+              >
+                Create an account
+              </button>
+              <button
+                onClick={() => {
+                  setShowUserNotFoundModal(false);
+                  setForgotPasswordStep('request');
+                  setErrorMsg('');
+                  setSuccessMsg('');
+                  setResetEmail(email);
+                }}
+                className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3.5 px-4 rounded-xl text-[11px] cursor-pointer transition-colors"
+              >
+                Forget password
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </Modal>
 
       {/* Login Failed Modal: Incorrect Password */}

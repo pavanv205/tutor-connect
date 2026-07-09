@@ -69,7 +69,7 @@ const initializeSeeds = async () => {
     isVerified: true,
     leadsCount: 12,
     viewsCount: 142,
-    ownReferralCode: 'TC123456',
+    ownReferralCode: 'HT123456',
     createdAt: new Date().toISOString()
   };
 

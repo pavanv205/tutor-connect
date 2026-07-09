@@ -390,7 +390,7 @@ exports.getTutorById = async (req, res, next) => {
     
     // Auto-generate ownReferralCode if missing
     if (!tutor.ownReferralCode) {
-      let generated = 'TC';
+      let generated = 'HT';
       for (let i = 0; i < 6; i++) {
         generated += Math.floor(Math.random() * 6) + 1;
       }

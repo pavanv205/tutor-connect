@@ -38,11 +38,22 @@ async function sendOtp(email, otp) {
   const fromName = process.env.FROM_NAME || 'HomeTutorX Support';
   const fromEmail = process.env.FROM_EMAIL || process.env.FROM_MAIL || user;
   const expiration = process.env.OTP_EXPIRATION_MINUTES || 10;
+
+  // Smart redirect: Redirect emails sent to mock domains to the sender/tester email to prevent bounces
+  let recipientEmail = email;
+  let textContent = `Your OTP for password reset is ${otp}. It will expire in ${expiration} minutes.`;
+  
+  if (email.endsWith('@tutorconnect.com') || email.endsWith('@hometutorx.com') || email.endsWith('@example.com')) {
+    recipientEmail = fromEmail;
+    textContent += `\n\n[LOCAL TESTING NOTE] This email was redirected from the mock domain target: ${email} to prevent delivery failure/bounces.`;
+    console.log(`[SMTP REDIRECT] Redirected mail from mock domain target "${email}" to SMTP user "${fromEmail}" to prevent bounces.`);
+  }
+
   const mailOptions = {
     from: `"${fromName}" <${fromEmail}>`,
-    to: email,
+    to: recipientEmail,
     subject: 'Password Reset OTP',
-    text: `Your OTP for password reset is ${otp}. It will expire in ${expiration} minutes.`
+    text: textContent
   };
 
   // Send mail and return result (or throw on error)

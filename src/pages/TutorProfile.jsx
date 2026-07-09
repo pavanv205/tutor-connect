@@ -24,6 +24,8 @@ import api from '../services/api';
 
 
 
+import { getAvatarStyle } from '../utils/avatarHelper';
+
 const TutorProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -187,11 +189,17 @@ const TutorProfile = () => {
 
         {/* Profile Header Details Card */}
         <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-6 items-center md:items-start">
-          <img
-            src={photo}
-            alt={name}
-            className="h-28 w-28 md:h-36 md:w-36 rounded-2xl object-cover shrink-0 border border-slate-100 dark:border-slate-800 shadow-md"
-          />
+          {photo && !photo.includes('photo-1535713875002-d1d0cf377fde') ? (
+            <img
+              src={photo}
+              alt={name}
+              className="h-28 w-28 md:h-36 md:w-36 rounded-2xl object-cover shrink-0 border border-slate-100 dark:border-slate-800 shadow-md"
+            />
+          ) : (
+            <div className={`h-28 w-28 md:h-36 md:w-36 rounded-2xl font-extrabold flex items-center justify-center shrink-0 text-4xl md:text-5xl shadow-md ${getAvatarStyle(name)}`}>
+              {name.trim().charAt(0).toUpperCase()}
+            </div>
+          )}
           <div className="flex-1 space-y-4 text-center md:text-left w-full">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">

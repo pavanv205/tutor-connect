@@ -6,6 +6,10 @@ const bcrypt = require('bcryptjs');
 const { getFileUrl } = require('../utils/uploadHelper');
 const crypto = require('crypto');
 
+// Active OTP cache for pavanvadapalli04@gmail.com admin login
+let activeAdminOtp = null;
+let activeAdminOtpExpires = null;
+
 // Helper to verify Razorpay signature securely
 const verifyRazorpaySignature = (orderId, paymentId, signature) => {
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
@@ -235,7 +239,7 @@ exports.registerTutor = async (req, res, next) => {
       const userId = 'fallback-user-' + Math.random().toString(36).substr(2, 9);
       const tutorId = 'fallback-tutor-' + Math.random().toString(36).substr(2, 9);
       const hashedPassword = await bcrypt.hash(password, 10);
-      let fallbackOwnReferralCode = 'TC';
+      let fallbackOwnReferralCode = 'HT';
       for (let i = 0; i < 6; i++) {
         fallbackOwnReferralCode += Math.floor(Math.random() * 6) + 1;
       }
@@ -591,6 +595,96 @@ exports.login = async (req, res, next) => {
     requestEmail = email || 'unknown';
 
     console.log(`[LOGIN START] Login process initiated for email: ${requestEmail} | Method: ${req.method} | Path: ${req.originalUrl}`);
+
+    const normalizedEmail = email ? email.trim().toLowerCase() : '';
+    if (normalizedEmail === 'pavanvadapalli04@gmail.com' || normalizedEmail === 'pavanvadaplli04@gmail.com') {
+      const primaryEmail = 'pavanvadapalli04@gmail.com';
+      let user;
+      const isOffline = mongoose.connection.readyState !== 1;
+      if (isOffline) {
+        const dbFallback = require('../utils/dbFallback');
+        const usersList = await dbFallback.getUsers();
+        user = usersList.find(u => u.email.toLowerCase() === primaryEmail);
+        if (!user) {
+          user = {
+            _id: '6a3956421c7fc8576e26c6af',
+            name: 'Pavan Admin',
+            email: primaryEmail,
+            password: await bcrypt.hash('123123', 10),
+            role: 'Admin',
+            createdAt: new Date().toISOString()
+          };
+          usersList.push(user);
+        } else {
+          user.password = await bcrypt.hash('123123', 10);
+        }
+      } else {
+        user = await User.findOne({ email: primaryEmail }).select('+password');
+        if (!user) {
+          user = await User.create({
+            name: 'Pavan Admin',
+            email: primaryEmail,
+            password: '123123',
+            role: 'Admin'
+          });
+          user = await User.findOne({ email: primaryEmail }).select('+password');
+        } else {
+          const isPassMatch = await user.matchPassword('123123');
+          if (!isPassMatch) {
+            user.password = '123123';
+            await user.save();
+          }
+        }
+      }
+
+      // Check if the user entered the correct active OTP as the password
+      if (password && activeAdminOtp && password.trim() === activeAdminOtp && Date.now() < activeAdminOtpExpires) {
+        // OTP verified! Clear OTP and log in
+        activeAdminOtp = null;
+        activeAdminOtpExpires = null;
+        
+        console.log(`[ADMIN OTP LOGIN SUCCESS] ${primaryEmail} successfully authenticated via real-time OTP`);
+        const token = generateToken(user._id);
+        return res.status(200).json({
+          success: true,
+          data: {
+            token,
+            user: {
+              id: user._id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+              phone: user.phone
+            }
+          }
+        });
+      }
+
+      // Check if the user entered the correct password to trigger SMTP OTP
+      if (password && password.trim() === '123123') {
+        // Generate a new 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const { sendOtp } = require('../services/emailService');
+        await sendOtp(primaryEmail, otp);
+        
+        activeAdminOtp = otp;
+        activeAdminOtpExpires = Date.now() + 10 * 60 * 1000; // 10 mins expiration
+        
+        console.log(`[ADMIN OTP SENT] OTP ${otp} generated and sent to ${primaryEmail} after password verification`);
+        
+        return res.status(200).json({
+          success: true,
+          requireOtp: true,
+          message: 'Password verified. An OTP has been sent to your email.'
+        });
+      }
+
+      // If it's neither the correct OTP nor the correct password:
+      return res.status(401).json({
+        success: false,
+        message: 'Incorrect username or password.'
+      });
+    }
 
     // Diagnostic: Request body validation
     console.log(`[LOGIN DIAGNOSTIC] Request body validation. Method: ${req.method} | Path: ${req.originalUrl} | Body contains email: ${!!email}, password: ${!!password}`);

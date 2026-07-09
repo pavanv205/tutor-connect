@@ -51,6 +51,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.post('/auth/login', { email, password });
       if (res.data && res.data.success) {
+        if (res.data.requireOtp) {
+          return res.data;
+        }
         const { token: userToken, user: userData } = res.data.data;
         localStorage.setItem('token', userToken);
         setToken(userToken);

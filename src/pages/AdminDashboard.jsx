@@ -4,6 +4,7 @@ import { FaGraduationCap, FaCheck, FaTimes, FaUserSlash, FaUserCheck, FaInfoCirc
 import api from '../services/api';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
+import { getAvatarStyle } from '../utils/avatarHelper';
 
 const formatVerifiedDate = (dateString) => {
   if (!dateString) return 'Not Verified';
@@ -14,6 +15,113 @@ const formatVerifiedDate = (dateString) => {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 };
+
+const ColorfulUsersIcon = ({ className = "h-6 w-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      {/* Left User Gradient: Sky Blue */}
+      <linearGradient id="leftGrad" x1="2.5" y1="9" x2="8.5" y2="20">
+        <stop offset="0%" stopColor="#38BDF8" />
+        <stop offset="100%" stopColor="#0284C7" />
+      </linearGradient>
+      
+      {/* Right User Gradient: Emerald Green */}
+      <linearGradient id="rightGrad" x1="15.5" y1="9" x2="21.5" y2="20">
+        <stop offset="0%" stopColor="#34D399" />
+        <stop offset="100%" stopColor="#059669" />
+      </linearGradient>
+      
+      {/* Center User Gradient: Indigo-Violet */}
+      <linearGradient id="centerGrad" x1="7" y1="3" x2="17" y2="20">
+        <stop offset="0%" stopColor="#818CF8" />
+        <stop offset="100%" stopColor="#4F46E5" />
+      </linearGradient>
+    </defs>
+
+    {/* Left User */}
+    <circle cx="6.5" cy="10" r="2.5" fill="url(#leftGrad)" />
+    <path d="M6.5 13.5C4.5 13.5 2.5 15.1 2.5 17.5V19.5H10.5V17.5C10.5 15.1 8.5 13.5 6.5 13.5Z" fill="url(#leftGrad)" />
+
+    {/* Right User */}
+    <circle cx="17.5" cy="10" r="2.5" fill="url(#rightGrad)" />
+    <path d="M17.5 13.5C15.5 13.5 13.5 15.1 13.5 17.5V19.5H22.5V17.5C22.5 15.1 20.5 13.5 17.5 13.5Z" fill="url(#rightGrad)" />
+
+    {/* Center User (Drawn last to overlap left/right) */}
+    <circle cx="12" cy="7" r="3" fill="url(#centerGrad)" className="stroke-white dark:stroke-slate-900" strokeWidth="1.5" />
+    <path d="M12 11C9.24 11 7 13.24 7 16V18.5C7 19.33 7.67 20 8.5 20H15.5C16.33 20 17 19.33 17 18.5V16C17 13.24 14.76 11 12 11Z" fill="url(#centerGrad)" className="stroke-white dark:stroke-slate-900" strokeWidth="1.5" />
+  </svg>
+);
+
+const ColorfulDatabaseIcon = ({ className = "h-6 w-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      {/* Glossy Server Metallic Gradient */}
+      <linearGradient id="dbMetallicGrad" x1="4" y1="2" x2="20" y2="22">
+        <stop offset="0%" stopColor="#64748B" />
+        <stop offset="50%" stopColor="#334155" />
+        <stop offset="100%" stopColor="#0F172A" />
+      </linearGradient>
+      
+      {/* Light border accents */}
+      <linearGradient id="dbHighlightGrad" x1="12" y1="2" x2="12" y2="22">
+        <stop offset="0%" stopColor="#94A3B8" />
+        <stop offset="100%" stopColor="#475569" />
+      </linearGradient>
+    </defs>
+
+    {/* Top Cylinder */}
+    <path d="M4 6C4 7.66 7.58 9 12 9C16.42 9 20 7.66 20 6C20 4.34 16.42 3 12 3C7.58 3 4 4.34 4 6Z" fill="url(#dbMetallicGrad)" stroke="url(#dbHighlightGrad)" strokeWidth="1" />
+    <path d="M20 6V10C20 11.66 16.42 13 12 13C7.58 13 4 11.66 4 10V6" fill="url(#dbMetallicGrad)" fillOpacity="0.85" stroke="url(#dbHighlightGrad)" strokeWidth="1" />
+
+    {/* Middle Cylinder */}
+    <path d="M20 11V15C20 16.66 16.42 18 12 18C7.58 18 4 15.66 4 14V11" fill="url(#dbMetallicGrad)" fillOpacity="0.85" stroke="url(#dbHighlightGrad)" strokeWidth="1" />
+
+    {/* Bottom Cylinder */}
+    <path d="M20 16V20C20 21.66 16.42 23 12 23C7.58 23 4 21.66 4 20V16" fill="url(#dbMetallicGrad)" fillOpacity="0.85" stroke="url(#dbHighlightGrad)" strokeWidth="1" />
+    
+    {/* Ellipses lines on cylinders for depth */}
+    <path d="M4 10C4 11.66 7.58 13 12 13C16.42 13 20 11.66 20 10" stroke="url(#dbHighlightGrad)" strokeWidth="1" />
+    <path d="M4 15C4 16.66 7.58 18 12 18C16.42 18 20 16.66 20 15" stroke="url(#dbHighlightGrad)" strokeWidth="1" />
+  </svg>
+);
+
+const ColorfulGiftIcon = ({ className = "h-6 w-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      {/* Box Wrap/Lid Gradient: Rose/Coral */}
+      <linearGradient id="lidGrad" x1="2" y1="6" x2="22" y2="10">
+        <stop offset="0%" stopColor="#FB7185" />
+        <stop offset="100%" stopColor="#F43F5E" />
+      </linearGradient>
+      
+      {/* Box Body Gradient: Gold/Orange */}
+      <linearGradient id="bodyGrad" x1="4" y1="10" x2="20" y2="21">
+        <stop offset="0%" stopColor="#FBBF24" />
+        <stop offset="100%" stopColor="#EA580C" />
+      </linearGradient>
+      
+      {/* Ribbon Gradient: Glowing Red */}
+      <linearGradient id="ribbonGrad" x1="12" y1="2" x2="12" y2="21">
+        <stop offset="0%" stopColor="#EF4444" />
+        <stop offset="100%" stopColor="#B91C1C" />
+      </linearGradient>
+    </defs>
+
+    {/* Ribbon Bow Loops */}
+    <path d="M12 7C9.5 7 7.5 5.5 7.5 3.5C7.5 1.5 9.5 1 12 5C14.5 1 16.5 1.5 16.5 3.5C16.5 5.5 14.5 7 12 7Z" fill="url(#ribbonGrad)" />
+    <path d="M12 7.5C11.17 7.5 10.5 6.83 10.5 6C10.5 5.17 11.17 4.5 12 4.5C12.83 4.5 13.5 5.17 13.5 6C13.5 6.83 12.83 7.5 12 7.5Z" fill="#FEE2E2" />
+
+    {/* Gift Box Body */}
+    <rect x="4" y="10" width="16" height="11" rx="2" fill="url(#bodyGrad)" />
+    
+    {/* Gift Box Lid */}
+    <rect x="3" y="7" width="18" height="3.5" rx="1.5" fill="url(#lidGrad)" className="stroke-white dark:stroke-slate-900" strokeWidth="0.5" />
+    
+    {/* Ribbon Vertical and Horizontal Stripes */}
+    <rect x="10.5" y="7" width="3" height="14" fill="url(#ribbonGrad)" />
+    <rect x="3" y="11.5" width="18" height="2" fill="url(#ribbonGrad)" />
+  </svg>
+);
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('Overview'); // 'Overview', 'Tutors', 'Referrals'
@@ -273,8 +381,15 @@ const AdminDashboard = () => {
                       onClick={() => setActiveTab('Tutors')}
                       className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all"
                     >
-                      <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary dark:bg-blue-500/10 dark:text-blue-400 flex items-center justify-center text-xl shrink-0">
-                        <FaGraduationCap />
+                      <div className="h-12 w-12 rounded-2xl bg-slate-950 border border-slate-900 shadow-md dark:bg-black dark:border-slate-950 flex items-center justify-center text-xl shrink-0 relative overflow-visible">
+                        <svg width="0" height="0" className="absolute">
+                          <linearGradient id="cap-gradient-admin" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#d4af37" />
+                            <stop offset="50%" stopColor="#f59e0b" />
+                            <stop offset="100%" stopColor="#fffbdf" />
+                          </linearGradient>
+                        </svg>
+                        <FaGraduationCap style={{ fill: "url(#cap-gradient-admin)" }} className="filter drop-shadow-[0_1px_4px_rgba(212,175,55,0.5)]" />
                       </div>
                       <div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Tutors</p>
@@ -296,10 +411,8 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 cursor-default">
-                      <div className="h-12 w-12 rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400 flex items-center justify-center text-xl shrink-0">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
+                      <div className="h-12 w-12 rounded-2xl bg-blue-50/70 dark:bg-blue-950/20 flex items-center justify-center shrink-0">
+                        <ColorfulUsersIcon className="h-6 w-6" />
                       </div>
                       <div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Students</p>
@@ -315,8 +428,8 @@ const AdminDashboard = () => {
                       }`}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400 flex items-center justify-center text-xl shrink-0">
-                          <FaDatabase />
+                        <div className="h-12 w-12 rounded-2xl bg-purple-50/70 dark:bg-purple-950/20 flex items-center justify-center shrink-0">
+                          <ColorfulDatabaseIcon className="h-6 w-6" />
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Storage Capacity</p>
@@ -459,7 +572,13 @@ const AdminDashboard = () => {
                             <tr key={tutor._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/40">
                               <td className="py-3.5 pl-2">
                                 <div className="flex items-center gap-3">
-                                  <img src={tutor.photo} alt={tutor.fullName} className="h-8 w-8 rounded-full object-cover border" />
+                                  {tutor.photo && !tutor.photo.includes('photo-1535713875002-d1d0cf377fde') ? (
+                                    <img src={tutor.photo} alt={tutor.fullName} className="h-8 w-8 rounded-full object-cover border" />
+                                  ) : (
+                                    <div className={`h-8 w-8 rounded-full font-extrabold flex items-center justify-center text-xs shrink-0 ${getAvatarStyle(tutor.fullName)}`}>
+                                      {(tutor.fullName || 'T').trim().charAt(0).toUpperCase()}
+                                    </div>
+                                  )}
                                   <div>
                                     <p className="font-bold text-slate-850 dark:text-slate-200">{tutor.fullName}</p>
                                     <p className="text-[9px] text-slate-400">
@@ -538,8 +657,8 @@ const AdminDashboard = () => {
                   {/* Summary Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:scale-[1.01] transition-all">
-                      <div className="h-12 w-12 rounded-2xl bg-indigo-55 bg-indigo-50/70 text-indigo-600 dark:bg-indigo-950/30 dark:text-indigo-400 flex items-center justify-center text-xl shrink-0">
-                        <FaUserCheck />
+                      <div className="h-12 w-12 rounded-2xl bg-blue-50/70 dark:bg-blue-950/20 flex items-center justify-center shrink-0">
+                        <ColorfulUsersIcon className="h-6 w-6" />
                       </div>
                       <div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Referred Signups</p>
@@ -558,8 +677,8 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md hover:scale-[1.01] transition-all">
-                      <div className="h-12 w-12 rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-455 flex items-center justify-center text-xl shrink-0">
-                        <FaGraduationCap />
+                      <div className="h-12 w-12 rounded-2xl bg-indigo-50/75 dark:bg-indigo-950/20 flex items-center justify-center shrink-0">
+                        <ColorfulGiftIcon className="h-6 w-6" />
                       </div>
                       <div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Top Referrer</p>
@@ -639,7 +758,13 @@ const AdminDashboard = () => {
                                 <tr key={referrer.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/40">
                                   <td className="py-3.5 pl-2">
                                     <div className="flex items-center gap-3">
-                                      <img src={referrer.photo} alt={referrer.name} className="h-8 w-8 rounded-full object-cover border" />
+                                      {referrer.photo && !referrer.photo.includes('photo-1535713875002-d1d0cf377fde') ? (
+                                        <img src={referrer.photo} alt={referrer.name} className="h-8 w-8 rounded-full object-cover border" />
+                                      ) : (
+                                        <div className={`h-8 w-8 rounded-full font-extrabold flex items-center justify-center text-xs shrink-0 ${getAvatarStyle(referrer.name)}`}>
+                                          {(referrer.name || 'T').trim().charAt(0).toUpperCase()}
+                                        </div>
+                                      )}
                                       <div>
                                         <p className="font-bold text-slate-850 dark:text-slate-200">{referrer.name}</p>
                                         <p className="text-[9px] text-slate-400">{referrer.email} • {referrer.mobile}</p>
@@ -714,7 +839,13 @@ const AdminDashboard = () => {
                   className="bg-slate-50 dark:bg-slate-850/40 border border-slate-100/50 dark:border-slate-800 p-3.5 rounded-2xl flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-all duration-150"
                 >
                   <div className="flex items-center gap-3">
-                    <img src={user.photo} alt={user.name} className="h-8 w-8 rounded-full object-cover border" />
+                    {user.photo && !user.photo.includes('photo-1535713875002-d1d0cf377fde') ? (
+                      <img src={user.photo} alt={user.name} className="h-8 w-8 rounded-full object-cover border" />
+                    ) : (
+                      <div className={`h-8 w-8 rounded-full font-extrabold flex items-center justify-center text-xs shrink-0 ${getAvatarStyle(user.name)}`}>
+                        {(user.name || 'T').trim().charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <div>
                       <p className="font-bold text-slate-800 dark:text-slate-200 text-xs">{user.name}</p>
                       <p className="text-[9px] text-slate-400">{user.email} • {user.mobile}</p>

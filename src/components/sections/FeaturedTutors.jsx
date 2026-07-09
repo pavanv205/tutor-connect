@@ -9,6 +9,8 @@ import Button from '../common/Button';
 
 
 
+import { getAvatarStyle } from '../../utils/avatarHelper';
+
 export const TutorCard = ({ tutor }) => {
   const navigate = useNavigate();
   const { openBookingModal } = useBookingModal();
@@ -50,11 +52,17 @@ export const TutorCard = ({ tutor }) => {
       <div>
         {/* Header: Photo and Badges */}
         <div className="flex gap-4 items-start">
-          <img
-            src={photo}
-            alt={name}
-            className="h-16 w-16 rounded-2xl object-cover shrink-0 border border-slate-100 dark:border-slate-800"
-          />
+          {photo && !photo.includes('photo-1535713875002-d1d0cf377fde') ? (
+            <img
+              src={photo}
+              alt={name}
+              className="h-16 w-16 rounded-2xl object-cover shrink-0 border border-slate-100 dark:border-slate-800"
+            />
+          ) : (
+            <div className={`h-16 w-16 rounded-2xl font-extrabold flex items-center justify-center shrink-0 text-xl ${getAvatarStyle(name)}`}>
+              {name.trim().charAt(0).toUpperCase()}
+            </div>
+          )}
           <div className="flex-1 space-y-1">
             <h4 className="font-bold text-slate-800 dark:text-slate-100 text-base group-hover:text-primary dark:group-hover:text-blue-450 transition-colors">
               {name}

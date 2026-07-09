@@ -58,7 +58,7 @@ TutorSchema.pre('save', async function(next) {
     let code;
     let exists = true;
     while (exists) {
-      code = 'TC';
+      code = 'HT';
       for (let i = 0; i < 6; i++) {
         code += Math.floor(Math.random() * 6) + 1;
       }
