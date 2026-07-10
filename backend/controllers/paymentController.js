@@ -5,8 +5,8 @@ let razorpayInstance = null;
 const getRazorpayInstance = () => {
   if (razorpayInstance) return razorpayInstance;
 
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
 
   if (!keyId || !keySecret || keyId === 'rzp_test_hometutorxkey') {
     console.warn('[PAYMENT] Razorpay keys not configured or using default sandbox key. Using mock payment simulation.');
@@ -36,6 +36,15 @@ exports.createOrder = async (req, res, next) => {
     const client = getRazorpayInstance();
 
     if (!client) {
+      // Prevent mock payment bypass in production environment
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[CRITICAL PAYMENT BYPASS ATTEMPT] Payment gateway is unconfigured in production mode.');
+        return res.status(500).json({
+          success: false,
+          message: 'Payment gateway configuration error. Live payments are currently unavailable.'
+        });
+      }
+
       // Mock order creation for development/demo when key is not set
       const mockOrder = {
         id: `order_mock_${Math.random().toString(36).substring(2, 11)}`,

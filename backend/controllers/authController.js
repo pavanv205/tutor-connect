@@ -12,10 +12,22 @@ let activeAdminOtpExpires = null;
 
 // Helper to verify Razorpay signature securely
 const verifyRazorpaySignature = (orderId, paymentId, signature) => {
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  if (!keySecret || keySecret === 'rzp_test_secret' || (orderId && orderId.startsWith('order_mock_'))) {
-    console.log('[PAYMENT WARNING] Bypassing Razorpay signature verification (mock/sandbox mode)');
-    return true;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  
+  if (process.env.NODE_ENV === 'production') {
+    if (!keySecret || keySecret === 'rzp_test_secret') {
+      console.error('[CRITICAL SECURITY ERROR] Razorpay keys not configured in production mode. Refusing payment verification.');
+      return false;
+    }
+    if (orderId && orderId.startsWith('order_mock_')) {
+      console.error('[CRITICAL SECURITY WARNING] Mock order ID bypass attempted in production mode.');
+      return false;
+    }
+  } else {
+    if (!keySecret || keySecret === 'rzp_test_secret' || (orderId && orderId.startsWith('order_mock_'))) {
+      console.log('[PAYMENT WARNING] Bypassing Razorpay signature verification (mock/sandbox mode)');
+      return true;
+    }
   }
   
   if (!orderId || !paymentId || !signature) {
