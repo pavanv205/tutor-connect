@@ -5,10 +5,10 @@ const memoryTutors = [];
 const memoryUsers = [];
 
 // Seed default users in memory (matching seed.js logic)
-const initializeSeeds = async () => {
-  const adminPasswordHash = await bcrypt.hash('adminpassword123', 10);
-  const tutorPasswordHash = await bcrypt.hash('tutor123', 10);
-  const studentPasswordHash = await bcrypt.hash('student123', 10);
+const initializeSeeds = () => {
+  const adminPasswordHash = bcrypt.hashSync('adminpassword123', 10);
+  const tutorPasswordHash = bcrypt.hashSync('tutor123', 10);
+  const studentPasswordHash = bcrypt.hashSync('student123', 10);
 
   const defaultAdmin = {
     _id: '6a3956421c7fc8576e26c6aa',
