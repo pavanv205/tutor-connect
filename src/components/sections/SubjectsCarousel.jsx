@@ -44,6 +44,13 @@ const SubjectsCarousel = () => {
     navigate(`/tutors?subject=${encodeURIComponent(name)}`);
   };
 
+  const handleKeyDown = (e, name) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCategoryClick(name);
+    }
+  };
+
   return (
     <section className="py-20 bg-white dark:bg-[#0f172a] overflow-hidden">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,9 +96,12 @@ const SubjectsCarousel = () => {
           {SUBJECT_CATEGORIES.map((cat, idx) => (
             <motion.div
               key={idx}
+              role="button"
+              tabIndex={0}
               whileHover={{ y: -6, scale: 1.02 }}
               onClick={() => handleCategoryClick(cat.name)}
-              className="flex-shrink-0 w-64 snap-start cursor-pointer bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 transition-all duration-300 group flex flex-col"
+              onKeyDown={(e) => handleKeyDown(e, cat.name)}
+              className="flex-shrink-0 w-64 snap-start cursor-pointer bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 transition-all duration-300 group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <div>
                 <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${cat.color} text-white shadow-md shadow-slate-100/10 group-hover:scale-110 transition-transform duration-300`}>
