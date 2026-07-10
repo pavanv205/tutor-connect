@@ -446,14 +446,7 @@ const TutorDashboard = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">Highest Qualification</label>
-                      <input
-                        type="text"
-                        name="qualification"
-                        value={tutorProfile.qualification || ''}
-                        onChange={handleProfileChange}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border rounded-xl py-3 px-4 text-sm focus:outline-none"
-                      />
+
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">Experience (Years)</label>

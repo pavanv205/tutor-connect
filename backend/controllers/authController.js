@@ -599,7 +599,13 @@ exports.login = async (req, res, next) => {
     console.log(`[LOGIN START] Login process initiated for email: ${requestEmail} | Method: ${req.method} | Path: ${req.originalUrl}`);
 
     const normalizedEmail = email ? email.trim().toLowerCase() : '';
+    if (normalizedEmail === 'supporthometutor@gmail.com') {
+      return res.status(403).json({ success: false, message: 'Admin login with this email is disabled.' });
+    }
     if (normalizedEmail === 'supporthometutorx@gmail.com' || normalizedEmail === 'suporthometutorx@gmail.com') {
+      if (normalizedEmail === 'supporthometutor@gmail.com') {
+        return res.status(403).json({ success: false, message: 'Admin login with this email is disabled.' });
+      }
       const primaryEmail = 'supporthometutorx@gmail.com';
       let user;
       const isOffline = mongoose.connection.readyState !== 1;
