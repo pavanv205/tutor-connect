@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { upload } = require('../utils/uploadHelper');
-const { registerTutor, registerStudent, login, getMe, checkEmail, renewSubscription, resendAdminOtp } = require('../controllers/authController');
+const { registerTutor, registerStudent, login, getMe, checkEmail, renewSubscription, resendAdminOtp, deleteAccount } = require('../controllers/authController');
 const { forgotPassword, verifyOtp, resetPassword } = require('../controllers/passwordController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -57,5 +57,6 @@ router.post('/verify-otp', verifyOtp);
 router.post('/reset-password', resetPassword);
 router.post('/check-email', checkEmail);
 router.post('/renew-subscription', protect, renewSubscription);
+router.delete('/delete-account', protect, deleteAccount);
 
 module.exports = router;

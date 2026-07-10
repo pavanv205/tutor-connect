@@ -72,13 +72,15 @@ const ColorfulUsersIcon = ({ className = "h-6 w-6" }) => (
 import { getAvatarStyle } from '../utils/avatarHelper';
 
 const TutorDashboard = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('Profile'); // 'Profile', 'Student Requests', 'Referrals', 'Settings'
   const [tutorProfile, setTutorProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' }); // type: 'success' or 'error'
   const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '' });
+  const [deleteData, setDeleteData] = useState({ email: '', password: '' });
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [updatingBookingId, setUpdatingBookingId] = useState(null);
 
@@ -282,6 +284,34 @@ const TutorDashboard = () => {
       console.error(err);
       setMessage({ text: 'Failed to update credentials.', type: 'error' });
       setSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    if (!window.confirm("WARNING: This will permanently delete your account and profile. This action cannot be undone. Are you sure you want to proceed?")) {
+      return;
+    }
+    
+    setSaving(true);
+    setDeleteLoading(true);
+    setMessage({ text: '', type: '' });
+    
+    try {
+      const res = await api.delete('/auth/delete-account', { data: deleteData });
+      if (res.data && res.data.success) {
+        alert("Your account has been successfully deleted.");
+        logout();
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage({
+        text: err.response?.data?.message || 'Failed to delete account. Please verify credentials.',
+        type: 'error'
+      });
+    } finally {
+      setSaving(false);
+      setDeleteLoading(false);
     }
   };
 
@@ -863,6 +893,49 @@ const TutorDashboard = () => {
                       <Button type="submit" variant="primary" loading={saving}>
                         Update Credentials
                       </Button>
+                    </div>
+                  </form>
+
+                  {/* Delete Account Form */}
+                  <form onSubmit={handleDeleteAccount} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+                    <h3 className="text-base font-extrabold text-red-655 dark:text-red-400 border-b pb-3 flex items-center gap-2">
+                      <FaTimes className="text-red-500" />
+                      Delete Account
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      Warning: Permanently delete your account. This action is irreversible and all your tutor profile details will be deleted.
+                    </p>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">Registered Email</label>
+                      <input
+                        type="email"
+                        required
+                        value={deleteData.email}
+                        onChange={(e) => setDeleteData(prev => ({ ...prev, email: e.target.value }))}
+                        className="w-full bg-slate-55 dark:bg-slate-80 border rounded-xl py-3 px-4 text-sm focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">Password</label>
+                      <input
+                        type="password"
+                        required
+                        value={deleteData.password}
+                        onChange={(e) => setDeleteData(prev => ({ ...prev, password: e.target.value }))}
+                        className="w-full bg-slate-55 dark:bg-slate-80 border rounded-xl py-3 px-4 text-sm focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        disabled={deleteLoading}
+                        className="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-sm transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        {deleteLoading ? 'Deleting Account...' : 'Permanently Delete Account'}
+                      </button>
                     </div>
                   </form>
                 </div>

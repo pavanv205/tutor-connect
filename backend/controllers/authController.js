@@ -991,3 +991,98 @@ exports.renewSubscription = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc    Delete logged in user's account
+// @route   POST /api/auth/delete-account
+// @access  Private
+exports.deleteAccount = async (req, res, next) => {
+  try {
+    const { email, password } = req.body || {};
+    
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide both email and password.'
+      });
+    }
+
+    const isOffline = mongoose.connection.readyState !== 1;
+    let user;
+
+    if (isOffline) {
+      console.log('🔌 MongoDB is offline. Running deleteAccount in Fallback mode.');
+      const dbFallback = require('../utils/dbFallback');
+      const usersList = await dbFallback.getUsers();
+      
+      // Find the user by ID
+      const rawUser = usersList.find(u => String(u._id) === String(req.user._id));
+      if (!rawUser) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+
+      // Check if email matches
+      if (rawUser.email.toLowerCase() !== email.trim().toLowerCase()) {
+        return res.status(400).json({ success: false, message: 'Invalid email address.' });
+      }
+
+      // Check password
+      const isMatch = await bcrypt.compare(password, rawUser.password);
+      if (!isMatch) {
+        return res.status(400).json({ success: false, message: 'Invalid password.' });
+      }
+
+      // If tutor, delete tutor profile in fallback too
+      if (rawUser.role === 'Tutor') {
+        const tutorsList = await dbFallback.getTutors();
+        const tutorIdx = tutorsList.findIndex(t => String(t.userId) === String(rawUser._id));
+        if (tutorIdx !== -1) {
+          tutorsList.splice(tutorIdx, 1);
+        }
+      }
+
+      // Delete user from fallback list
+      const userIdx = usersList.findIndex(u => String(u._id) === String(rawUser._id));
+      if (userIdx !== -1) {
+        usersList.splice(userIdx, 1);
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Account successfully deleted.'
+      });
+    }
+
+    // Database mode
+    user = await User.findById(req.user._id).select('+password');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    // Verify email matches the user's email
+    if (user.email.toLowerCase() !== email.trim().toLowerCase()) {
+      return res.status(400).json({ success: false, message: 'Invalid email address.' });
+    }
+
+    // Match password
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Invalid password.' });
+    }
+
+    // If Tutor, delete tutor profile
+    if (user.role === 'Tutor') {
+      await Tutor.findOneAndDelete({ userId: user._id });
+    }
+
+    // Delete user
+    await User.findByIdAndDelete(user._id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Account successfully deleted.'
+    });
+  } catch (err) {
+    console.error(`[DELETE SYSTEM ERROR] Uncaught error in deleteAccount | Error: ${err.message}`);
+    next(err);
+  }
+};

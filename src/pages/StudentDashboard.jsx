@@ -7,12 +7,18 @@ import Button from '../components/common/Button';
 import { FaGraduationCap, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBookOpen, FaUser, FaHistory, FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
 
 const StudentDashboard = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingBookingId, setUpdatingBookingId] = useState(null);
+  
+  // Delete account states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteData, setDeleteData] = useState({ email: '', password: '' });
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const handleUpdateBookingStatus = async (bookingId, newStatus) => {
     setUpdatingBookingId(bookingId);
@@ -46,6 +52,30 @@ const StudentDashboard = () => {
       setError('Failed to delete booking request.');
     } finally {
       setUpdatingBookingId(null);
+    }
+  };
+
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    if (!window.confirm("WARNING: This will permanently delete your account. This action cannot be undone. Are you sure you want to proceed?")) {
+      return;
+    }
+
+    setDeleteLoading(true);
+    setDeleteError('');
+
+    try {
+      const res = await api.delete('/auth/delete-account', { data: deleteData });
+      if (res.data && res.data.success) {
+        alert("Your account has been successfully deleted.");
+        setShowDeleteModal(false);
+        logout();
+      }
+    } catch (err) {
+      console.error(err);
+      setDeleteError(err.response?.data?.message || 'Failed to delete account. Please verify credentials.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -87,10 +117,20 @@ const StudentDashboard = () => {
                 Welcome back, {user?.name || 'Student'}. Track your session requests and tutor details here.
               </p>
             </div>
-            <div>
+            <div className="flex items-center gap-3">
               <Button onClick={() => navigate('/tutors')} variant="primary" size="sm">
                 Find Tutors
               </Button>
+              <button
+                onClick={() => {
+                  setDeleteData({ email: '', password: '' });
+                  setDeleteError('');
+                  setShowDeleteModal(true);
+                }}
+                className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-655 dark:bg-red-955/20 dark:hover:bg-red-955/40 dark:text-red-400 font-bold text-xs rounded-xl border border-red-200 dark:border-red-900/40 cursor-pointer transition-colors"
+              >
+                Delete Account
+              </button>
             </div>
           </div>
 
@@ -255,6 +295,77 @@ const StudentDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Account Modal Overlay */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-105 dark:border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative space-y-6">
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            >
+              <FaTimes className="h-5 w-5" />
+            </button>
+            
+            <div className="text-center space-y-2">
+              <div className="h-14 w-14 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <FaTrash className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-850 dark:text-slate-100">Permanently Delete Account</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                Warning: This action is irreversible. All of your booking history, tuition requests, and account details will be permanently deleted.
+              </p>
+            </div>
+
+            {deleteError && (
+              <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/25 border border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold text-center">
+                {deleteError}
+              </div>
+            )}
+
+            <form onSubmit={handleDeleteAccount} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">Registered Email</label>
+                <input
+                  type="email"
+                  required
+                  value={deleteData.email}
+                  onChange={(e) => setDeleteData(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full bg-slate-50 dark:bg-slate-80 border rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 mb-1.5 uppercase tracking-wide">Password</label>
+                <input
+                  type="password"
+                  required
+                  value={deleteData.password}
+                  onChange={(e) => setDeleteData(prev => ({ ...prev, password: e.target.value }))}
+                  className="w-full bg-slate-50 dark:bg-slate-85 border rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-red-500"
+                />
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={deleteLoading}
+                  className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {deleteLoading ? 'Deleting...' : 'Delete Account'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
