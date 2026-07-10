@@ -15,38 +15,59 @@ function normalizeTutor(t) {
   };
 }
 
+// Safely extract array list of tutors from API response and normalize them
+function extractTutorList(resData) {
+  if (Array.isArray(resData)) {
+    return resData.map(normalizeTutor);
+  }
+  if (resData && Array.isArray(resData.data)) {
+    return resData.data.map(normalizeTutor);
+  }
+  if (resData && Array.isArray(resData.tutors)) {
+    return resData.tutors.map(normalizeTutor);
+  }
+  if (resData && typeof resData === 'object') {
+    return [normalizeTutor(resData)];
+  }
+  return [];
+}
+
 export const tutorService = {
   async registerTutor(formData) {
-    const debugObj = {};
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        debugObj[key] = `[File: ${value.name}]`;
-      } else {
-        try { debugObj[key] = JSON.parse(value); } catch { debugObj[key] = value; }
-      }
-    }
-    console.log('Sending tutor object to API:', debugObj);
-
     const response = await api.post('/tutors', formData);
     return response.data;
   },
 
   async getTutors(filters = {}) {
-    const response = await api.get('/tutors', { params: filters });
-    const data = Array.isArray(response.data) ? response.data.map(normalizeTutor) : response.data;
-    console.log('API Response (Get Tutors):', data);
-    return data;
+    try {
+      const response = await api.get('/tutors', { params: filters });
+      return extractTutorList(response.data);
+    } catch (error) {
+      console.error('tutorService.getTutors error:', error);
+      throw error;
+    }
   },
 
   async getTutorById(id) {
-    const response = await api.get(`/tutors/${id}`);
-    return normalizeTutor(response.data);
+    try {
+      const response = await api.get(`/tutors/${id}`);
+      const rawData = response.data && response.data.data ? response.data.data : response.data;
+      return normalizeTutor(rawData);
+    } catch (error) {
+      console.error(`tutorService.getTutorById error for ID ${id}:`, error);
+      throw error;
+    }
   },
 
   async getFeaturedTutors() {
-    const response = await api.get('/tutors', { params: { featured: true } });
-    const list = Array.isArray(response.data) ? response.data.map(normalizeTutor) : [];
-    return list.filter(t => t.featured);
+    try {
+      const response = await api.get('/tutors', { params: { featured: true } });
+      const list = extractTutorList(response.data);
+      return list.filter(t => t.featured);
+    } catch (error) {
+      console.error('tutorService.getFeaturedTutors error:', error);
+      return [];
+    }
   },
 
   async updateTutor(id, data) {
