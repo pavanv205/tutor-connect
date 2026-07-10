@@ -19,29 +19,37 @@ export const AuthProvider = ({ children }) => {
 
   // Load user data on startup if token exists
   useEffect(() => {
+    let isCurrent = true;
+
     const loadUser = async () => {
       if (!token) {
-        setLoading(false);
+        if (isCurrent) setLoading(false);
         return;
       }
 
       try {
         const res = await api.get('/auth/me');
-        if (res.data && res.data.success) {
-          setUser(res.data.data);
-        } else {
-          // Token invalid, clear it
-          logout();
+        if (isCurrent) {
+          if (res.data && res.data.success) {
+            setUser(res.data.data);
+          } else {
+            // Token invalid, clear it
+            logout();
+          }
         }
       } catch (err) {
         console.error('Failed to load user:', err);
-        logout();
+        if (isCurrent) logout();
       } finally {
-        setLoading(false);
+        if (isCurrent) setLoading(false);
       }
     };
 
     loadUser();
+
+    return () => {
+      isCurrent = false;
+    };
   }, [token]);
 
   // Login action
@@ -54,14 +62,19 @@ export const AuthProvider = ({ children }) => {
         if (res.data.requireOtp) {
           return res.data;
         }
-        const { token: userToken, user: userData } = res.data.data;
+        const { token: userToken, user: userData } = res.data.data || {};
+        if (!userToken || !userData) {
+          throw new Error('Invalid authentication response from server.');
+        }
         localStorage.setItem('token', userToken);
         setToken(userToken);
         setUser(userData);
         return userData;
+      } else {
+        throw new Error(res.data?.message || 'Login failed. Please check credentials.');
       }
     } catch (err) {
-      const errMsg = err.message || 'Login failed. Please check credentials.';
+      const errMsg = err.response?.data?.message || err.message || 'Login failed. Please check credentials.';
       setError(errMsg);
       throw new Error(errMsg, { cause: err });
     } finally {
@@ -80,14 +93,19 @@ export const AuthProvider = ({ children }) => {
         }
       });
       if (res.data && res.data.success) {
-        const { token: userToken, user: userData } = res.data.data;
+        const { token: userToken, user: userData } = res.data.data || {};
+        if (!userToken || !userData) {
+          throw new Error('Invalid registration response from server.');
+        }
         localStorage.setItem('token', userToken);
         setToken(userToken);
         setUser(userData);
         return userData;
+      } else {
+        throw new Error(res.data?.message || 'Registration failed. Please try again.');
       }
     } catch (err) {
-      const errMsg = err.message || 'Registration failed. Please try again.';
+      const errMsg = err.response?.data?.message || err.message || 'Registration failed. Please try again.';
       setError(errMsg);
       throw new Error(errMsg, { cause: err });
     } finally {
@@ -102,14 +120,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.post('/auth/register-student', studentData);
       if (res.data && res.data.success) {
-        const { token: userToken, user: userData } = res.data.data;
+        const { token: userToken, user: userData } = res.data.data || {};
+        if (!userToken || !userData) {
+          throw new Error('Invalid registration response from server.');
+        }
         localStorage.setItem('token', userToken);
         setToken(userToken);
         setUser(userData);
         return userData;
+      } else {
+        throw new Error(res.data?.message || 'Registration failed. Please try again.');
       }
     } catch (err) {
-      const errMsg = err.message || 'Registration failed. Please try again.';
+      const errMsg = err.response?.data?.message || err.message || 'Registration failed. Please try again.';
       setError(errMsg);
       throw new Error(errMsg, { cause: err });
     } finally {
@@ -126,9 +149,11 @@ export const AuthProvider = ({ children }) => {
       if (res.data && res.data.success) {
         setUser(res.data.data);
         return res.data.data;
+      } else {
+        throw new Error(res.data?.message || 'Renewal failed. Please try again.');
       }
     } catch (err) {
-      const errMsg = err.message || 'Renewal failed. Please try again.';
+      const errMsg = err.response?.data?.message || err.message || 'Renewal failed. Please try again.';
       setError(errMsg);
       throw new Error(errMsg, { cause: err });
     } finally {
