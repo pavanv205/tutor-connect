@@ -80,12 +80,17 @@
 - Removed the "Experience (Years)" input field from the profile details edit form in [TutorDashboard.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/TutorDashboard.jsx).
 - Replaced it with a "Profile Photo" change upload option featuring an image picker, size compression using `compressImage`, a visual thumbnail preview (with initials fallback), and validation error notifications.
 - Integrated the image file upload with the backend multipart updates by submitting tutor profile data via `FormData` when a new photo is selected.
-- Added a "Remove Photo" option in the edit form. Clicking this clears any locally selected photo file or permanently deletes the saved profile photo from the database (falling back to initials).
 
 ---
 
 ### 10. Compressed Profile Photo to Less Than 350KB
 - Configured the image compression utility threshold to `350 * 1024` (350KB) in both registration [BecomeTutorForm.jsx](file:///c:/hometutor/Tutor%20connect/src/components/forms/BecomeTutorForm.jsx) and editing [TutorDashboard.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/TutorDashboard.jsx) pages to ensure tutor profile photos are compressed below 350KB before upload.
+
+---
+
+### 11. Added Remove Photo Action beside Change Photo
+- Added a `handleRemovePhoto` state-clearing function and a "Remove Photo" action button beside "Change Photo" in [TutorDashboard.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/TutorDashboard.jsx).
+- The button is displayed conditionally when a photo is selected locally or exists on the server, permitting tutors to clear their profile photo (reverting to the initials avatar placeholder) upon save.
 
 ---
 

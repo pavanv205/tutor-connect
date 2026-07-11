@@ -258,21 +258,6 @@ const TutorDashboard = () => {
     });
   };
 
-  const handleRemovePhoto = () => {
-    if (photoFile) {
-      setPhotoFile(null);
-      if (photoPreview) {
-        URL.revokeObjectURL(photoPreview);
-        setPhotoPreview(null);
-      }
-    } else {
-      setTutorProfile(prev => ({
-        ...prev,
-        photo: ''
-      }));
-    }
-  };
-
   const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -307,6 +292,19 @@ const TutorDashboard = () => {
         setCompressing(false);
       }
     }
+  };
+
+  const handleRemovePhoto = () => {
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setPhotoError('');
+    setTutorProfile(prev => ({
+      ...prev,
+      photo: ''
+    }));
   };
 
   // Save Profile
@@ -569,29 +567,31 @@ const TutorDashboard = () => {
                             </div>
                           )}
                         </div>
-                        <div className="flex flex-col gap-1">
-                          <label className="cursor-pointer bg-primary/10 hover:bg-primary/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-primary dark:text-blue-400 text-xs font-bold px-3 py-2 rounded-lg text-center transition-colors">
-                            Change Photo
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={handlePhotoChange}
-                              className="hidden"
-                            />
-                          </label>
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex items-center gap-2">
+                            <label className="cursor-pointer bg-primary/10 hover:bg-primary/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-primary dark:text-blue-400 text-xs font-bold px-3 py-2 rounded-lg text-center transition-colors">
+                              Change Photo
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handlePhotoChange}
+                                className="hidden"
+                              />
+                            </label>
+                            {(photoPreview || tutorProfile.photo) && (
+                              <button
+                                type="button"
+                                onClick={handleRemovePhoto}
+                                className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-455 text-xs font-bold px-3 py-2 rounded-lg transition-colors cursor-pointer"
+                              >
+                                Remove Photo
+                              </button>
+                            )}
+                          </div>
                           {photoFile && (
                             <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold max-w-[150px] truncate">
                               {photoFile.name}
                             </span>
-                          )}
-                          {(photoPreview || tutorProfile.photo) && (
-                            <button
-                              type="button"
-                              onClick={handleRemovePhoto}
-                              className="text-xs font-bold text-rose-500 hover:text-rose-600 cursor-pointer hover:underline text-left mt-1"
-                            >
-                              Remove Photo
-                            </button>
                           )}
                         </div>
                       </div>
