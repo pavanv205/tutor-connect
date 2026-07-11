@@ -920,7 +920,7 @@ const BecomeTutorForm = () => {
                       onClick={() => toggleSubject(sub)}
                       className={`py-2 px-3 text-xs font-semibold rounded-lg border text-center transition-all duration-200 ${
                         isChecked
-                          ? 'bg-primary/10 border-primary text-primary dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-400'
+                          ? 'bg-primary/10 border-primary text-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100'
                           : 'border-slate-200 text-slate-650 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-350 dark:hover:bg-slate-800/50'
                       }`}
                     >
@@ -947,7 +947,7 @@ const BecomeTutorForm = () => {
                       onClick={() => toggleClass(cls)}
                       className={`py-2.5 px-3 text-xs font-semibold rounded-lg border text-center transition-all duration-200 ${
                         isChecked
-                          ? 'bg-primary/10 border-primary text-primary dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-400'
+                          ? 'bg-primary/10 border-primary text-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100'
                           : 'border-slate-200 text-slate-650 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-350 dark:hover:bg-slate-800/50'
                       }`}
                     >
@@ -972,7 +972,7 @@ const BecomeTutorForm = () => {
                       key={m}
                       className={`flex items-center justify-center p-3 rounded-xl border text-sm font-semibold cursor-pointer transition-all duration-200 ${
                         isSelected
-                          ? 'bg-primary/10 border-primary text-primary dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-450 font-extrabold shadow-sm'
+                          ? 'bg-primary/10 border-primary text-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 font-extrabold shadow-sm'
                           : 'border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800/50'
                       }`}
                     >
@@ -1218,7 +1218,7 @@ const BecomeTutorForm = () => {
               {certificateFile && !certificateCompressionLoading && (
                 <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-250/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-11 w-11 bg-primary/10 dark:bg-blue-500/10 text-primary dark:text-blue-455 rounded-xl flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="h-11 w-11 bg-primary/10 dark:bg-slate-700/20 text-primary dark:text-slate-200 rounded-xl flex items-center justify-center font-bold text-xs shrink-0">
                       {certificateFile.name.split('.').pop().toUpperCase()}
                     </div>
                     <div>

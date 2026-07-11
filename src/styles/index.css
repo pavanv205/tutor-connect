@@ -3,11 +3,11 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #2563EB;
-  --color-primary-hover: #1D4ED8;
-  --color-primary-light: #EFF6FF;
-  --color-secondary: #0F172A;
-  --color-secondary-hover: #1E293B;
+  --color-primary: #0F172A;
+  --color-primary-hover: #000000;
+  --color-primary-light: #F1F5F9;
+  --color-secondary: #2563EB;
+  --color-secondary-hover: #1D4ED8;
   --color-accent: #F59E0B;
   --color-accent-hover: #D97706;
   --color-dark-bg: #0B0F19;
@@ -27,25 +27,6 @@
     from { transform: translateY(16px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
-}
-
-.theme-black {
-  --color-primary: #09090b !important;
-  --color-primary-hover: #18181b !important;
-  --color-primary-light: #f4f4f5 !important;
-  
-  --color-blue-50: #f4f4f5 !important;
-  --color-blue-100: #e4e4e7 !important;
-  --color-blue-200: #d4d4d8 !important;
-  --color-blue-400: #a1a1aa !important;
-  --color-blue-500: #18181b !important;
-  --color-blue-600: #09090b !important;
-  --color-blue-700: #09090b !important;
-  --color-blue-800: #09090b !important;
-  --color-blue-900: #09090b !important;
-  --color-blue-950: #09090b !important;
-  
-  --tw-ring-color: rgba(9, 9, 11, 0.1) !important;
 }
 
 @layer base {
@@ -125,7 +106,7 @@
 
 /* Custom styles for Range slider */
 input[type="range"] {
-  accent-color: #2563EB;
+  accent-color: #0F172A;
 }
 
 /* Leaflet Custom Marker Styling */
@@ -158,7 +139,7 @@ input[type="range"] {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 3px solid #2563EB; /* primary blue */
+  border: 3px solid #0F172A; /* primary black */
   background-color: white;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -173,7 +154,7 @@ input[type="range"] {
 }
 .tutor-avatar-marker:hover {
   transform: scale(1.1);
-  border-color: #1D4ED8; /* hover primary */
+  border-color: #000000; /* hover primary hover */
 }
 .tutor-avatar-marker img {
   width: 100%;

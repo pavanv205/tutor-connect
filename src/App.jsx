@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 import { AuthProvider } from './context/AuthContext';
@@ -72,11 +72,17 @@ function App() {
         <AuthProvider>
           <BookingModalProvider>
             <Router>
-              <AppContentWrapper
-                hasPlaceholder={hasPlaceholder}
-                rawApiUrl={rawApiUrl}
-                isApiUrlMissing={isApiUrlMissing}
-              >
+              <div className="flex flex-col min-h-screen bg-slate-50 text-slate-705 transition-colors duration-300">
+                {hasPlaceholder && (
+                  <div className="bg-red-600 text-white px-4 py-2.5 text-center text-xs font-bold z-50 sticky top-0 shadow-md">
+                    ⚠️ API Configuration Warning: VITE_API_URL contains unresolved placeholders ( <code className="bg-white/20 px-1.5 py-0.5 rounded font-mono text-white">{rawApiUrl}</code> ). Please configure your actual deployment domain. Falling back to relative route <code className="bg-white/20 px-1.5 py-0.5 rounded font-mono text-white">/api</code>.
+                  </div>
+                )}
+                {isApiUrlMissing && !hasPlaceholder && (
+                  <div className="bg-amber-500 text-slate-900 px-4 py-2.5 text-center text-xs font-bold z-50 sticky top-0 shadow-md">
+                    ⚠️ API Configuration Warning: The environment variable <code className="bg-slate-900/10 px-1.5 py-0.5 rounded font-mono">VITE_API_URL</code> is not configured. Frontend operations might fail if not proxying relative routes.
+                  </div>
+                )}
                 <Navbar />
                 <main className="flex-grow">
                   <ErrorBoundary>
@@ -86,32 +92,11 @@ function App() {
                 <Footer />
                 <ScrollToTop />
                 <BookingModalWrapper />
-              </AppContentWrapper>
+              </div>
             </Router>
           </BookingModalProvider>
         </AuthProvider>
     </HelmetProvider>
-  );
-}
-
-const AppContentWrapper = ({ children, hasPlaceholder, rawApiUrl, isApiUrlMissing }) => {
-  const location = useLocation();
-  const isHomeOrFindTutors = location.pathname === '/' || location.pathname === '/tutors' || location.pathname === '/tutors/';
-
-  return (
-    <div className={`flex flex-col min-h-screen bg-slate-50 text-slate-705 transition-colors duration-300 ${!isHomeOrFindTutors ? 'theme-black' : ''}`}>
-      {hasPlaceholder && (
-        <div className="bg-red-600 text-white px-4 py-2.5 text-center text-xs font-bold z-50 sticky top-0 shadow-md">
-          ⚠️ API Configuration Warning: VITE_API_URL contains unresolved placeholders ( <code className="bg-white/20 px-1.5 py-0.5 rounded font-mono text-white">{rawApiUrl}</code> ). Please configure your actual deployment domain. Falling back to relative route <code className="bg-white/20 px-1.5 py-0.5 rounded font-mono text-white">/api</code>.
-        </div>
-      )}
-      {isApiUrlMissing && !hasPlaceholder && (
-        <div className="bg-amber-500 text-slate-900 px-4 py-2.5 text-center text-xs font-bold z-50 sticky top-0 shadow-md">
-          ⚠️ API Configuration Warning: The environment variable <code className="bg-slate-900/10 px-1.5 py-0.5 rounded font-mono">VITE_API_URL</code> is not configured. Frontend operations might fail if not proxying relative routes.
-        </div>
-      )}
-      {children}
-    </div>
   );
 }
 
