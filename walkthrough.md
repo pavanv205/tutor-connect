@@ -118,6 +118,12 @@
 
 ---
 
+### 16. Green Color for Assigned Status Pill
+- Changed the background and text color of the **"Assigned"** status pill from blue to emerald green (`bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400`).
+- This change applies to [TutorDashboard.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/TutorDashboard.jsx), [TutorProfile.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/TutorProfile.jsx), and [StudentDashboard.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/StudentDashboard.jsx).
+
+---
+
 ## 🚀 Verification Results
 
 ### 1. Successful Client Build Compilation

@@ -755,7 +755,7 @@ const TutorDashboard = () => {
                                 booking.status === 'Pending'
                                   ? 'bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-450'
                                   : booking.status === 'Assigned'
-                                  ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400'
+                                  ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400'
                                   : booking.status === 'Completed'
                                   ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400'
                                   : 'bg-red-50 text-red-600 dark:bg-red-950/30 dark:text-red-400'
