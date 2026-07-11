@@ -62,6 +62,11 @@ exports.getDashboardStats = async (req, res, next) => {
         cdnDataSize = totalTutors * 0.9 * 1024 * 1024;
       }
 
+      const avgStudentDbSize = totalStudents > 0 ? Math.round(Buffer.byteLength(JSON.stringify(usersList.filter(u => u.role === 'Student'))) / totalStudents) : 512;
+      const avgTutorDbSize = totalTutors > 0 ? Math.round(Buffer.byteLength(JSON.stringify(tutorsList)) / totalTutors) : 3584;
+      const avgTutorCdnSize = totalTutors > 0 ? Math.round(cdnDataSize / totalTutors) : 900 * 1024;
+      const avgBookingSize = totalRequests > 0 ? Math.round(Buffer.byteLength(JSON.stringify(bookingsList)) / totalRequests) : 1024;
+
       return res.status(200).json({
         success: true,
         data: {
@@ -81,7 +86,11 @@ exports.getDashboardStats = async (req, res, next) => {
           },
           storage: {
             databaseSize: dbDataSize,
-            cdnSize: cdnDataSize
+            cdnSize: cdnDataSize,
+            avgStudentDbSize,
+            avgTutorDbSize,
+            avgTutorCdnSize,
+            avgBookingSize
           }
         }
       });
@@ -99,9 +108,28 @@ exports.getDashboardStats = async (req, res, next) => {
     const contactedRequests = await StudentRequest.countDocuments({ status: 'Contacted' });
     const resolvedRequests = await StudentRequest.countDocuments({ status: 'Resolved' });
 
+    let avgStudentDbSize = 512;
+    let avgTutorDbSize = 3584;
+    let avgBookingSize = 1024;
+
     try {
       const stats = await mongoose.connection.db.stats();
       dbDataSize = stats.dataSize || stats.storageSize || 0;
+
+      try {
+        const userStats = await User.collection.stats();
+        avgStudentDbSize = userStats.avgObjSize || 512;
+      } catch (e) {}
+
+      try {
+        const tutorStats = await Tutor.collection.stats();
+        avgTutorDbSize = tutorStats.avgObjSize || 3584;
+      } catch (e) {}
+
+      try {
+        const bookingStats = await StudentRequest.collection.stats();
+        avgBookingSize = bookingStats.avgObjSize || 1024;
+      } catch (e) {}
     } catch (dbErr) {
       console.error('Failed to get MongoDB db stats:', dbErr);
       dbDataSize = (totalStudents * 0.5 + totalTutors * 3.5 + totalRequests * 1.0) * 1024;
@@ -129,6 +157,8 @@ exports.getDashboardStats = async (req, res, next) => {
       cdnDataSize = totalTutors * 0.9 * 1024 * 1024;
     }
 
+    const avgTutorCdnSize = totalTutors > 0 ? Math.round(cdnDataSize / totalTutors) : 900 * 1024;
+
     res.status(200).json({
       success: true,
       data: {
@@ -148,7 +178,11 @@ exports.getDashboardStats = async (req, res, next) => {
         },
         storage: {
           databaseSize: dbDataSize,
-          cdnSize: cdnDataSize
+          cdnSize: cdnDataSize,
+          avgStudentDbSize,
+          avgTutorDbSize,
+          avgTutorCdnSize,
+          avgBookingSize
         }
       }
     });

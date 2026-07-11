@@ -112,6 +112,12 @@
 
 ---
 
+### 15. Dynamic Calculation Parameter Metrics
+- Updated [adminController.js](file:///c:/hometutor/Tutor%20connect/backend/controllers/adminController.js) to dynamically calculate the actual average document size for student entries (`avgStudentDbSize`), tutor profiles (`avgTutorDbSize`), booking requests (`avgBookingSize`), and uploads (`avgTutorCdnSize`).
+- Enabled [AdminDashboard.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/AdminDashboard.jsx) to dynamically render these exact statistics inside the *Calculation parameters* dashboard box, replacing the static text sizes.
+
+---
+
 ## 🚀 Verification Results
 
 ### 1. Successful Client Build Compilation

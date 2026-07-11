@@ -539,8 +539,8 @@ const AdminDashboard = () => {
                               <h4 className="text-xl font-extrabold text-slate-850 dark:text-slate-100 mt-0.5">
                                 {(stats.storage && stats.storage.databaseSize > 0) ? (
                                   Math.max(0, Math.min(
-                                    Math.floor((512 * 1024 * 1024 - stats.storage.databaseSize) / (3.5 * 1024)),
-                                    Math.floor((25 * 1024 * 1024 * 1024 - stats.storage.cdnSize) / (900 * 1024))
+                                    Math.floor((512 * 1024 * 1024 - stats.storage.databaseSize) / (stats.storage.avgTutorDbSize || 3.5 * 1024)),
+                                    Math.floor((25 * 1024 * 1024 * 1024 - stats.storage.cdnSize) / (stats.storage.avgTutorCdnSize || 900 * 1024))
                                   )).toLocaleString()
                                 ) : (
                                   Math.max(0, Math.min(
@@ -561,7 +561,7 @@ const AdminDashboard = () => {
                               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Max Student Logins</p>
                               <h4 className="text-xl font-extrabold text-slate-850 dark:text-slate-100 mt-0.5">
                                 {(stats.storage && stats.storage.databaseSize > 0) ? (
-                                  Math.max(0, Math.floor((512 * 1024 * 1024 - stats.storage.databaseSize) / (0.5 * 1024))).toLocaleString()
+                                  Math.max(0, Math.floor((512 * 1024 * 1024 - stats.storage.databaseSize) / (stats.storage.avgStudentDbSize || 0.5 * 1024))).toLocaleString()
                                 ) : (
                                   Math.max(0, Math.floor((512 * 1024 - ((stats.students?.total || 0) * 0.5 + (stats.tutors?.total || 0) * 3.5 + (stats.bookings?.total || 0) * 1.0)) / 0.5)).toLocaleString()
                                 )}
@@ -576,9 +576,9 @@ const AdminDashboard = () => {
                     <div className="bg-slate-50 dark:bg-slate-850/40 p-4 rounded-2xl text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed border border-slate-100 dark:border-slate-800 font-semibold">
                       <p className="font-bold text-slate-700 dark:text-slate-300 uppercase text-[9px] tracking-wider mb-1">Calculation parameters:</p>
                       <ul className="list-disc pl-4 space-y-1">
-                        <li><strong>Student registration size:</strong> ~0.5 KB inside MongoDB. Students do not upload files.</li>
-                        <li><strong>Tutor profile registration size:</strong> ~3.5 KB inside MongoDB (profile, subjects, classes, location coordinates) + ~900 KB average inside Cloudinary CDN for attachments (profile picture, verified certificates).</li>
-                        <li><strong>Booking Request size:</strong> ~1.0 KB inside MongoDB.</li>
+                        <li><strong>Student registration size:</strong> ~{(stats.storage?.avgStudentDbSize ? (stats.storage.avgStudentDbSize / 1024).toFixed(3) : '0.5')} KB inside MongoDB. Students do not upload files.</li>
+                        <li><strong>Tutor profile registration size:</strong> ~{(stats.storage?.avgTutorDbSize ? (stats.storage.avgTutorDbSize / 1024).toFixed(3) : '3.5')} KB inside MongoDB (profile, subjects, classes, location coordinates) + ~{(stats.storage?.avgTutorCdnSize ? (stats.storage.avgTutorCdnSize / 1024).toFixed(1) : '900')} KB average inside Cloudinary CDN for attachments (profile picture, verified certificates).</li>
+                        <li><strong>Booking Request size:</strong> ~{(stats.storage?.avgBookingSize ? (stats.storage.avgBookingSize / 1024).toFixed(3) : '1.0')} KB inside MongoDB.</li>
                       </ul>
                     </div>
                   </div>
