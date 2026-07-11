@@ -569,7 +569,7 @@ const TutorDashboard = () => {
                         </div>
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2">
-                            <label className="cursor-pointer bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/45 text-indigo-600 dark:text-indigo-400 text-xs font-bold px-3 py-2 rounded-lg text-center transition-colors">
+                            <label className="cursor-pointer bg-primary/10 hover:bg-primary/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-700 dark:text-blue-300 text-xs font-bold px-3 py-2 rounded-lg text-center transition-colors">
                               {photoPreview || tutorProfile.photo ? 'Change Photo' : 'Add Photo'}
                               <input
                                 type="file"
@@ -596,7 +596,7 @@ const TutorDashboard = () => {
                         </div>
                       </div>
                       {compressing && (
-                        <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1 font-semibold">Optimizing image...</p>
+                        <p className="text-xs text-primary dark:text-blue-450 mt-1 font-semibold">Optimizing image...</p>
                       )}
                       {photoError && (
                         <p className="text-red-500 text-xs mt-1 font-medium">{photoError}</p>
