@@ -12,6 +12,7 @@ export const SUBJECTS = [
   "Chemistry",
   "Biology",
   "Science",
+  "Social",
   "English",
   "Computer Science",
   "Economics",

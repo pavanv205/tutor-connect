@@ -116,8 +116,8 @@ const TermsOfService = () => {
               We apply the following payment rules for registrations and subscriptions on the platform:
             </p>
             <ul className="list-disc pl-5 text-sm text-slate-600 dark:text-slate-400 space-y-2 font-medium">
-              <li><strong>Student Verification Fee:</strong> Students pay a one-time profile verification fee of ₹29 upon registration to activate their account and request classes.</li>
-              <li><strong>Tutor Subscription Plan:</strong> Tutors pay ₹29 to register for a 6-month subscription plan. The subscription must be renewed every 6 months to maintain dashboard access and profile listing visibility.</li>
+              <li><strong>Student Verification Fee:</strong> Students pay a one-time profile verification fee of ₹1 upon registration to activate their account and request classes.</li>
+              <li><strong>Tutor Subscription Plan:</strong> Tutors pay ₹1 to register for a 5-minute subscription plan. The subscription must be renewed every 5 minutes to maintain dashboard access and profile listing visibility.</li>
               <li><strong>Lesson Payments:</strong> All regular tutoring class hours and fees are negotiated and coordinated directly between the Student and the Tutor. HomeTutorX does not process or manage standard lesson payments.</li>
             </ul>
           </div>

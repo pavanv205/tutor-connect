@@ -112,7 +112,7 @@ exports.registerTutor = async (req, res, next) => {
     if (!actualPaymentId || data.paymentStatus !== 'Paid') {
       return res.status(400).json({
         success: false,
-        message: 'Payment verification failed. Tutor profile registration requires a successful ₹29 tutor subscription plan payment.'
+        message: 'Payment verification failed. Tutor profile registration requires a successful ₹1 tutor subscription plan payment.'
       });
     }
 
@@ -267,7 +267,7 @@ exports.registerTutor = async (req, res, next) => {
         tutorProfile: tutorId,
         paymentStatus: 'Paid',
         paymentId: data.paymentId,
-        subscriptionExpiresAt: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
+        subscriptionExpiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
         createdAt: new Date().toISOString()
       };
       
@@ -334,7 +334,7 @@ exports.registerTutor = async (req, res, next) => {
         role: 'Tutor',
         paymentStatus: 'Paid',
         paymentId: data.paymentId,
-        subscriptionExpiresAt: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
+        subscriptionExpiresAt: new Date(Date.now() + 5 * 60 * 1000)
       });
       devLog(`[DATABASE SAVE] Created User document, ID: ${user._id}`);
     } catch (userErr) {
@@ -470,7 +470,7 @@ exports.registerStudent = async (req, res, next) => {
     if (!actualPaymentId || paymentStatus !== 'Paid') {
       return res.status(400).json({
         success: false,
-        message: 'Payment verification failed. Student account registration requires a successful ₹29 registration fee payment.'
+        message: 'Payment verification failed. Student account registration requires a successful ₹1 registration fee payment.'
       });
     }
 
@@ -953,7 +953,7 @@ exports.renewSubscription = async (req, res, next) => {
     if (!actualPaymentId || paymentStatus !== 'Paid') {
       return res.status(400).json({
         success: false,
-        message: 'Payment verification failed. Subscription renewal requires a successful ₹29 payment.'
+        message: 'Payment verification failed. Subscription renewal requires a successful ₹1 payment.'
       });
     }
 
@@ -965,7 +965,7 @@ exports.renewSubscription = async (req, res, next) => {
       });
     }
 
-    const newExpiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000);
+    const newExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     let user;
     if (mongoose.connection.readyState !== 1) {
@@ -995,7 +995,7 @@ exports.renewSubscription = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Subscription successfully renewed for 6 months.',
+      message: 'Subscription successfully renewed for 5 minutes.',
       data: user
     });
   } catch (err) {

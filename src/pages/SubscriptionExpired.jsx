@@ -66,7 +66,7 @@ const SubscriptionExpired = () => {
       // 2. Initialize Options
       const options = {
         key: 'rzp_test_hometutorxkey', // Fallback key
-        amount: orderData.amount, // ₹29.00 in paise
+        amount: orderData.amount, // ₹1.00 in paise
         currency: orderData.currency,
         name: 'HomeTutorX',
         description: `${user.role} Subscription Renewal`,
@@ -113,7 +113,7 @@ const SubscriptionExpired = () => {
         },
         modal: {
           ondismiss: function() {
-            setErrorMsg('Payment cancelled. You must complete the ₹29 payment to renew your subscription.');
+            setErrorMsg('Payment cancelled. You must complete the ₹1 payment to renew your subscription.');
             setLoading(false);
           }
         }
@@ -122,7 +122,7 @@ const SubscriptionExpired = () => {
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_hometutorxkey';
       if (razorpayKey === 'rzp_test_hometutorxkey' || isMock) {
         const simulateSuccess = window.confirm(
-          "HomeTutorX Demo: Razorpay sandbox key is not configured.\n\nWould you like to simulate a successful Razorpay renewal payment of ₹29?"
+          "HomeTutorX Demo: Razorpay sandbox key is not configured.\n\nWould you like to simulate a successful Razorpay renewal payment of ₹1?"
         );
         if (simulateSuccess) {
           const mockPaymentId = `pay_mock_${Math.random().toString(36).substring(2, 11)}`;
@@ -177,7 +177,7 @@ const SubscriptionExpired = () => {
               Subscription Expired
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-sm mx-auto">
-              Your 6-month HomeTutorX subscription expired on <strong className="text-rose-600 dark:text-rose-400">{formattedExpiry}</strong>.
+              Your 5-minute HomeTutorX subscription expired on <strong className="text-rose-600 dark:text-rose-400">{formattedExpiry}</strong>.
             </p>
           </div>
 
@@ -212,7 +212,7 @@ const SubscriptionExpired = () => {
                 <div className="h-2.5 w-2.5 rounded-full bg-primary dark:bg-blue-500" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">6-Month Renewal</h4>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">5-Minute Renewal</h4>
                 <p className="text-xs text-slate-400 font-semibold mt-0.5">Full tutor & student connections</p>
               </div>
             </div>

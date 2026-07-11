@@ -379,10 +379,10 @@ const BecomeTutorForm = () => {
       // Initialize Razorpay Options
       const options = {
         key: 'rzp_test_hometutorxkey', // Fallback key
-        amount: orderData.amount, // ₹29.00 in paise
+        amount: orderData.amount, // ₹1.00 in paise
         currency: orderData.currency,
         name: 'HomeTutorX',
-        description: '6-Month Tutor Subscription Plan',
+        description: '5-Minute Tutor Subscription Plan',
         order_id: isMock ? undefined : orderData.id,
         handler: async function (response) {
           try {
@@ -438,7 +438,7 @@ const BecomeTutorForm = () => {
         },
         modal: {
           ondismiss: function() {
-            setSubmitError('Payment was cancelled. You must complete the ₹29 payment to submit your application.');
+            setSubmitError('Payment was cancelled. You must complete the ₹1 payment to submit your application.');
             setLoading(false);
           }
         }
@@ -447,7 +447,7 @@ const BecomeTutorForm = () => {
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_hometutorxkey';
       if (razorpayKey === 'rzp_test_hometutorxkey' || isMock) {
         const simulateSuccess = window.confirm(
-          "HomeTutorX Demo: Razorpay sandbox key is not configured.\n\nWould you like to simulate a successful Razorpay payment of ₹29 for this registration?"
+          "HomeTutorX Demo: Razorpay sandbox key is not configured.\n\nWould you like to simulate a successful Razorpay payment of ₹1 for this registration?"
         );
         if (simulateSuccess) {
           const mockPaymentId = `pay_mock_${Math.random().toString(36).substring(2, 11)}`;
@@ -1304,7 +1304,7 @@ const BecomeTutorForm = () => {
                 <div>
                   <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">Tutor Subscription Plan</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
-                    HomeTutorX charges a fee of <strong className="text-amber-600 dark:text-amber-500 font-extrabold text-sm">₹1</strong> for a 6-month tutor subscription plan.
+                    HomeTutorX charges a fee of <strong className="text-amber-600 dark:text-amber-500 font-extrabold text-sm">₹1</strong> for a 5-minute tutor subscription plan.
                   </p>
                 </div>
               </div>

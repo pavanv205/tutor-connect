@@ -52,6 +52,26 @@
 
 ---
 
+### 5. Added Social Subject Selection
+- Added `"Social"` to the list of `SUBJECTS` in [index.js](file:///c:/hometutor/Tutor%20connect/src/constants/index.js).
+- Enabled tutors to select `"Social"` as a subject they can teach and allowed filtering by `"Social"` across search pages and dashboards.
+
+---
+
+### 6. Updated Tutor and Student Registration Fees
+- Updated the Razorpay order creation logic in [paymentController.js](file:///c:/hometutor/Tutor%20connect/backend/controllers/paymentController.js) to set the registration/subscription fee amount to ₹1 (100 paise) instead of ₹29.
+- Updated all frontend checkout steps, simulation confirm dialogs, and error message fields in [BecomeTutorForm.jsx](file:///c:/hometutor/Tutor%20connect/src/components/forms/BecomeTutorForm.jsx), [RegisterStudent.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/RegisterStudent.jsx), and [SubscriptionExpired.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/SubscriptionExpired.jsx).
+- Adjusted the terms in [TermsOfService.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/TermsOfService.jsx) and the fee listing in the [AdminDashboard.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/AdminDashboard.jsx).
+- Updated validation feedback messages in [authController.js](file:///c:/hometutor/Tutor%20connect/backend/controllers/authController.js).
+
+---
+
+### 7. Updated Tutor Subscription Plan Duration
+- Changed the tutor subscription lifespan from 6 months (180 days) to 5 minutes (`5 * 60 * 1000` milliseconds) inside tutor registration handlers and renewal endpoints in [authController.js](file:///c:/hometutor/Tutor%20connect/backend/controllers/authController.js).
+- Updated user-facing descriptions and renewal options in [BecomeTutorForm.jsx](file:///c:/hometutor/Tutor%20connect/src/components/forms/BecomeTutorForm.jsx), [SubscriptionExpired.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/SubscriptionExpired.jsx), and [TermsOfService.jsx](file:///c:/hometutor/Tutor%20connect/src/pages/TermsOfService.jsx).
+
+---
+
 ## 🚀 Verification Results
 
 ### 1. Successful Client Build Compilation

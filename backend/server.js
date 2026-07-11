@@ -41,7 +41,15 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || /https?:\/\/.*\.vercel\.app$/.test(origin) || /https?:\/\/.*\.hometutorx\.in$/.test(origin) || origin === 'https://hometutorx.in') {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      origin === 'http://localhost' ||
+      origin === 'capacitor://localhost' ||
+      /https?:\/\/.*\.vercel\.app$/.test(origin) ||
+      /https?:\/\/.*\.hometutorx\.in$/.test(origin) ||
+      origin === 'https://hometutorx.in'
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

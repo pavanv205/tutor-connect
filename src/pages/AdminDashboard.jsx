@@ -584,7 +584,7 @@ const AdminDashboard = () => {
                                     <p className="text-[9px] text-slate-400">
                                       {tutor.email} • {tutor.mobile}
                                       {tutor.referralCode && ` • Referral: ${tutor.referralCode}`}
-                                      {tutor.paymentId && ` • Fee: ₹29 Paid (ID: ${tutor.paymentId})`}
+                                      {tutor.paymentId && ` • Fee: ₹1 Paid (ID: ${tutor.paymentId})`}
                                       {tutor.certificateUrl && (
                                         <>
                                           {' • '}

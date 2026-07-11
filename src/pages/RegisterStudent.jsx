@@ -101,7 +101,7 @@ const RegisterStudent = () => {
       // 3. Initialize Razorpay Options
       const options = {
         key: 'rzp_test_hometutorxkey', // Fallback key
-        amount: orderData.amount, // ₹29.00 in paise
+        amount: orderData.amount, // ₹1.00 in paise
         currency: orderData.currency,
         name: 'HomeTutorX',
         description: 'Student Registration Fee',
@@ -148,7 +148,7 @@ const RegisterStudent = () => {
         },
         modal: {
           ondismiss: function() {
-            setErrorMsg('Payment was cancelled. You must complete the ₹29 payment to create your account.');
+            setErrorMsg('Payment was cancelled. You must complete the ₹1 payment to create your account.');
             setLoading(false);
           }
         }
@@ -157,7 +157,7 @@ const RegisterStudent = () => {
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_hometutorxkey';
       if (razorpayKey === 'rzp_test_hometutorxkey' || isMock) {
         const simulateSuccess = window.confirm(
-          "HomeTutorX Demo: Razorpay sandbox key is not configured.\n\nWould you like to simulate a successful Razorpay payment of ₹29 for this student registration?"
+          "HomeTutorX Demo: Razorpay sandbox key is not configured.\n\nWould you like to simulate a successful Razorpay payment of ₹1 for this student registration?"
         );
         if (simulateSuccess) {
           const mockPaymentId = `pay_mock_${Math.random().toString(36).substring(2, 11)}`;

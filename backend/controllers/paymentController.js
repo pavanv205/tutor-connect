@@ -26,13 +26,13 @@ const getRazorpayInstance = () => {
 };
 
 /**
- * @desc    Create a new Razorpay Order for ₹29
+ * @desc    Create a new Razorpay Order for ₹1
  * @route   POST /api/payments/create-order
  * @access  Public
  */
 exports.createOrder = async (req, res, next) => {
   try {
-    const amount = 29 * 100; // ₹29.00 in paise
+    const amount = 1 * 100; // ₹1.00 in paise
     const client = getRazorpayInstance();
 
     if (!client) {
