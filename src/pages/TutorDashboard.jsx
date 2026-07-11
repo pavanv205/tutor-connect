@@ -258,6 +258,21 @@ const TutorDashboard = () => {
     });
   };
 
+  const handleRemovePhoto = () => {
+    if (photoFile) {
+      setPhotoFile(null);
+      if (photoPreview) {
+        URL.revokeObjectURL(photoPreview);
+        setPhotoPreview(null);
+      }
+    } else {
+      setTutorProfile(prev => ({
+        ...prev,
+        photo: ''
+      }));
+    }
+  };
+
   const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -568,6 +583,15 @@ const TutorDashboard = () => {
                             <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold max-w-[150px] truncate">
                               {photoFile.name}
                             </span>
+                          )}
+                          {(photoPreview || tutorProfile.photo) && (
+                            <button
+                              type="button"
+                              onClick={handleRemovePhoto}
+                              className="text-xs font-bold text-rose-500 hover:text-rose-600 cursor-pointer hover:underline text-left mt-1"
+                            >
+                              Remove Photo
+                            </button>
                           )}
                         </div>
                       </div>
