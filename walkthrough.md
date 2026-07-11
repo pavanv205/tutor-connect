@@ -147,6 +147,12 @@
 
 ---
 
+### 21. Dynamic Theme Black Styling Everywhere Except Home and Find Tutors Listing
+- Redefined primary layout color custom variables (`--color-primary`, `--color-primary-hover`, `--color-primary-light`, and all `--color-blue-*` shades) inside a `.theme-black` scope in [index.css](file:///c:/hometutor/Tutor%20connect/src/styles/index.css) to evaluate to premium dark zinc/black and slate gray.
+- Introduced `AppContentWrapper` in [App.jsx](file:///c:/hometutor/Tutor%20connect/src/App.jsx) which checks the current React Router location path: if not on Home (`/`) or Find Tutors listing (`/tutors`), it dynamically wraps the page layout with the `.theme-black` class. This automatically turns all primary blue buttons, inputs, focus borders, active selectors, status rings, and loading indicators into bold, premium black/zinc on all form, detail, auth, and dashboard pages.
+
+---
+
 ## 🚀 Verification Results
 
 ### 1. Successful Client Build Compilation
