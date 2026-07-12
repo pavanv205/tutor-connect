@@ -7,7 +7,7 @@ const STEPS = [
     title: 'Search & Choose',
     description: 'Browse verified tutor profiles, compare qualifications, teaching experience, modes (online/offline), and rates.',
     icon: <FaSearch className="h-6 w-6" />,
-    color: 'bg-slate-100 text-slate-900 border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700/50'
+    color: 'bg-blue-50 text-primary border-blue-100 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/50'
   },
   {
     step: '02',

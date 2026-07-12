@@ -525,7 +525,7 @@ const BecomeTutorForm = () => {
           <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 dark:bg-slate-800 -translate-y-1/2 z-0" />
           {/* Active progress bar line */}
           <div
-            className="absolute top-1/2 left-0 h-0.5 bg-slate-950 dark:bg-slate-200 -translate-y-1/2 z-0 transition-all duration-300"
+            className="absolute top-1/2 left-0 h-0.5 bg-primary dark:bg-blue-500 -translate-y-1/2 z-0 transition-all duration-300"
             style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
           />
 
@@ -534,9 +534,9 @@ const BecomeTutorForm = () => {
               <div
                 className={`h-11 w-11 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all duration-300 ${
                   idx < currentStep
-                    ? 'bg-slate-950 border-slate-950 text-white dark:bg-slate-200 dark:border-slate-200 dark:text-slate-950'
+                    ? 'bg-primary border-primary text-white'
                     : idx === currentStep
-                    ? 'bg-white border-slate-950 text-slate-950 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-100 ring-4 ring-slate-950/10'
+                    ? 'bg-white border-primary text-primary dark:bg-slate-900 dark:text-blue-400 dark:border-blue-400 ring-4 ring-primary/10'
                     : 'bg-white border-slate-200 text-slate-400 dark:bg-slate-900 dark:border-slate-800'
                 }`}
               >
