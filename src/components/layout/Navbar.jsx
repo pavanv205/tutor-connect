@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaGraduationCap, FaBars, FaTimes, FaBell } from 'react-icons/fa';
+import { FaGraduationCap, FaBars, FaTimes } from 'react-icons/fa';
 import { NAV_LINKS } from '../../constants';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
@@ -250,7 +250,7 @@ const Navbar = () => {
                       onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                       className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 focus:outline-none cursor-pointer relative"
                     >
-                      <FaBell className="h-4.5 w-4.5 text-slate-700 dark:text-slate-300" />
+                      <span className="text-sm select-none leading-none">🔔</span>
                       {unreadCount > 0 && (
                         <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[8px] font-black text-white ring-2 ring-white dark:ring-[#070b13]">
                           {unreadCount}
@@ -349,7 +349,7 @@ const Navbar = () => {
                     onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                     className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 focus:outline-none cursor-pointer relative"
                   >
-                    <FaBell className="h-4 w-4 text-slate-700 dark:text-slate-300" />
+                    <span className="text-sm select-none leading-none">🔔</span>
                     {unreadCount > 0 && (
                       <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-rose-500 text-[8px] font-black text-white ring-2 ring-white dark:ring-[#070b13]">
                         {unreadCount}
