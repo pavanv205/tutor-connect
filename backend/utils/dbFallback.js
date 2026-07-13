@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const memoryBookings = [];
 const memoryTutors = [];
 const memoryUsers = [];
+const memoryNotifications = [];
 
 // Seed default users in memory (matching seed.js logic)
 const initializeSeeds = () => {
@@ -146,5 +147,39 @@ exports.deleteBooking = async (id) => {
     return true;
   }
   return false;
+};
+
+exports.getNotifications = async () => memoryNotifications;
+exports.saveNotification = async (notification) => {
+  memoryNotifications.push(notification);
+  return notification;
+};
+exports.markNotificationAsRead = async (id) => {
+  const notification = memoryNotifications.find(n => String(n._id) === String(id));
+  if (notification) {
+    notification.isRead = true;
+  }
+  return notification;
+};
+exports.markAllNotificationsAsRead = async (recipientId) => {
+  memoryNotifications.forEach(n => {
+    if (String(n.recipient) === String(recipientId)) {
+      n.isRead = true;
+    }
+  });
+};
+
+exports.addPushSubscription = async (userId, subscription) => {
+  const user = memoryUsers.find(u => String(u._id) === String(userId));
+  if (user) {
+    if (!user.pushSubscriptions) {
+      user.pushSubscriptions = [];
+    }
+    const exists = user.pushSubscriptions.find(s => s.endpoint === subscription.endpoint);
+    if (!exists) {
+      user.pushSubscriptions.push(subscription);
+    }
+  }
+  return user;
 };
 

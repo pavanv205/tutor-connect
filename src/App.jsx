@@ -16,11 +16,16 @@ const BookingModalWrapper = () => {
   const { isOpen, selectedTutor, closeBookingModal } = useBookingModal();
   const [modalTitle, setModalTitle] = useState('');
 
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(false);
+  const [prevSelectedTutor, setPrevSelectedTutor] = useState(null);
+
+  if (isOpen !== prevIsOpen || selectedTutor !== prevSelectedTutor) {
+    setPrevIsOpen(isOpen);
+    setPrevSelectedTutor(selectedTutor);
     if (isOpen) {
       setModalTitle(selectedTutor ? '' : 'Book a Session');
     }
-  }, [isOpen, selectedTutor]);
+  }
 
   return (
     <Modal

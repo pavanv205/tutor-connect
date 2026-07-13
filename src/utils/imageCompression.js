@@ -81,8 +81,8 @@ export const compressImage = (file, maxSizeBytes = 500 * 1024) => {
 
         checkAndCompress(quality);
       };
-      img.onerror = (err) => reject(new Error('Failed to load image element'));
+      img.onerror = () => reject(new Error('Failed to load image element'));
     };
-    reader.onerror = (err) => reject(new Error('Failed to read image file'));
+    reader.onerror = () => reject(new Error('Failed to read image file'));
   });
 };

@@ -1,5 +1,3 @@
-import React from 'react';
-import { motion } from 'framer-motion';
 import { FaFileContract, FaRegHandshake, FaExclamationTriangle, FaRegEnvelope } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
 

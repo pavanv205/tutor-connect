@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FaGraduationCap, FaCheck, FaTimes, FaUserSlash, FaUserCheck, FaInfoCircle, FaDatabase, FaServer, FaUser } from 'react-icons/fa';
+import { FaGraduationCap, FaUserCheck, FaInfoCircle, FaUser } from 'react-icons/fa';
 import api from '../services/api';
 import { parseArrayField } from '../utils/arrayHelper';
 import Button from '../components/common/Button';
@@ -168,7 +167,15 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchDashboardData();
+      }
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Verify / Approve Tutor profile

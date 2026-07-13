@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaEnvelope, FaLock, FaUserShield, FaChalkboardTeacher, FaEye, FaEyeSlash, FaUndo, FaGraduationCap, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUserShield, FaChalkboardTeacher, FaEye, FaEyeSlash, FaGraduationCap, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
@@ -24,6 +24,7 @@ const Login = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [showUserNotFoundModal, setShowUserNotFoundModal] = useState(false);
   const [showIncorrectPasswordModal, setShowIncorrectPasswordModal] = useState(false);
+  const [showIncorrectOtpModal, setShowIncorrectOtpModal] = useState(false);
   
   const [isOtpStep, setIsOtpStep] = useState(false);
   const [savedEmail, setSavedEmail] = useState('');
@@ -120,7 +121,10 @@ const Login = () => {
   }, [isAuthenticated, role, navigate, location]);
 
   // Parse query parameters to set the default active tab
-  useEffect(() => {
+  const [prevSearch, setPrevSearch] = useState('');
+
+  if (location.search !== prevSearch) {
+    setPrevSearch(location.search);
     const params = new URLSearchParams(location.search);
     const roleParam = params.get('role');
     if (roleParam === 'student') {
@@ -133,7 +137,7 @@ const Login = () => {
       setActiveTab('Admin');
       setErrorMsg('');
     }
-  }, [location.search]);
+  }
 
   // Cooldown timer effect
   useEffect(() => {
@@ -221,6 +225,8 @@ const Login = () => {
         setShowUserNotFoundModal(true);
       } else if (errMsg.includes('Incorrect username or password')) {
         setShowIncorrectPasswordModal(true);
+      } else if (errMsg.toLowerCase().includes('incorrect otp')) {
+        setShowIncorrectOtpModal(true);
       } else {
         setErrorMsg(errMsg || 'Login failed. Please check your credentials.');
       }
@@ -229,21 +235,7 @@ const Login = () => {
     }
   };
 
-  const handleQuickFill = (roleType) => {
-    if (roleType === 'Admin') {
-      setEmail('admin@hometutorx.com');
-      setPassword('adminpassword123');
-      setActiveTab('Admin');
-    } else if (roleType === 'Student') {
-      setEmail('student@hometutorx.com');
-      setPassword('student123');
-      setActiveTab('Student');
-    } else {
-      setEmail('tutor@hometutorx.com');
-      setPassword('tutor123');
-      setActiveTab('Tutor');
-    }
-  };
+
 
   return (
     <>
@@ -743,6 +735,29 @@ const Login = () => {
           </p>
           <button
             onClick={() => setShowIncorrectPasswordModal(false)}
+            className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-4 rounded-xl text-xs shadow-md cursor-pointer transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </Modal>
+
+      {/* Login Failed Modal: Incorrect OTP */}
+      <Modal
+        isOpen={showIncorrectOtpModal}
+        onClose={() => setShowIncorrectOtpModal(false)}
+        title="Login Failed"
+        size="sm"
+      >
+        <div className="flex flex-col items-center text-center p-2">
+          <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/30 flex items-center justify-center text-rose-600 dark:text-rose-400 mb-4">
+            <FaExclamationTriangle className="h-6 w-6" />
+          </div>
+          <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-6">
+            incorrect OTP
+          </p>
+          <button
+            onClick={() => setShowIncorrectOtpModal(false)}
             className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-4 rounded-xl text-xs shadow-md cursor-pointer transition-colors"
           >
             Try Again

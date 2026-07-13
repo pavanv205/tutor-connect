@@ -4,7 +4,7 @@ import api from '../services/api';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
 import { SUBJECTS, CLASSES } from '../constants';
-import { FaLock, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBookOpen, FaUser, FaCheck, FaTimes, FaGraduationCap, FaGift } from 'react-icons/fa';
+import { FaLock, FaEnvelope, FaPhone, FaUser, FaCheck, FaTimes } from 'react-icons/fa';
 
 const ColorfulGiftIcon = ({ className = "h-6 w-6" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

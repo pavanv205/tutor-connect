@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 console.log('🔧 Building frontend with Vite...');
 execSync('npm run build', { stdio: 'inherit' });

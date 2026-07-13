@@ -1,9 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const theme = 'light';
 
   useEffect(() => {
     const root = window.document.documentElement;

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaSearch, FaUserPlus, FaStar, FaUserGraduate, FaChalkboardTeacher } from 'react-icons/fa';
+import { FaSearch, FaUserPlus, FaUserGraduate, FaChalkboardTeacher } from 'react-icons/fa';
 import Button from '../common/Button';
 
 const Hero = () => {

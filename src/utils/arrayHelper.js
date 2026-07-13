@@ -19,7 +19,7 @@ export const parseArrayField = (fieldData) => {
       } else {
         result = [parsed];
       }
-    } catch (e) {
+    } catch {
       // Split by comma if it's a simple string representation
       result = fieldData.split(',').map(s => s.trim()).filter(Boolean);
     }
@@ -43,7 +43,7 @@ export const parseArrayField = (fieldData) => {
           } else {
             cleanResult.push(parsed);
           }
-        } catch (e) {
+        } catch {
           cleanResult.push(item);
         }
       } else {
@@ -52,7 +52,9 @@ export const parseArrayField = (fieldData) => {
         if (cleanStr.startsWith('"') && cleanStr.endsWith('"')) {
           try {
             cleanStr = JSON.parse(cleanStr);
-          } catch(e) {}
+          } catch {
+            // If parsing fails, fall back to keeping the raw string
+          }
         }
         cleanResult.push(cleanStr);
       }

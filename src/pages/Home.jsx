@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChevronDown } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
@@ -12,7 +11,6 @@ import { FAQS } from '../constants';
 
 
 const Home = () => {
-  const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState(null);
 
 

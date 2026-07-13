@@ -28,7 +28,7 @@ exports.getDashboardStats = async (req, res, next) => {
       totalTutors = tutorsList.length;
       const verifiedTutors = tutorsList.filter(t => t.isVerified).length;
       const pendingTutors = tutorsList.filter(t => !t.isVerified).length;
-      const activeTutors = tutorsList.filter(t => t.paymentStatus === 'Paid').length;
+      const activeTutors = verifiedTutors;
       totalStudents = usersList.filter(u => u.role === 'Student').length;
 
       totalRequests = bookingsList.length;
@@ -103,7 +103,7 @@ exports.getDashboardStats = async (req, res, next) => {
     totalTutors = await Tutor.countDocuments();
     const verifiedTutors = await Tutor.countDocuments({ isVerified: true });
     const pendingTutors = await Tutor.countDocuments({ isVerified: false });
-    const activeTutors = await Tutor.countDocuments({ paymentStatus: 'Paid' });
+    const activeTutors = verifiedTutors;
     totalStudents = await User.countDocuments({ role: 'Student' });
 
     totalRequests = await StudentRequest.countDocuments();
@@ -215,17 +215,27 @@ exports.verifyTutor = async (req, res, next) => {
       const tutorsList = await dbFallback.getTutors();
       tutor = tutorsList.find(t => String(t._id) === String(req.params.id));
       if (tutor) {
+        const originalStatus = tutor.isVerified;
         tutor.isVerified = targetStatus;
         tutor.verifiedAt = targetStatus ? new Date() : null;
         tutor.verifiedDate = targetStatus ? new Date() : null;
         await dbFallback.updateTutor(req.params.id, tutor);
+        if (targetStatus && !originalStatus) {
+          const { createNotification } = require('../services/notificationService');
+          await createNotification(tutor.userId, 'TutorVerified', "you're now verified! Your profile is now visible in the search directory.");
+        }
       }
     } else {
+      const originalTutor = await Tutor.findById(req.params.id);
       tutor = await Tutor.findByIdAndUpdate(
         req.params.id,
         updateData,
         { new: true }
       );
+      if (tutor && targetStatus && (!originalTutor || !originalTutor.isVerified)) {
+        const { createNotification } = require('../services/notificationService');
+        await createNotification(tutor.userId, 'TutorVerified', "you're now verified! Your profile is now visible in the search directory.");
+      }
     }
 
     if (!tutor) {

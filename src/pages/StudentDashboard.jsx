@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import SEO from '../components/common/SEO';
 import Button from '../components/common/Button';
-import { FaGraduationCap, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBookOpen, FaUser, FaHistory, FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaGraduationCap, FaPhone, FaMapMarkerAlt, FaUser, FaHistory, FaTimes, FaTrash } from 'react-icons/fa';
 
 const StudentDashboard = () => {
   const { user, logout } = useAuth();
@@ -100,7 +100,15 @@ const StudentDashboard = () => {
   }, [user]);
 
   useEffect(() => {
-    loadStudentBookings();
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        loadStudentBookings();
+      }
+    });
+    return () => {
+      active = false;
+    };
   }, [loadStudentBookings]);
 
   return (
@@ -127,7 +135,7 @@ const StudentDashboard = () => {
                   setDeleteError('');
                   setShowDeleteModal(true);
                 }}
-                className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-655 dark:bg-red-955/20 dark:hover:bg-red-955/40 dark:text-red-400 font-bold text-xs rounded-xl border border-red-200 dark:border-red-900/40 cursor-pointer transition-colors"
+                className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/20 dark:hover:bg-red-950/40 dark:text-red-400 font-bold text-xs rounded-xl border border-red-200 dark:border-red-900/40 cursor-pointer transition-colors"
               >
                 Delete Account
               </button>
@@ -136,7 +144,7 @@ const StudentDashboard = () => {
 
           {/* Feedback Messages */}
           {error && (
-            <div className="p-4 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-55 dark:bg-red-950/20 text-xs font-bold text-red-700 dark:text-red-400 flex items-center gap-3">
+            <div className="p-4 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20 text-xs font-bold text-red-700 dark:text-red-400 flex items-center gap-3">
               <span>⚠️</span>
               <p>{error}</p>
             </div>

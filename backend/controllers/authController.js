@@ -700,6 +700,13 @@ exports.login = async (req, res, next) => {
       }
 
       // If it's neither the correct OTP nor the correct password:
+      if (activeAdminOtp && Date.now() < activeAdminOtpExpires) {
+        return res.status(401).json({
+          success: false,
+          message: 'Incorrect OTP.'
+        });
+      }
+
       return res.status(401).json({
         success: false,
         message: 'Incorrect username or password.'

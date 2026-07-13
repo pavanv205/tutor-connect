@@ -568,6 +568,16 @@ const FindTutors = () => {
 
           {/* Tutors Listing Main Grid */}
           <main className="lg:col-span-3">
+            {!loading && !error && Array.isArray(tutors) && tutors.length > 0 && (
+              <div className="mb-6 flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-205/60 dark:border-slate-800 rounded-2xl py-3.5 px-5 shadow-sm">
+                <span className="text-sm font-extrabold text-slate-850 dark:text-slate-200">
+                  {tutors.length} {tutors.length === 1 ? 'Active Tutor' : 'Active Tutors'} Found
+                </span>
+                <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+                  Showing verified profiles
+                </span>
+              </div>
+            )}
             {error ? (
               <div className="text-center py-20 bg-white dark:bg-slate-900 border border-rose-100 dark:border-rose-950/20 rounded-3xl p-8 shadow-sm">
                 <div className="h-16 w-16 bg-rose-50 dark:bg-rose-950/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">

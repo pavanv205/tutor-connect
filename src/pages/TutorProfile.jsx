@@ -6,9 +6,7 @@ import {
   FaMapMarkerAlt,
   FaArrowLeft,
   FaCalendarAlt,
-  FaEnvelope,
   FaPhone,
-  FaBookOpen,
   FaCheck,
   FaTimes,
   FaHistory,
@@ -183,7 +181,6 @@ const TutorProfile = () => {
   const about = tutor.about || tutor.bio || 'No biography details provided.';
   const subjects = parseArrayField(tutor.subjects);
   const classes = parseArrayField(tutor.classes);
-  const reviews = Array.isArray(tutor.reviews) ? tutor.reviews : [];
   const hourlyRate = tutor.hourlyRate || 500;
   const monthlyRate = tutor.monthlyRate || 3000;
 

@@ -57,6 +57,8 @@ exports.createBooking = async (req, res, next) => {
         if (tutorObj) {
           tutorObj.leadsCount = (tutorObj.leadsCount || 0) + 1;
           await dbFallback.updateTutor(tutorObj._id, { leadsCount: tutorObj.leadsCount });
+          const { createNotification } = require('../services/notificationService');
+          await createNotification(tutorObj.userId, 'RequestSent', `You have received a new trial class request from ${studentName} for ${subject}.`);
         }
       }
       return res.status(201).json({
@@ -108,6 +110,11 @@ exports.createBooking = async (req, res, next) => {
     const booking = await Booking.create(bookingData);
     if (bookingData.assignedTutor) {
       await Tutor.findByIdAndUpdate(bookingData.assignedTutor, { $inc: { leadsCount: 1 } });
+      const tutor = await Tutor.findById(bookingData.assignedTutor);
+      if (tutor && tutor.userId) {
+        const { createNotification } = require('../services/notificationService');
+        await createNotification(tutor.userId, 'RequestSent', `You have received a new trial class request from ${studentName} for ${subject}.`);
+      }
     }
 
     res.status(201).json({
@@ -223,6 +230,7 @@ exports.updateBooking = async (req, res, next) => {
       if (!booking) {
         return res.status(404).json({ success: false, message: 'Booking not found' });
       }
+      const originalStatus = booking.status;
 
       // Authorization check
       if (req.user.role === 'Tutor') {
@@ -267,6 +275,16 @@ exports.updateBooking = async (req, res, next) => {
       }
 
       const updated = await dbFallback.updateBooking(req.params.id, booking);
+      if (booking.status === 'Assigned' && originalStatus !== 'Assigned') {
+        const usersList = await dbFallback.getUsers();
+        const studentUser = usersList.find(u => u.email.toLowerCase() === booking.studentEmail.toLowerCase() && u.role === 'Student');
+        if (studentUser) {
+          const tutorObj = tutorsList.find(t => String(t._id) === String(booking.assignedTutor));
+          const tutorName = tutorObj ? tutorObj.fullName : 'Your Tutor';
+          const { createNotification } = require('../services/notificationService');
+          await createNotification(studentUser._id, 'RequestAccepted', `Your trial request for ${booking.subject} has been accepted by ${tutorName}.`);
+        }
+      }
       return res.status(200).json({
         success: true,
         data: updated
@@ -278,6 +296,7 @@ exports.updateBooking = async (req, res, next) => {
     if (!booking) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
+    const originalStatus = booking.status;
 
     // Authorization check
     if (req.user.role === 'Tutor') {
@@ -319,6 +338,17 @@ exports.updateBooking = async (req, res, next) => {
     }
 
     await booking.save();
+
+    if (booking.status === 'Assigned' && originalStatus !== 'Assigned') {
+      const User = require('../models/User');
+      const studentUser = await User.findOne({ email: booking.studentEmail, role: 'Student' });
+      if (studentUser) {
+        const tutor = await Tutor.findById(booking.assignedTutor);
+        const tutorName = tutor ? tutor.fullName : 'Your Tutor';
+        const { createNotification } = require('../services/notificationService');
+        await createNotification(studentUser._id, 'RequestAccepted', `Your trial request for ${booking.subject} has been accepted by ${tutorName}.`);
+      }
+    }
 
     res.status(200).json({
       success: true,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaCreditCard, FaLock, FaExclamationTriangle, FaCheck, FaSignOutAlt } from 'react-icons/fa';
+import { FaLock, FaExclamationTriangle, FaCheck, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';

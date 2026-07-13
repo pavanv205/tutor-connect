@@ -1,6 +1,4 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { FaShieldAlt, FaLock, FaUserShield, FaRegEnvelope } from 'react-icons/fa';
+import { FaShieldAlt, FaUserShield, FaRegEnvelope } from 'react-icons/fa';
 import SEO from '../components/common/SEO';
 
 const PrivacyPolicy = () => {
