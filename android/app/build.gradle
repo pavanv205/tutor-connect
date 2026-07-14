@@ -19,9 +19,9 @@ android {
     signingConfigs {
         release {
             storeFile file('hometutorx-release.keystore')
-            storePassword 'HomeTutor@2026'
+            storePassword 'Pavan@2193'
             keyAlias 'hometutorx-release'
-            keyPassword 'HomeTutor@2026'
+            keyPassword 'Pavan@2193'
         }
     }
     buildTypes {
